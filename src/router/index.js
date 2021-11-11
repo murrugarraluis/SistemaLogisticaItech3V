@@ -82,7 +82,7 @@ const routes = [
   {
     path: '/compras',
     name: 'compras',
-    component: () => import('@/views/simple-table/demos/ShoppingTable.vue'),
+    component: () => import('@/views/simple-table/demos/PurcharseTable.vue'),
   },
   {
     path: '/almacenes',

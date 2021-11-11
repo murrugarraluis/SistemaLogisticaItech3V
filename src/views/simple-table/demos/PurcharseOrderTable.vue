@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar flat>
         <v-toolbar-title>
-          <h3>Usuarios</h3>
+          <h3>Ordenes de Compra</h3>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
