@@ -60,17 +60,72 @@ const routes = [
     },
   },
   {
+    path: '/usuarios',
+    name: 'usuarios',
+    component: () => import('@/views/simple-table/demos/UserTable.vue'),
+  },
+  {
+    path: '/personal',
+    name: 'personal',
+    component: () => import('@/views/simple-table/demos/PersonalTable.vue'),
+  },
+  {
+    path: '/productos',
+    name: 'productos',
+    component: () => import('@/views/simple-table/demos/ProductTable.vue'),
+  },
+  {
+    path: '/proveedores',
+    name: 'proveedores',
+    component: () => import('@/views/simple-table/demos/SupplierTable.vue'),
+  },
+  {
+    path: '/compras',
+    name: 'compras',
+    component: () => import('@/views/simple-table/demos/ShoppingTable.vue'),
+  },
+  {
+    path: '/almacenes',
+    name: 'almacenes',
+    component: () => import('@/views/simple-table/demos/WarehouseTable.vue'),
+  },
+  {
+    path: '/requerimientos',
+    name: 'requerimientos',
+    component: () => import('@/views/simple-table/demos/RequirementTable.vue'),
+  },
+  {
+    path: '/ordenes-compra',
+    name: 'ordenes-compra',
+    component: () => import('@/views/simple-table/demos/PurcharseOrderTable.vue'),
+  },
+  {
+    path: '/notas-ingreso',
+    name: 'notas-ingreso',
+    component: () => import('@/views/simple-table/demos/EntryNoteTable.vue'),
+  },
+  {
+    path: '/notas-salida',
+    name: 'notas-salida',
+    component: () => import('@/views/simple-table/demos/ExitNoteTable.vue'),
+  },
+  {
+    path: '/cotizaciones',
+    name: 'cotizaciones',
+    component: () => import('@/views/simple-table/demos/QuotationTable.vue'),
+  },
+  {
+    path: '/configuracion',
+    name: 'configuracion',
+    component: () => import('@/views/simple-table/demos/DemoSimpleTableDense.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
     meta: {
       layout: 'blank',
     },
-  },
-  {
-    path: '/usuarios',
-    name: 'usuarios',
-    component: () => import('@/views/simple-table/demos/UserTable.vue'),
   },
   {
     path: '*',
