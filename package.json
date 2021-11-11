@@ -1,28 +1,24 @@
 {
-  "name": "materio-free-vuetify-vuejs-admin-template",
-  "description": "Production ready carefully crafted most comprehensive admin template",
+  "name": "SistemaLogisticaItech3V",
+  "description": "Sistema de Desarrollo de Tesis",
   "license": "MIT",
   "version": "1.0.1",
   "author": {
-    "name": "ThemeSelection",
+    "name": "Luis Murrugarra A",
     "url": "https://themeselection.com/"
   },
-  "bugs": {
-    "url": "https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free/issues"
-  },
-  "private": false,
+  "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free"
+    "url": "git+https://github.com/murrugarraluis/SistemaLogisticaItech3V"
   },
-  "homepage": "https://themeselection.com/demo/materio-vuetify-vuejs-admin-template-free/demo/",
   "keywords": [
-    "free template",
+    "template",
     "vuejs admin",
-    "free admin template",
-    "free vuejs theme",
-    "free vuejs admin",
-    "free vuejs template"
+    "admin template",
+    "vuejs theme",
+    "vuejs admin",
+    "vuejs template"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",

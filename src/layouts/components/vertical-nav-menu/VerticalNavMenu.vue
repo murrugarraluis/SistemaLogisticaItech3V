@@ -15,7 +15,7 @@
         class="d-flex align-center text-decoration-none"
       >
         <v-img
-          :src="require('@/assets/images/logos/itech.png')"
+          :src="require('@/assets/images/logos/logo.png')"
           max-height="30px"
           max-width="30px"
           alt="logo"
