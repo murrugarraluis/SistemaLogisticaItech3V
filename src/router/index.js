@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/usuarios',
     name: 'usuarios',
-    component: () => import('@/views/simple-table/demos/UserTable.vue'),
+    component: () => import('@/views/manteiners/User.vue'),
   },
   {
     path: '/personal',
