@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/usuarios',
     name: 'usuarios',
-    component: () => import('@/views/manteiners/User.vue'),
+    component: () => import('@/views/manteiners/UserMantainer.vue'),
   },
   {
     path: '/personal',
