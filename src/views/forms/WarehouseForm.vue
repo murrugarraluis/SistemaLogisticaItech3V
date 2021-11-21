@@ -98,15 +98,11 @@ export default {
           const { message } = result.data
           this.$root.$emit('setData-Table', data)
           this.reset()
-          this.$swal({
-            title: 'Registrado!!!', text: message, icon: 'success', confirmButtonColor: '#0d293f',
-          })
+          this.$swal('Registrado!!!', message, 'success')
         }).catch(error => {
           if (error.response) {
             const message = error.response.data.errors.name[0]
-            this.$swal({
-              title: 'Algo no salió bien !!!', text: message, icon: 'error', confirmButtonColor: '#0d293f',
-            })
+            this.$swal('Algo no salió bien !!!', message, 'error')
           }
         })
       }

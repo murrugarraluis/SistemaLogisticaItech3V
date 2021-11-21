@@ -10,9 +10,14 @@ import store from './store'
 import 'sweetalert2/dist/sweetalert2.css'
 
 Vue.config.productionTip = false
+
 Vue.prototype.$URL_SERVE = 'http://127.0.0.1:8000/api'
 
-Vue.use(VueSweetalert2)
+const options = {
+  confirmButtonColor: '#0d293f',
+  cancelButtonColor: '#8A8D93',
+}
+Vue.use(VueSweetalert2, options)
 new Vue({
   router,
   store,

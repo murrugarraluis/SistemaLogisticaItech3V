@@ -70,9 +70,15 @@
 </template>
 <script>
 import {
-  mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
+  mdiDelete,
+  mdiFileDelimited,
+  mdiFileExcel,
+  mdiFilePdfBox,
+  mdiMagnify,
+  mdiPencil,
 } from '@mdi/js'
 import axios from 'axios'
+import api from '@/api'
 
 export default {
   data: () => ({
@@ -106,28 +112,16 @@ export default {
     this.initialize()
   },
   methods: {
-    initialize() {
+    async initialize() {
       const url = `${this.$URL_SERVE}/warehouses`
-
-      // Llamado a la api
-      axios.get(url).then(result => {
-        const { data } = result.data
-        this.desserts = [...data]
-      })
+      this.desserts = await api.get(url)
     },
 
     deleteItem(item) {
       const index = this.desserts.indexOf(item)
       const { id } = { ...item }
       this.$swal({
-        title: '¿Está Seguro?',
-        text: 'Una vez eliminado ya no se podrá recuperar!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#0d293f',
-        cancelButtonColor: '#8A8D93',
-        confirmButtonText: 'Si, Eliminar!',
-        cancelButtonText: 'Cancelar',
+        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
       }).then(result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/warehouses/${id}`
@@ -135,15 +129,11 @@ export default {
           // Peticion Http
           axios.delete(url).then(r => {
             const { message } = r.data
-            this.$swal({
-              title: 'Eliminado!!!', text: message, icon: 'success', confirmButtonColor: '#0d293f',
-            })
+            this.$swal('Eliminado!!!', message, 'success')
           }).catch(error => {
             if (error.response) {
               const message = error.response.data.error
-              this.$swal({
-                title: 'Algo no salió bien !!!', text: message, icon: 'error', confirmButtonColor: '#0d293f',
-              })
+              this.$swal('Algo no salió bien !!!', message, 'error')
             }
           })
           this.desserts.splice(index, 1)
@@ -154,4 +144,3 @@ export default {
   },
 }
 </script>
-<style></style>

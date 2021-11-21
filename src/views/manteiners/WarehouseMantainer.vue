@@ -60,3 +60,8 @@ export default {
   },
 }
 </script>
+<style>
+.swal2-popup {
+  font-family: "Inter", sans-serif
+}
+</style>
