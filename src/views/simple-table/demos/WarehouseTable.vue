@@ -77,7 +77,6 @@ import {
   mdiMagnify,
   mdiPencil,
 } from '@mdi/js'
-import axios from 'axios'
 import api from '@/api'
 
 export default {
@@ -114,7 +113,7 @@ export default {
   methods: {
     async initialize() {
       const url = `${this.$URL_SERVE}/warehouses`
-      this.desserts = await api.get(url)
+      this.desserts = await api.getAll(url)
     },
 
     deleteItem(item) {
@@ -122,21 +121,16 @@ export default {
       const { id } = { ...item }
       this.$swal({
         title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
-      }).then(result => {
+      }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/warehouses/${id}`
-
-          // Peticion Http
-          axios.delete(url).then(r => {
-            const { message } = r.data
-            this.$swal('Eliminado!!!', message, 'success')
-          }).catch(error => {
-            if (error.response) {
-              const message = error.response.data.error
-              this.$swal('Algo no salió bien !!!', message, 'error')
-            }
-          })
-          this.desserts.splice(index, 1)
+          const response = await api.destroy(url)
+          if (response.status === 400) {
+            this.$swal('Algo no salió bien !!!', response.error, 'error')
+          } else {
+            this.$swal('Eliminado!!!', response.message, 'success')
+            this.desserts.splice(index, 1)
+          }
         }
       })
     },
