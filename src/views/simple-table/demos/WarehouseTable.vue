@@ -1,44 +1,6 @@
 <template>
   <v-card>
     <v-card-text>
-      <!--      Dialog para Consultar Eliminacion-->
-      <v-dialog
-        v-model="dialogDelete"
-        max-width="500px"
-      >
-        <v-card>
-          <v-card-title class="text-h5 d-flex justify-center">
-            ¿Desea eliminar el almacén ?
-          </v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="closeDelete"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="deleteItemConfirm"
-            >
-              OK
-            </v-btn>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <!--    Alertas-->
-      <div id="alerts">
-        <v-alert
-          :type="typeAlert"
-          text
-        >
-          {{ alertText }}
-        </v-alert>
-      </div>
       <!--      Emcabezado de Tabla-->
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
@@ -130,27 +92,12 @@ export default {
     // Variables de busqueda o filtrado
     search: '',
 
-    // variables para el uso de alertas
-    typeAlert: 'info',
-    alertText: 'Notificaciones',
-
-    // Variables para eliminacion
-    dialogDelete: false,
-    deletedItem: 0,
-    deletedId: 0,
-
     // Iconos
     icons: {
       mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
     },
 
   }),
-  watch: {
-    // Muestra una alerta por un tiempo,segun su cambio de estado (true or false)
-    typeAlert(val) {
-      if (val) setTimeout(() => { this.typeAlert = 'info'; this.alertText = 'Notificaciones' }, 3000)
-    },
-  },
   mounted() {
     // Recibir y Actualizar data recien ingresada
     this.$root.$on('setData-Table', data => { this.desserts.push(data) })
@@ -170,37 +117,40 @@ export default {
     },
 
     deleteItem(item) {
-      this.deletedItem = this.desserts.indexOf(item)
-      this.deletedId = { ...item }.id
-      this.dialogDelete = true
-    },
+      const index = this.desserts.indexOf(item)
+      const { id } = { ...item }
+      this.$swal({
+        title: '¿Está Seguro?',
+        text: 'Una vez eliminado ya no se podrá recuperar!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0d293f',
+        cancelButtonColor: '#8A8D93',
+        confirmButtonText: 'Si, Eliminar!',
+        cancelButtonText: 'Cancelar',
+      }).then(result => {
+        if (result.isConfirmed) {
+          const url = `${this.$URL_SERVE}/warehouses/${id}`
 
-    deleteItemConfirm() {
-      const url = `${this.$URL_SERVE}/warehouses/${this.deletedId}`
-      console.log(url)
-
-      // Peticion Http
-      axios.delete(url).then(result => {
-        const { message } = result.data
-        this.typeAlert = 'success'
-        this.alertText = message
-      }).catch(error => {
-        if (error.response) {
-          const message = error.response.data.error
-          this.typeAlert = 'error'
-          this.alertText = message
+          // Peticion Http
+          axios.delete(url).then(r => {
+            const { message } = r.data
+            this.$swal({
+              title: 'Eliminado!!!', text: message, icon: 'success', confirmButtonColor: '#0d293f',
+            })
+          }).catch(error => {
+            if (error.response) {
+              const message = error.response.data.error
+              this.$swal({
+                title: 'Algo no salió bien !!!', text: message, icon: 'error', confirmButtonColor: '#0d293f',
+              })
+            }
+          })
+          this.desserts.splice(index, 1)
         }
       })
-
-      this.desserts.splice(this.deletedItem, 1)
-      this.closeDelete()
     },
 
-    closeDelete() {
-      this.dialogDelete = false
-      this.deletedId = 0
-      this.deletedItem = 0
-    },
   },
 }
 </script>

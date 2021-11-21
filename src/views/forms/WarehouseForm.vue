@@ -3,15 +3,6 @@
     <v-col cols="12">
       <v-card>
         <v-card-text>
-          <!-- Alertas-->
-          <div id="alerts">
-            <v-alert
-              :type="typeAlert"
-              text
-            >
-              {{ alertText }}
-            </v-alert>
-          </div>
           <!-- Formulario-->
           <v-form
             ref="form"
@@ -78,10 +69,6 @@ export default {
     return {
       valid: true,
 
-      // variables para el uso de alertas
-      typeAlert: 'info',
-      alertText: 'Notificaciones',
-
       // Reglas de Validacion
       nameRules: [v => !!v || 'Nombre es obligatorio'],
     }
@@ -92,12 +79,6 @@ export default {
     const description = ref('')
 
     return { name, description }
-  },
-  watch: {
-    // Muestra una alerta por un tiempo,segun su cambio de estado (true or false)
-    typeAlert(val) {
-      if (val) setTimeout(() => { this.typeAlert = 'info'; this.alertText = 'Notificaciones' }, 3000)
-    },
   },
   methods: {
     // Metodo para validar campos y enviar datos via http
@@ -115,15 +96,17 @@ export default {
         axios.post(url, json).then(result => {
           const { data } = result.data
           const { message } = result.data
-          this.typeAlert = 'success'
-          this.alertText = message
           this.$root.$emit('setData-Table', data)
           this.reset()
+          this.$swal({
+            title: 'Registrado!!!', text: message, icon: 'success', confirmButtonColor: '#0d293f',
+          })
         }).catch(error => {
           if (error.response) {
             const message = error.response.data.errors.name[0]
-            this.typeAlert = 'error'
-            this.alertText = message
+            this.$swal({
+              title: 'Algo no salió bien !!!', text: message, icon: 'error', confirmButtonColor: '#0d293f',
+            })
           }
         })
       }
