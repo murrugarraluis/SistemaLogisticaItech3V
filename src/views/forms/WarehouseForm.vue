@@ -1,32 +1,24 @@
 <template>
   <v-row class-name="match-height">
-    <!-- Multiple Column -->
     <v-col cols="12">
       <v-card>
         <v-card-text>
+          <!-- Alertas-->
+          <div id="alerts">
+            <v-alert
+              :type="typeAlert"
+              text
+            >
+              {{ alertText }}
+            </v-alert>
+          </div>
+          <!-- Formulario-->
           <v-form
             ref="form"
             v-model="valid"
             class="multi-col-validation"
             lazy-validation
           >
-            <!--    Alertas-->
-            <div id="alerts">
-              <v-alert
-                type="success"
-                text
-                :value="alertSuccess"
-              >
-                {{ alertSuccessText }}
-              </v-alert>
-              <v-alert
-                type="error"
-                :value="alertErrors"
-                text
-              >
-                {{ alertErrorsText }}
-              </v-alert>
-            </div>
             <!--    Columnas de Inputs-->
             <v-row>
               <v-col
@@ -45,9 +37,9 @@
               >
                 <v-textarea
                   v-model="description"
+                  label="Descripcion"
                   outlined
                   dense
-                  label="Descripcion"
                 ></v-textarea>
               </v-col>
 
@@ -84,45 +76,30 @@ import axios from 'axios'
 export default {
   data() {
     return {
-
       valid: true,
 
       // variables para el uso de alertas
-      alertSuccess: false,
-      alertErrors: false,
-      alertSuccessText: '',
-      alertErrorsText: '',
+      typeAlert: 'info',
+      alertText: 'Notificaciones',
 
       // Reglas de Validacion
-      nameRules: [
-        v => !!v || 'Nombre es obligatorio',
-      ],
+      nameRules: [v => !!v || 'Nombre es obligatorio'],
     }
   },
   setup() {
+    // modelos de inputs
     const name = ref('')
     const description = ref('')
 
-    return {
-      name,
-      description,
-    }
+    return { name, description }
   },
   watch: {
     // Muestra una alerta por un tiempo,segun su cambio de estado (true or false)
-    alertSuccess(val) {
-      if (val) {
-        setTimeout(() => { this.alertSuccess = false }, 3000)
-      }
-    },
-    alertErrors(val) {
-      if (val) {
-        setTimeout(() => { this.alertErrors = false }, 3500)
-      }
+    typeAlert(val) {
+      if (val) setTimeout(() => { this.typeAlert = 'info'; this.alertText = 'Notificaciones' }, 3000)
     },
   },
   methods: {
-
     // Metodo para validar campos y enviar datos via http
     validate() {
       const url = `${this.$URL_SERVE}/warehouses`
@@ -136,15 +113,17 @@ export default {
 
         // Peticion Http
         axios.post(url, json).then(result => {
+          const { data } = result.data
           const { message } = result.data
-          this.alertSuccess = true
-          this.alertSuccessText = message
+          this.typeAlert = 'success'
+          this.alertText = message
+          this.$root.$emit('setData-Table', data)
           this.reset()
         }).catch(error => {
           if (error.response) {
             const message = error.response.data.errors.name[0]
-            this.alertErrors = true
-            this.alertErrorsText = message
+            this.typeAlert = 'error'
+            this.alertText = message
           }
         })
       }

@@ -1,5 +1,6 @@
 <template>
   <v-card>
+    <!--    Cabezera Mantenedor-->
     <v-toolbar
       color="primary"
       dark
@@ -7,9 +8,10 @@
     >
       <v-card-title class="w-full d-flex justify-center">
         <h1 class="font-weight-bold text-h4 text--white text-truncate">
-          Almacenes
+          {{ mantenedor }}
         </h1>
       </v-card-title>
+      <!--      Pestañas -->
       <template v-slot:extension>
         <v-tabs
           v-model="model"
@@ -26,7 +28,7 @@
         </v-tabs>
       </template>
     </v-toolbar>
-
+    <!--   Contenido Pestañas -->
     <v-tabs-items v-model="model">
       <v-tab-item
         v-for="(item,i) in items"
@@ -35,8 +37,8 @@
       >
         <v-card flat>
           <v-card-text>
-            <warehouse-form v-if="i === 0"></warehouse-form>
-            <warehouse-table v-if="i === 1 && renderTable"></warehouse-table>
+            <base-form v-if="i === 0"></base-form>
+            <base-table v-if="i === 1"></base-table>
           </v-card-text>
         </v-card>
       </v-tab-item>
@@ -44,39 +46,17 @@
   </v-card>
 </template>
 <script>
-import WarehouseTable from '@/views/simple-table/demos/WarehouseTable.vue'
-import WarehouseForm from '@/views/forms/WarehouseForm.vue'
+import BaseTable from '@/views/simple-table/demos/WarehouseTable.vue'
+import BaseForm from '@/views/forms/WarehouseForm.vue'
 
 export default {
-  components: {
-    WarehouseTable,
-    WarehouseForm,
-  },
+  components: { BaseTable, BaseForm },
   data() {
     return {
+      mantenedor: 'Almacenes',
       model: 'tab-1',
-      renderTable: true,
-      items: [
-        'Nuevo Almacen', 'Listar Almacen',
-      ],
+      items: ['Nuevo Almacen', 'Listar Almacen'],
     }
-  },
-  watch: {
-    model(val) {
-      if (val === 'tab-1') {
-        console.log('Renderiza')
-        this.forceRerenderTable()
-      }
-    },
-  },
-  methods: {
-    forceRerenderTable() {
-      this.renderTable = false
-
-      this.$nextTick(() => {
-        this.renderTable = true
-      })
-    },
   },
 }
 </script>
