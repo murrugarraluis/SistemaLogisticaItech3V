@@ -62,7 +62,7 @@
 
 <script>
 import { ref } from '@vue/composition-api'
-import axios from 'axios'
+import api from '@/api'
 
 export default {
   data() {
@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     // Metodo para validar campos y enviar datos via http
-    validate() {
+    async validate() {
       const url = `${this.$URL_SERVE}/warehouses`
       const validation = this.$refs.form.validate()
       if (validation) {
@@ -91,20 +91,16 @@ export default {
           name: this.name,
           description: this.description,
         }
-
-        // Peticion Http
-        axios.post(url, json).then(result => {
-          const { data } = result.data
-          const { message } = result.data
-          this.$root.$emit('setData-Table', data)
+        const response = await api.save(url, json)
+        if (response.status === 201) {
           this.reset()
-          this.$swal('Registrado!!!', message, 'success')
-        }).catch(error => {
-          if (error.response) {
-            const message = error.response.data.errors.name[0]
-            this.$swal('Algo no salió bien !!!', message, 'error')
-          }
-        })
+          this.$root.$emit('setData-Table', response.data)
+          this.$swal('Registrado!!!', response.message, 'success')
+        } else {
+          const errorsArray = Object.values(response.errors)
+          const errors = errorsArray.join('\n')
+          this.$swal('Algo no salió bien !!!', errors, 'error')
+        }
       }
     },
 

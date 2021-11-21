@@ -125,11 +125,11 @@ export default {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/warehouses/${id}`
           const response = await api.destroy(url)
-          if (response.status === 400) {
-            this.$swal('Algo no salió bien !!!', response.error, 'error')
-          } else {
+          if (response.status === 200) {
             this.$swal('Eliminado!!!', response.message, 'success')
             this.desserts.splice(index, 1)
+          } else {
+            this.$swal('Algo no salió bien !!!', response.error, 'error')
           }
         }
       })

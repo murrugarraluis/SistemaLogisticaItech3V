@@ -9,12 +9,37 @@ async function getAll(url) {
 
   return items
 }
+async function save(url, json) {
+  let JSON = {}
+  await axios.post(url, json).then(result => {
+    // let JSON = {}
+    const { data } = result.data
+    const { message } = result.data
+    const { status } = result
+    JSON = {
+      data,
+      message,
+      status,
+    }
+  }).catch(error => {
+    if (error.response) {
+      const { errors } = error.response.data
+      const { status } = error.response
+      JSON = {
+        errors,
+        status,
+      }
+    }
+  })
+
+  return JSON
+}
 async function destroy(url) {
-  let json = { }
+  let JSON = { }
   await axios.delete(url).then(result => {
     const { message } = result.data
     const { status } = result
-    json = {
+    JSON = {
       message,
       status,
     }
@@ -22,13 +47,13 @@ async function destroy(url) {
     if (e.response) {
       const { error } = e.response.data
       const { status } = e.response
-      json = {
+      JSON = {
         error,
         status,
       }
     }
   })
 
-  return json
+  return JSON
 }
-export default { getAll, destroy }
+export default { getAll, save, destroy }
