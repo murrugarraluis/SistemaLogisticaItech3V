@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="d-flex flex-column justify-center flex-sm-row">
       <v-text-field
         v-model="search"
         :append-icon="icons.mdiMagnify"
@@ -13,35 +13,30 @@
         inset
         vertical
       ></v-divider>
-      <div class="d-flex flex-wrap justify-center">
-        <v-btn
-          class="ma-2"
-          :loading="ExcelLoading"
-          :disabled="ExcelLoading"
-          color="secondary"
-          @click="loader = 'ExcelLoading'"
-        >
-          Excel
+      <v-btn-toggle>
+        <v-btn elevation="0">
+          <span class="hidden-sm-and-down">Excel</span>
+
+          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+            {{ icons.mdiFileExcel }}
+          </v-icon>
         </v-btn>
-        <v-btn
-          class="ma-2"
-          :loading="CSVLoading"
-          :disabled="CSVLoading"
-          color="secondary"
-          @click="loader = 'CSVLoading'"
-        >
-          CSV
+
+        <v-btn elevation="0">
+          <span class="hidden-sm-and-down">CSV</span>
+
+          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+            {{ icons.mdiFileDelimited }}
+          </v-icon>
         </v-btn>
-        <v-btn
-          class="ma-2"
-          :loading="PDFLoading"
-          :disabled="PDFLoading"
-          color="secondary"
-          @click="loader = 'PDFLoading'"
-        >
-          PDF
+
+        <v-btn elevation="0">
+          <span class="hidden-sm-and-down">PDF</span>
+          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+            {{ icons.mdiFilePdfBox }}
+          </v-icon>
         </v-btn>
-      </div>
+      </v-btn-toggle>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -76,8 +71,7 @@
 </template>
 <script>
 import {
-  mdiPencil,
-  mdiDelete, mdiMagnify,
+  mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
 } from '@mdi/js'
 
 export default {
@@ -89,19 +83,18 @@ export default {
     dialog: false,
     dialogDelete: false,
     search: '',
-    icons: { mdiPencil, mdiDelete, mdiMagnify },
+    icons: {
+      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
+    },
     headers: [
       {
-        text: 'Dessert (100g serving)',
+        text: 'Codigo',
         align: 'start',
-        sortable: false,
-        value: 'name',
+        value: 'code',
       },
-      { text: 'Calories', value: 'calories' },
-      { text: 'Fat (g)', value: 'fat' },
-      { text: 'Carbs (g)', value: 'carbs' },
-      { text: 'Protein (g)', value: 'protein' },
-      { text: 'Actions', value: 'actions', sortable: false },
+      { text: 'Tipo de Usuario', value: 'typeUser' },
+      { text: 'Nombre Completo', value: 'fullName' },
+      { text: 'Actiones', value: 'actions', sortable: false },
     ],
     desserts: [],
     editedIndex: -1,
@@ -154,74 +147,24 @@ export default {
     initialize() {
       this.desserts = [
         {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
+          code: 'USR-000001',
+          typeUser: 'Administrador',
+          fullName: 'Murrugarra Astolingon Luis Angel',
         },
         {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
+          code: 'USR-000002',
+          typeUser: 'Logistica',
+          fullName: 'Urbina Rodriguez Alexandro Del Piero',
         },
         {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
+          code: 'USR-000003',
+          typeUser: 'Almacen',
+          fullName: 'Murrugarra Astolingon Luis Angel',
         },
         {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
+          code: 'USR-000004',
+          typeUser: 'Almacenero',
+          fullName: 'Urbina Rodriguez Alexandro Del Piero',
         },
       ]
     },

@@ -1,239 +1,347 @@
 <template>
-  <div>
-    <v-card>
-      <v-toolbar flat>
-        <v-toolbar-title>
-          <h3>Almacenes</h3>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <div>
+  <v-card>
+    <v-card-text>
+      <!--      Modal-->
+      <template>
+        <div class="d-flex justify-center justify-sm-end">
           <v-dialog
             v-model="dialog"
-            persistent
-            max-width="600px"
+            width="500"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="primary"
                 dark
+                class="mb-2"
                 v-bind="attrs"
                 v-on="on"
               >
+                <v-icon class="mr-1">
+                  {{ icons.mdiPlusCircleOutline }}
+                </v-icon>
                 Agregar
               </v-btn>
             </template>
+            <!--            Contenido Modal-->
             <v-card>
-              <v-card-title>
-                <span class="text-h5 font-weight-bold">Agregar Usuario</span>
+              <v-card-title class="primary">
+                <span class="white--text text-2xl pa-0">
+                  {{ formTitle }}
+                </span>
               </v-card-title>
+
               <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
+                <v-row
+                  class-name="match-height"
+                  class="py-8"
+                >
+                  <v-col cols="12">
+                    <!-- Formulario-->
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      class="multi-col-validation"
+                      lazy-validation
                     >
-                      <v-text-field
-                        label="DNI"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        label="Nombre"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        label="Apellidos"
-                        persistent-hint
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Email"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Password"
-                        type="password"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :items="['0-17', '18-29', '30-54', '54+']"
-                        label="Edad"
-                        required
-                      ></v-select>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-autocomplete
-                        :items="['Administrador', 'Jefe Logistica', 'Jefe Almacen', 'Operario', 'Otro']"
-                        label="Roles"
-                      ></v-autocomplete>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <small></small>
+                      <!--    Columnas de Inputs-->
+                      <v-row>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-text-field
+                            v-model="editedItem.name"
+                            label="Nombre"
+                            :rules="nameRules"
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-textarea
+                            v-model="editedItem.description"
+                            label="Descripcion"
+                            outlined
+                            dense
+                          ></v-textarea>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-col>
+                </v-row>
               </v-card-text>
+
+              <v-divider></v-divider>
+
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="dialog = false"
-                >
-                  Cerrar
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  text
-                  @click="dialog = false"
-                >
-                  Guardar
-                </v-btn>
+                <div class="d-flex flex-column flex-sm-row justify-sm-center">
+                  <v-btn
+                    color="primary"
+                    class="mb-2 mb-sm-0 mr-sm-2"
+                    @click="save"
+                  >
+                    Guardar
+                  </v-btn>
+                  <v-btn
+                    type="reset"
+                    outlined
+                    @click="close"
+                  >
+                    Cancelar
+                  </v-btn>
+                </div>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </div>
-      </v-toolbar>
-      <v-card-title>
+      </template>
+      <!--      Encabezado de Tabla-->
+      <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
           v-model="search"
-          append-icon="mdi-magnify"
+          :append-icon="icons.mdiMagnify"
           label="Buscar"
           single-line
           hide-details
         ></v-text-field>
+        <v-divider
+          class="mx-4"
+          inset
+          vertical
+        ></v-divider>
+        <v-btn-toggle>
+          <v-btn elevation="0">
+            <span class="hidden-sm-and-down">Excel</span>
+            <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+              {{ icons.mdiFileExcel }}
+            </v-icon>
+          </v-btn>
+
+          <v-btn elevation="0">
+            <span class="hidden-sm-and-down">CSV</span>
+            <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+              {{ icons.mdiFileDelimited }}
+            </v-icon>
+          </v-btn>
+
+          <v-btn elevation="0">
+            <span class="hidden-sm-and-down">PDF</span>
+            <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+              {{ icons.mdiFilePdfBox }}
+            </v-icon>
+          </v-btn>
+        </v-btn-toggle>
       </v-card-title>
+      <!--      Tabla-->
       <v-data-table
         :headers="headers"
         :items="desserts"
         :search="search"
-      ></v-data-table>
-    </v-card>
-  </div>
+        :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc"
+      >
+        <template
+          v-slot:item.actions="{ item }"
+        >
+          <div class="pa-2">
+            <v-btn
+              color="#F9A825"
+              fab
+              x-small
+              class="ma-1"
+              @click="editItem(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiPencil }}
+              </v-icon>
+            </v-btn>
+            <v-btn
+              color="#C62828"
+              fab
+              x-small
+              class="ma-1"
+              @click="deleteItem(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiDelete }}
+              </v-icon>
+            </v-btn>
+          </div>
+        </template>
+        <template v-slot:no-data>
+          No hay datos disponibles
+        </template>
+      </v-data-table>
+    </v-card-text>
+  </v-card>
 </template>
 <script>
+import {
+  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline,
+} from '@mdi/js'
+
+import api from '@/api'
+
 export default {
-  data() {
-    return {
-      dialog: false,
-      search: '',
-      headers: [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'start',
-          value: 'name',
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
-        { text: 'Iron (%)', value: 'iron' },
-      ],
-      desserts: [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: '1%',
-        },
-        {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: '1%',
-        },
-        {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: '7%',
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: '8%',
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: '16%',
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: '0%',
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: '2%',
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: '45%',
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: '22%',
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: '6%',
-        },
-      ],
-    }
+  data: () => ({
+    valid: true,
+    table: 'Almacen',
+    uri: 'warehouses',
+
+    // Variables de uso en tabla
+    headers: [
+      { text: 'Codigo', align: 'start', value: 'code' },
+      { text: 'Nombre', value: 'name' },
+      { text: 'Descripcion', value: 'description', sortable: false },
+      { text: 'Acciones', value: 'actions', sortable: false },
+    ],
+    desserts: [],
+
+    // Variables para ordenamiento de tabla
+    sortBy: 'code',
+    sortDesc: true,
+
+    // Variables de busqueda o filtrado
+    search: '',
+
+    // Iconos
+    icons: {
+      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline,
+    },
+
+    // Variable para uso de modal
+    dialog: false,
+
+    // Variable para formulario
+    editedItem: {},
+    defaultItem: {
+      id: '',
+      code: '',
+      name: '',
+      description: '',
+    },
+    editedIndex: -1,
+
+    // Reglas de Validacion
+    nameRules: [v => !!v || 'Nombre es obligatorio'],
+
+  }),
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
+    },
+  },
+  watch: {
+    dialog(val) {
+      // eslint-disable-next-line no-unused-expressions
+      val || this.close()
+    },
+  },
+  created() {
+    this.initialize()
+  },
+  methods: {
+    // Metodo para cargar recursos (API)
+    async initialize() {
+      const url = `${this.$URL_SERVE}/${this.uri}`
+      this.desserts = await api.getAll(url)
+    },
+
+    // Metodo para abrir modal de editar y capturar data
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      this.dialog = true
+    },
+
+    // Metodo para guardar cambios(crear o editar)
+    async save() {
+      if (this.editedIndex > -1) {
+        await this.update()
+      } else {
+        await this.register()
+      }
+    },
+
+    // Metodo para crear recurso (API)
+    async register() {
+      const url = `${this.$URL_SERVE}/${this.uri}`
+      const validation = this.$refs.form.validate()
+      if (validation) {
+        const response = await api.save(url, this.editedItem)
+        if (response.status === 201) {
+          const { data } = response
+          this.desserts.push(data)
+          this.close()
+          this.$toast.success(response.message)
+        } else {
+          const errorsArray = Object.values(response.errors)
+          const errors = errorsArray.join('\n')
+          this.$toast.error(errors)
+        }
+      }
+    },
+
+    // Metodo oara editar recurso (API)
+    async update() {
+      const data = this.editedItem
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
+      const response = await api.update(url, data)
+      if (response.status === 200) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        this.close()
+        this.$toast.success(response.message)
+      } else if (response.errors) {
+        const errorsArray = Object.values(response.errors)
+        const errors = errorsArray.join('\n')
+        this.$toast.error(errors)
+      } else {
+        this.$toast.error(response.error)
+      }
+    },
+
+    // Metodo Para restablecer valores por default
+    close() {
+      this.reset()
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem }
+        this.editedIndex = -1
+      })
+    },
+
+    // Metodo para eliminar un recurso (API)
+    deleteItem(item) {
+      const index = this.desserts.indexOf(item)
+      const { id } = { ...item }
+      this.$swal({
+        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          const url = `${this.$URL_SERVE}/${this.uri}/${id}`
+          const response = await api.destroy(url)
+          if (response.status === 200) {
+            this.desserts.splice(index, 1)
+            this.$toast.success(response.message)
+          } else {
+            this.$toast.error(response.error)
+          }
+        }
+      })
+    },
+
+    // Metodo para limpiar reseatear formulario (limpiar campos)
+    reset() {
+      this.$refs.form.reset()
+    },
+
+    // Metodo para limpiar validaciones
+    resetValidation() {
+      this.$refs.form.resetValidation()
+    },
+
   },
 }
 </script>

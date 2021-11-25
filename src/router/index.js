@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/usuarios',
     name: 'usuarios',
-    component: () => import('@/views/manteiners/User.vue'),
+    component: () => import('@/views/manteiners/UserMantainer.vue'),
   },
   {
     path: '/personal',
@@ -87,7 +87,7 @@ const routes = [
   {
     path: '/almacenes',
     name: 'almacenes',
-    component: () => import('@/views/simple-table/demos/WarehouseTable.vue'),
+    component: () => import('@/views/manteiners/WarehouseMantainer.vue'),
   },
   {
     path: '/requerimientos',

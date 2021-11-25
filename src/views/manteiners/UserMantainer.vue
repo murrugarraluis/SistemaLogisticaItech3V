@@ -6,7 +6,7 @@
       flat
     >
       <v-card-title class="w-full d-flex justify-center">
-        <h1 class="font-weight-bold text-h4 text--white">
+        <h1 class="font-weight-bold text-h4 text--white text-truncate">
           Usuarios
         </h1>
       </v-card-title>
@@ -58,7 +58,6 @@ export default {
       items: [
         'Nuevo Usuario', 'Listar Usuario',
       ],
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
     }
   },
 }
