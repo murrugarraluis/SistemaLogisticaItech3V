@@ -1,15 +1,28 @@
 <template>
   <v-card>
     <v-card-text>
+      <!--      Modal-->
       <template>
-        <div class="text-center">
+        <div class="d-flex justify-center justify-sm-end">
           <v-dialog
             v-model="dialog"
             width="500"
           >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-bind="attrs"
+                v-on="on"
+              >
+                Agregar
+              </v-btn>
+            </template>
+            <!--            Contenido Modal-->
             <v-card>
               <v-card-title class="text-h5 grey lighten-2">
-                Editar Almacen
+                {{ formTitle }}
               </v-card-title>
 
               <v-card-text>
@@ -148,18 +161,17 @@
 </template>
 <script>
 import {
-  mdiDelete,
-  mdiFileDelimited,
-  mdiFileExcel,
-  mdiFilePdfBox,
-  mdiMagnify,
-  mdiPencil,
+  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil,
 } from '@mdi/js'
 
 import api from '@/api'
 
 export default {
   data: () => ({
+    valid: true,
+    table: 'Almacen',
+    uri: 'warehouses',
+
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
@@ -181,67 +193,91 @@ export default {
       mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
     },
 
+    // Variable para uso de modal
     dialog: false,
-    editedItem: {
-      id: '',
-      code: 0,
-      name: 0,
-      description: 0,
-    },
+
+    // Variable para formulario
+    editedItem: {},
     defaultItem: {
       id: '',
-      code: 0,
-      name: 0,
-      description: 0,
+      code: '',
+      name: '',
+      description: '',
     },
+    editedIndex: -1,
+
+    // Reglas de Validacion
+    nameRules: [v => !!v || 'Nombre es obligatorio'],
+
   }),
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
+    },
+  },
+  watch: {
+    dialog(val) {
+      // eslint-disable-next-line no-unused-expressions
+      val || this.close()
+    },
+  },
   created() {
     this.initialize()
-
-    // console.log('Table Creda')
-  },
-  mounted() {
-    // Recibir y Actualizar data recien ingresada
-    this.$root.$on('setData-Table', data => { this.desserts.push(data) })
   },
   methods: {
+    // Metodo para cargar recursos (API)
     async initialize() {
-      const url = `${this.$URL_SERVE}/warehouses`
+      const url = `${this.$URL_SERVE}/${this.uri}`
       this.desserts = await api.getAll(url)
     },
+
+    // Metodo para abrir modal de editar y capturar data
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
       this.dialog = true
     },
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item)
-      const { id } = { ...item }
-      this.$swal({
-        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
-      }).then(async result => {
-        if (result.isConfirmed) {
-          const url = `${this.$URL_SERVE}/warehouses/${id}`
-          const response = await api.destroy(url)
-          if (response.status === 200) {
-            this.$swal('Eliminado!!!', response.message, 'success')
-            this.desserts.splice(index, 1)
-          } else {
-            this.$swal('Algo no salió bien !!!', response.error, 'error')
-          }
-        }
-      })
-    },
-    close() {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
+
+    // Metodo para guardar cambios(crear o editar)
     async save() {
+      if (this.editedIndex > -1) {
+        await this.update()
+      } else {
+        await this.register()
+      }
+    },
+
+    // Metodo para crear recurso (API)
+    async register() {
+      const url = `${this.$URL_SERVE}/${this.uri}`
+      const validation = this.$refs.form.validate()
+      if (validation) {
+        // Construccion de JSON
+        const json = {
+          name: this.editedItem.name,
+          description: this.editedItem.description,
+        }
+        const response = await api.save(url, json)
+        console.log(response)
+
+        if (response.status === 201) {
+          this.reset()
+
+          this.desserts.push(this.editedItem)
+          this.$swal('Registrado!!!', response.message, 'success')
+          this.close()
+        } else {
+          const errorsArray = Object.values(response.errors)
+          const errors = errorsArray.join('\n')
+          this.$swal('Algo no salió bien !!!', errors, 'error')
+        }
+      }
+    },
+
+    // Metodo oara editar recurso (API)
+    async update() {
       const data = this.editedItem
-      const url = `${this.$URL_SERVE}/warehouses/${data.id}`
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
       const response = await api.update(url, data)
       if (response.status === 200) {
         this.$swal('Editado!!!', response.message, 'success')
@@ -256,15 +292,45 @@ export default {
       }
     },
 
+    // Metodo Para restablecer valores por default
+    close() {
+      this.reset()
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem }
+        this.editedIndex = -1
+      })
+    },
+
+    // Metodo para eliminar un recurso (API)
+    deleteItem(item) {
+      const index = this.desserts.indexOf(item)
+      const { id } = { ...item }
+      this.$swal({
+        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          const url = `${this.$URL_SERVE}/${this.uri}/${id}`
+          const response = await api.destroy(url)
+          if (response.status === 200) {
+            this.$swal('Eliminado!!!', response.message, 'success')
+            this.desserts.splice(index, 1)
+          } else {
+            this.$swal('Algo no salió bien !!!', response.error, 'error')
+          }
+        }
+      })
+    },
+
     // Metodo para limpiar reseatear formulario (limpiar campos)
-    // reset() {
-    //   this.$refs.form.reset()
-    // },
+    reset() {
+      this.$refs.form.reset()
+    },
 
     // Metodo para limpiar validaciones
-    // resetValidation() {
-    //   this.$refs.form.resetValidation()
-    // },
+    resetValidation() {
+      this.$refs.form.resetValidation()
+    },
 
   },
 }
