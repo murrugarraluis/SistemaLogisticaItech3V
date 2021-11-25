@@ -125,6 +125,11 @@ const routes = [
     component: () => import('@/views/manteiners/CategoryMantainer.vue'),
   },
   {
+    path: '/marcas',
+    name: 'marcas',
+    component: () => import('@/views/manteiners/MarkMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
