@@ -16,19 +16,24 @@
                 v-bind="attrs"
                 v-on="on"
               >
+                <v-icon class="mr-1">
+                  {{ icons.mdiPlusCircleOutline }}
+                </v-icon>
                 Agregar
               </v-btn>
             </template>
             <!--            Contenido Modal-->
             <v-card>
-              <v-card-title class="text-h5 grey lighten-2">
-                {{ formTitle }}
+              <v-card-title class="primary">
+                <span class="white--text text-2xl pa-0">
+                  {{ formTitle }}
+                </span>
               </v-card-title>
 
               <v-card-text>
                 <v-row
                   class-name="match-height"
-                  class="py-4"
+                  class="py-8"
                 >
                   <v-col cols="12">
                     <!-- Formulario-->
@@ -46,9 +51,9 @@
                           <v-text-field
                             v-model="editedItem.name"
                             label="Nombre"
+                            :rules="nameRules"
                             outlined
                             dense
-                            :rules="nameRules"
                           ></v-text-field>
                         </v-col>
                         <v-col
@@ -137,20 +142,33 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
       >
-        <template v-slot:item.actions="{ item }">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(item)"
-          >
-            {{ icons.mdiPencil }}
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(item)"
-          >
-            {{ icons.mdiDelete }}
-          </v-icon>
+        <template
+          v-slot:item.actions="{ item }"
+        >
+          <div class="pa-2">
+            <v-btn
+              color="#F9A825"
+              fab
+              x-small
+              class="ma-1"
+              @click="editItem(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiPencil }}
+              </v-icon>
+            </v-btn>
+            <v-btn
+              color="#C62828"
+              fab
+              x-small
+              class="ma-1"
+              @click="deleteItem(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiDelete }}
+              </v-icon>
+            </v-btn>
+          </div>
         </template>
         <template v-slot:no-data>
           No hay datos disponibles
@@ -161,7 +179,7 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil,
+  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline,
 } from '@mdi/js'
 
 import api from '@/api'
@@ -190,7 +208,7 @@ export default {
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
+      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline,
     },
 
     // Variable para uso de modal
@@ -252,12 +270,7 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
       if (validation) {
-        // Construccion de JSON
-        const json = {
-          name: this.editedItem.name,
-          description: this.editedItem.description,
-        }
-        const response = await api.save(url, json)
+        const response = await api.save(url, this.editedItem)
         if (response.status === 201) {
           const { data } = response
           this.desserts.push(data)

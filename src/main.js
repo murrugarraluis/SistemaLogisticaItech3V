@@ -17,7 +17,7 @@ Vue.config.productionTip = false
 Vue.prototype.$URL_SERVE = 'http://127.0.0.1:8000/api'
 
 const options = {
-  confirmButtonColor: '#0d293f',
+  confirmButtonColor: '#C62828',
   cancelButtonColor: '#8A8D93',
 }
 const optionsToast = {
