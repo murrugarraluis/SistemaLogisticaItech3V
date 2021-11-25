@@ -130,6 +130,11 @@ const routes = [
     component: () => import('@/views/manteiners/MarkMantainer.vue'),
   },
   {
+    path: '/unidades-medida',
+    name: 'unidades-medida',
+    component: () => import('@/views/manteiners/MeasureUnitMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
