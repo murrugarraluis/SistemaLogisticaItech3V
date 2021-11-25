@@ -258,18 +258,15 @@ export default {
           description: this.editedItem.description,
         }
         const response = await api.save(url, json)
-        console.log(response)
-
         if (response.status === 201) {
-          this.reset()
-
-          this.desserts.push(this.editedItem)
-          this.$swal('Registrado!!!', response.message, 'success')
+          const { data } = response
+          this.desserts.push(data)
           this.close()
+          this.$toast.success(response.message)
         } else {
           const errorsArray = Object.values(response.errors)
           const errors = errorsArray.join('\n')
-          this.$swal('Algo no salió bien !!!', errors, 'error')
+          this.$toast.error(errors)
         }
       }
     },
@@ -280,15 +277,15 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
       const response = await api.update(url, data)
       if (response.status === 200) {
-        this.$swal('Editado!!!', response.message, 'success')
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
         this.close()
+        this.$toast.success(response.message)
       } else if (response.errors) {
         const errorsArray = Object.values(response.errors)
         const errors = errorsArray.join('\n')
-        this.$swal('Algo no salió bien !!!', errors, 'error')
+        this.$toast.error(errors)
       } else {
-        this.$swal('Algo no salió bien !!!', response.error, 'error')
+        this.$toast.error(response.error)
       }
     },
 
@@ -313,10 +310,10 @@ export default {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
           const response = await api.destroy(url)
           if (response.status === 200) {
-            this.$swal('Eliminado!!!', response.message, 'success')
             this.desserts.splice(index, 1)
+            this.$toast.success(response.message)
           } else {
-            this.$swal('Algo no salió bien !!!', response.error, 'error')
+            this.$toast.error(response.error)
           }
         }
       })

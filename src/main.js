@@ -2,10 +2,13 @@ import '@/plugins/vue-composition-api'
 import '@/styles/styles.scss'
 import Vue from 'vue'
 import VueSweetalert2 from 'vue-sweetalert2'
+import Toast from 'vue-toastification'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
 import store from './store'
+import 'vue-toastification/dist/index.css'
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'sweetalert2/dist/sweetalert2.css'
 
@@ -17,6 +20,24 @@ const options = {
   confirmButtonColor: '#0d293f',
   cancelButtonColor: '#8A8D93',
 }
+const optionsToast = {
+  position: 'top-center',
+  timeout: 4000,
+  closeOnClick: true,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: true,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false,
+  transition: 'Vue-Toastification__fade',
+  maxToasts: 20,
+  newestOnTop: true,
+}
+Vue.use(Toast, optionsToast)
 Vue.use(VueSweetalert2, options)
 new Vue({
   router,
