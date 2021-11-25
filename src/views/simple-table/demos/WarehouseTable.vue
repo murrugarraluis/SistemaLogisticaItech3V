@@ -1,7 +1,85 @@
 <template>
   <v-card>
     <v-card-text>
-      <!--      Emcabezado de Tabla-->
+      <template>
+        <div class="text-center">
+          <v-dialog
+            v-model="dialog"
+            width="500"
+          >
+            <v-card>
+              <v-card-title class="text-h5 grey lighten-2">
+                Editar Almacen
+              </v-card-title>
+
+              <v-card-text>
+                <v-row
+                  class-name="match-height"
+                  class="py-4"
+                >
+                  <v-col cols="12">
+                    <!-- Formulario-->
+                    <v-form
+                      ref="form"
+                      v-model="valid"
+                      class="multi-col-validation"
+                      lazy-validation
+                    >
+                      <!--    Columnas de Inputs-->
+                      <v-row>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-text-field
+                            v-model="editedItem.name"
+                            label="Nombre"
+                            outlined
+                            dense
+                            :rules="nameRules"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-textarea
+                            v-model="editedItem.description"
+                            label="Descripcion"
+                            outlined
+                            dense
+                          ></v-textarea>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+
+              <v-divider></v-divider>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <div class="d-flex flex-column flex-sm-row justify-sm-center">
+                  <v-btn
+                    color="primary"
+                    class="mb-2 mb-sm-0 mr-sm-2"
+                    @click="save"
+                  >
+                    Guardar
+                  </v-btn>
+                  <v-btn
+                    type="reset"
+                    outlined
+                    @click="close"
+                  >
+                    Cancelar
+                  </v-btn>
+                </div>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
+      </template>
+      <!--      Encabezado de Tabla-->
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
           v-model="search"
@@ -77,6 +155,7 @@ import {
   mdiMagnify,
   mdiPencil,
 } from '@mdi/js'
+
 import api from '@/api'
 
 export default {
@@ -102,20 +181,39 @@ export default {
       mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox,
     },
 
+    dialog: false,
+    editedItem: {
+      id: '',
+      code: 0,
+      name: 0,
+      description: 0,
+    },
+    defaultItem: {
+      id: '',
+      code: 0,
+      name: 0,
+      description: 0,
+    },
   }),
+  created() {
+    this.initialize()
+
+    // console.log('Table Creda')
+  },
   mounted() {
     // Recibir y Actualizar data recien ingresada
     this.$root.$on('setData-Table', data => { this.desserts.push(data) })
-  },
-  created() {
-    this.initialize()
   },
   methods: {
     async initialize() {
       const url = `${this.$URL_SERVE}/warehouses`
       this.desserts = await api.getAll(url)
     },
-
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      this.dialog = true
+    },
     deleteItem(item) {
       const index = this.desserts.indexOf(item)
       const { id } = { ...item }
@@ -134,6 +232,39 @@ export default {
         }
       })
     },
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem }
+        this.editedIndex = -1
+      })
+    },
+    async save() {
+      const data = this.editedItem
+      const url = `${this.$URL_SERVE}/warehouses/${data.id}`
+      const response = await api.update(url, data)
+      if (response.status === 200) {
+        this.$swal('Editado!!!', response.message, 'success')
+        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        this.close()
+      } else if (response.errors) {
+        const errorsArray = Object.values(response.errors)
+        const errors = errorsArray.join('\n')
+        this.$swal('Algo no salió bien !!!', errors, 'error')
+      } else {
+        this.$swal('Algo no salió bien !!!', response.error, 'error')
+      }
+    },
+
+    // Metodo para limpiar reseatear formulario (limpiar campos)
+    // reset() {
+    //   this.$refs.form.reset()
+    // },
+
+    // Metodo para limpiar validaciones
+    // resetValidation() {
+    //   this.$refs.form.resetValidation()
+    // },
 
   },
 }

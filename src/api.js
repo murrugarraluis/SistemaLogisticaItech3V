@@ -10,9 +10,8 @@ async function getAll(url) {
   return items
 }
 async function save(url, json) {
-  let JSON = {}
+  let JSON = { }
   await axios.post(url, json).then(result => {
-    // let JSON = {}
     const { data } = result.data
     const { message } = result.data
     const { status } = result
@@ -28,6 +27,38 @@ async function save(url, json) {
       JSON = {
         errors,
         status,
+      }
+    }
+  })
+
+  return JSON
+}
+async function update(url, json) {
+  let JSON = { }
+  await axios.put(url, json).then(result => {
+    const { data } = result.data
+    const { message } = result.data
+    const { status } = result
+    JSON = {
+      data,
+      message,
+      status,
+    }
+  }).catch(e => {
+    if (e.response) {
+      const { errors } = e.response.data
+      const { status } = e.response
+      if (errors) {
+        JSON = {
+          errors,
+          status,
+        }
+      } else {
+        const { error } = e.response.data
+        JSON = {
+          error,
+          status,
+        }
       }
     }
   })
@@ -56,4 +87,6 @@ async function destroy(url) {
 
   return JSON
 }
-export default { getAll, save, destroy }
+export default {
+  getAll, save, update, destroy,
+}

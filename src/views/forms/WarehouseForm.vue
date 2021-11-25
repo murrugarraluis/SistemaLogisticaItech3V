@@ -80,6 +80,9 @@ export default {
 
     return { name, description }
   },
+  created() {
+    console.log('Form Creado')
+  },
   methods: {
     // Metodo para validar campos y enviar datos via http
     async validate() {
