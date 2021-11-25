@@ -13,7 +13,7 @@ export default {
         error: '#FF4C51',
       },
       dark: {
-        primary: '#0d293f ',
+        primary: '#0d293f',
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',

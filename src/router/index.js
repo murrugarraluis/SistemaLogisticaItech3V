@@ -120,6 +120,11 @@ const routes = [
     component: () => import('@/views/simple-table/demos/DemoSimpleTableDense.vue'),
   },
   {
+    path: '/categorias',
+    name: 'categorias',
+    component: () => import('@/views/manteiners/CategoryMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
