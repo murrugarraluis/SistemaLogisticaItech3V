@@ -48,17 +48,9 @@ async function update(url, json) {
     if (e.response) {
       const { errors } = e.response.data
       const { status } = e.response
-      if (errors) {
-        JSON = {
-          errors,
-          status,
-        }
-      } else {
-        const { error } = e.response.data
-        JSON = {
-          error,
-          status,
-        }
+      JSON = {
+        errors,
+        status,
       }
     }
   })
@@ -76,10 +68,56 @@ async function destroy(url) {
     }
   }).catch(e => {
     if (e.response) {
-      const { error } = e.response.data
+      const { errors } = e.response.data
       const { status } = e.response
       JSON = {
-        error,
+        errors,
+        status,
+      }
+    }
+  })
+
+  return JSON
+}
+async function getDeleted(url) {
+  let JSON = { }
+  await axios.get(url).then(result => {
+    const { data } = result.data
+    const { status } = result
+    JSON = {
+      data,
+      status,
+    }
+  }).catch(error => {
+    if (error.response) {
+      const { errors } = error.response.data
+      const { status } = error.response
+      JSON = {
+        errors,
+        status,
+      }
+    }
+  })
+
+  return JSON
+}
+async function restore(url) {
+  let JSON = { }
+  await axios.put(url).then(result => {
+    const { data } = result.data
+    const { message } = result.data
+    const { status } = result
+    JSON = {
+      data,
+      message,
+      status,
+    }
+  }).catch(e => {
+    if (e.response) {
+      const { errors } = e.response.data
+      const { status } = e.response
+      JSON = {
+        errors,
         status,
       }
     }
@@ -88,5 +126,5 @@ async function destroy(url) {
   return JSON
 }
 export default {
-  getAll, save, update, destroy,
+  getAll, save, update, destroy, getDeleted, restore,
 }

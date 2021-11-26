@@ -279,6 +279,8 @@ export default {
           this.desserts.push(data)
           this.close()
           this.$toast.success(response.message)
+        } else if (await this.isDeleted(this.editedItem.name)) {
+          this.restore(this.editedItem.name)
         } else {
           const errorsArray = Object.values(response.errors)
           const errors = errorsArray.join('\n')
@@ -296,12 +298,10 @@ export default {
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
         this.close()
         this.$toast.success(response.message)
-      } else if (response.errors) {
+      } else {
         const errorsArray = Object.values(response.errors)
         const errors = errorsArray.join('\n')
         this.$toast.error(errors)
-      } else {
-        this.$toast.error(response.error)
       }
     },
 
@@ -329,7 +329,38 @@ export default {
             this.desserts.splice(index, 1)
             this.$toast.success(response.message)
           } else {
-            this.$toast.error(response.error)
+            console.log(response.errors)
+            const errorsArray = Object.values(response.errors)
+            const errors = errorsArray.join('\n')
+            this.$toast.error(errors)
+          }
+        }
+      })
+    },
+
+    async isDeleted(name) {
+      const url = `${this.$URL_SERVE}/${this.uri}/${name}/deleted`
+      const response = await api.getDeleted(url)
+
+      return (response.status === 200)
+    },
+
+    restore(name) {
+      this.$swal({
+        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          const url = `${this.$URL_SERVE}/${this.uri}/${name}/restore`
+          const response = await api.restore(url)
+          if (response.status === 200) {
+            const { data } = response
+            this.desserts.push(data)
+            this.close()
+            this.$toast.success(response.message)
+          } else {
+            const errorsArray = Object.values(response.errors)
+            const errors = errorsArray.join('\n')
+            this.$toast.error(errors)
           }
         }
       })
