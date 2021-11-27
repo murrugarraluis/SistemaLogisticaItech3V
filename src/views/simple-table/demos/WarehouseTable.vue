@@ -298,21 +298,13 @@ export default {
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
         this.close()
         this.$toast.success(response.message)
+      } else if (await this.isDeleted(this.editedItem.name)) {
+        this.restore(this.editedItem.name)
       } else {
         const errorsArray = Object.values(response.errors)
         const errors = errorsArray.join('\n')
         this.$toast.error(errors)
       }
-    },
-
-    // Metodo Para restablecer valores por default
-    close() {
-      this.reset()
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
     },
 
     // Metodo para eliminar un recurso (API)
@@ -365,6 +357,16 @@ export default {
             this.$toast.error(errors)
           }
         }
+      })
+    },
+
+    // Metodo Para restablecer valores por default
+    close() {
+      this.reset()
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem }
+        this.editedIndex = -1
       })
     },
 

@@ -267,6 +267,8 @@ export default {
           this.desserts.push(data)
           this.close()
           this.$toast.success(response.message)
+        } else if (await this.isDeleted(this.editedItem.name)) {
+          this.restore(this.editedItem.name)
         } else {
           const errorsArray = Object.values(response.errors)
           const errors = errorsArray.join('\n')
@@ -284,23 +286,13 @@ export default {
         Object.assign(this.desserts[this.editedIndex], this.editedItem)
         this.close()
         this.$toast.success(response.message)
-      } else if (response.errors) {
+      } else if (await this.isDeleted(this.editedItem.name)) {
+        this.restore(this.editedItem.name)
+      } else {
         const errorsArray = Object.values(response.errors)
         const errors = errorsArray.join('\n')
         this.$toast.error(errors)
-      } else {
-        this.$toast.error(response.error)
       }
-    },
-
-    // Metodo Para restablecer valores por default
-    close() {
-      this.reset()
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
     },
 
     // Metodo para eliminar un recurso (API)
@@ -320,6 +312,46 @@ export default {
             this.$toast.error(response.error)
           }
         }
+      })
+    },
+
+    // Metodo para saber si un recurso a sido eliminado
+    async isDeleted(name) {
+      const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
+      const response = await api.getDeleted(url)
+
+      return (response.status === 200)
+    },
+
+    // Metodo para restaurar un recurso eliminado
+    restore(name) {
+      this.$swal({
+        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
+          const response = await api.restore(url)
+          if (response.status === 200) {
+            const { data } = response
+            this.desserts.push(data)
+            this.close()
+            this.$toast.success(response.message)
+          } else {
+            const errorsArray = Object.values(response.errors)
+            const errors = errorsArray.join('\n')
+            this.$toast.error(errors)
+          }
+        }
+      })
+    },
+
+    // Metodo Para restablecer valores por default
+    close() {
+      this.reset()
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem }
+        this.editedIndex = -1
       })
     },
 
