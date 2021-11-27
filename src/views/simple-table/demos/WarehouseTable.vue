@@ -338,19 +338,21 @@ export default {
       })
     },
 
+    // Metodo para saber si un recurso a sido eliminado
     async isDeleted(name) {
-      const url = `${this.$URL_SERVE}/${this.uri}/${name}/deleted`
+      const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
       const response = await api.getDeleted(url)
 
       return (response.status === 200)
     },
 
+    // Metodo para restaurar un recurso eliminado
     restore(name) {
       this.$swal({
         title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
-          const url = `${this.$URL_SERVE}/${this.uri}/${name}/restore`
+          const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
           const response = await api.restore(url)
           if (response.status === 200) {
             const { data } = response
