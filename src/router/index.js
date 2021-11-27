@@ -120,6 +120,21 @@ const routes = [
     component: () => import('@/views/simple-table/demos/DemoSimpleTableDense.vue'),
   },
   {
+    path: '/categorias',
+    name: 'categorias',
+    component: () => import('@/views/manteiners/CategoryMantainer.vue'),
+  },
+  {
+    path: '/marcas',
+    name: 'marcas',
+    component: () => import('@/views/manteiners/MarkMantainer.vue'),
+  },
+  {
+    path: '/unidades-medida',
+    name: 'unidades-medida',
+    component: () => import('@/views/manteiners/MeasureUnitMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),

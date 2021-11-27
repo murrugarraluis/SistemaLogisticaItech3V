@@ -67,7 +67,32 @@
       <!--          target="_blank"-->
       <!--        ></nav-menu-link>-->
       <!--      </nav-menu-group>-->
-      <!--      <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title>-->
+      <nav-menu-group
+        title="Materiales"
+        :icon="icons.mdiPackageVariantClosed"
+      >
+        <nav-menu-link
+          title="Materiales"
+          :to="{ name: 'productos' }"
+          :icon="icons.mdiPackageVariantClosed "
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Categorias"
+          :to="{ name: 'categorias' }"
+          :icon="icons.mdiTag"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Marcas"
+          :to="{ name: 'marcas' }"
+          :icon="icons.mdiBookmark"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Unidades de Medida"
+          :to="{ name: 'unidades-medida' }"
+          :icon="icons.mdiCounter"
+        ></nav-menu-link>
+      </nav-menu-group>
+      <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title>
       <!--      <nav-menu-link-->
       <!--        title="Typography"-->
       <!--        :to="{ name: 'typography' }"-->
@@ -78,11 +103,11 @@
       <!--        :to="{ name: 'icons' }"-->
       <!--        :icon="icons.mdiEyeOutline"-->
       <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Cards"-->
-      <!--        :to="{ name: 'cards' }"-->
-      <!--        :icon="icons.mdiCreditCardOutline"-->
-      <!--      ></nav-menu-link>-->
+      <nav-menu-link
+        title="Cards"
+        :to="{ name: 'cards' }"
+        :icon="icons.mdiCreditCardOutline"
+      ></nav-menu-link>
       <!--      <nav-menu-link-->
       <!--        title="Tables"-->
       <!--        :to="{ name: 'simple-table' }"-->
@@ -102,11 +127,6 @@
         title="Personal"
         :to="{ name: 'personal' }"
         :icon="icons.mdiAccount"
-      ></nav-menu-link>
-      <nav-menu-link
-        title="Productos"
-        :to="{ name: 'productos' }"
-        :icon="icons.mdiPackageVariantClosed "
       ></nav-menu-link>
       <nav-menu-link
         title="Proveedores"
@@ -178,16 +198,19 @@ import {
   mdiAccountTie,
   mdiNotebook,
   mdiCurrencyUsd,
+  mdiTag,
+  mdiBookmark,
+  mdiCounter,
 } from '@mdi/js'
 
-// import NavMenuSectionTitle from './components/NavMenuSectionTitle.vue'
-// import NavMenuGroup from './components/NavMenuGroup.vue'
+import NavMenuSectionTitle from './components/NavMenuSectionTitle.vue'
+import NavMenuGroup from './components/NavMenuGroup.vue'
 import NavMenuLink from './components/NavMenuLink.vue'
 
 export default {
   components: {
-    // NavMenuSectionTitle,
-    // NavMenuGroup,
+    NavMenuSectionTitle,
+    NavMenuGroup,
     NavMenuLink,
   },
   props: {
@@ -197,7 +220,10 @@ export default {
     },
   },
   setup() {
+    console.log(window.location.href)
+
     return {
+      active: 'Producto',
       icons: {
         mdiHomeOutline,
         mdiAlphaTBoxOutline,
@@ -217,6 +243,9 @@ export default {
         mdiAccountTie,
         mdiNotebook,
         mdiCurrencyUsd,
+        mdiTag,
+        mdiBookmark,
+        mdiCounter,
       },
     }
   },

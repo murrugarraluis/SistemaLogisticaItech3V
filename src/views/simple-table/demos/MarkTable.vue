@@ -56,16 +56,6 @@
                             dense
                           ></v-text-field>
                         </v-col>
-                        <v-col
-                          cols="12"
-                        >
-                          <v-textarea
-                            v-model="editedItem.description"
-                            label="Descripcion"
-                            outlined
-                            dense
-                          ></v-textarea>
-                        </v-col>
                       </v-row>
                     </v-form>
                   </v-col>
@@ -188,14 +178,13 @@ import api from '@/api'
 export default {
   data: () => ({
     valid: true,
-    table: 'Almacen',
-    uri: 'warehouses',
+    table: 'Marca',
+    uri: 'marks',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
-      { text: 'Descripcion', value: 'description', sortable: false },
       {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
       },
@@ -223,7 +212,6 @@ export default {
       id: '',
       code: '',
       name: '',
-      description: '',
     },
     editedIndex: -1,
 
@@ -321,10 +309,7 @@ export default {
             this.desserts.splice(index, 1)
             this.$toast.success(response.message)
           } else {
-            console.log(response.errors)
-            const errorsArray = Object.values(response.errors)
-            const errors = errorsArray.join('\n')
-            this.$toast.error(errors)
+            this.$toast.error(response.error)
           }
         }
       })
