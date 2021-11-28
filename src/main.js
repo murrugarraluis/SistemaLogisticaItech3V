@@ -21,7 +21,7 @@ const options = {
   cancelButtonColor: '#8A8D93',
 }
 const optionsToast = {
-  position: 'top-center',
+  position: 'bottom-right',
   timeout: 4000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
