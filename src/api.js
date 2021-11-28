@@ -9,7 +9,7 @@ async function getAll(url) {
 
   return items
 }
-async function save(url, json) {
+async function register(url, json) {
   let JSON = { }
   await axios.post(url, json).then(result => {
     const { data } = result.data
@@ -126,5 +126,5 @@ async function restore(url) {
   return JSON
 }
 export default {
-  getAll, save, update, destroy, getDeleted, restore,
+  getAll, register, update, destroy, getDeleted, restore,
 }
