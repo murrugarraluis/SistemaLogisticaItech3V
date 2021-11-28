@@ -152,7 +152,7 @@
               fab
               x-small
               class="ma-1"
-              @click="editItem(item)"
+              @click="edit(item)"
             >
               <v-icon color="white">
                 {{ icons.mdiPencil }}
@@ -163,7 +163,7 @@
               fab
               x-small
               class="ma-1"
-              @click="deleteItem(item)"
+              @click="destroy(item)"
             >
               <v-icon color="white">
                 {{ icons.mdiDelete }}
@@ -253,7 +253,7 @@ export default {
     },
 
     // Metodo para abrir modal de editar y capturar data
-    editItem(item) {
+    edit(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
       this.dialog = true
@@ -270,21 +270,17 @@ export default {
 
     // Metodo para crear recurso (API)
     async register() {
+      const data = this.editedItem
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
       if (validation) {
-        const response = await api.save(url, this.editedItem)
+        const response = await api.register(url, data)
         if (response.status === 201) {
-          const { data } = response
-          this.desserts.push(data)
-          this.close()
-          this.$toast.success(response.message)
-        } else if (await this.isDeleted(this.editedItem.name)) {
-          this.restore(this.editedItem.name)
+          this.insertItem(response)
+        } else if (await this.isDeleted(data.name)) {
+          this.restore(data.name)
         } else {
-          const errorsArray = Object.values(response.errors)
-          const errors = errorsArray.join('\n')
-          this.$toast.error(errors)
+          this.showErrors(response.errors)
         }
       }
     },
@@ -295,21 +291,16 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
       const response = await api.update(url, data)
       if (response.status === 200) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        this.close()
-        this.$toast.success(response.message)
-      } else if (await this.isDeleted(this.editedItem.name)) {
-        this.restore(this.editedItem.name)
+        this.updateItem(response)
+      } else if (await this.isDeleted(data.name)) {
+        this.restore(data.name)
       } else {
-        const errorsArray = Object.values(response.errors)
-        const errors = errorsArray.join('\n')
-        this.$toast.error(errors)
+        this.showErrors(response.errors)
       }
     },
 
     // Metodo para eliminar un recurso (API)
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item)
+    destroy(item) {
       const { id } = { ...item }
       this.$swal({
         title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
@@ -318,13 +309,9 @@ export default {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
           const response = await api.destroy(url)
           if (response.status === 200) {
-            this.desserts.splice(index, 1)
-            this.$toast.success(response.message)
+            this.deleteItem(item, response)
           } else {
-            console.log(response.errors)
-            const errorsArray = Object.values(response.errors)
-            const errors = errorsArray.join('\n')
-            this.$toast.error(errors)
+            this.showErrors(response.errors)
           }
         }
       })
@@ -347,17 +334,45 @@ export default {
           const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
           const response = await api.restore(url)
           if (response.status === 200) {
-            const { data } = response
-            this.desserts.push(data)
-            this.close()
-            this.$toast.success(response.message)
+            this.insertItem(response)
           } else {
-            const errorsArray = Object.values(response.errors)
-            const errors = errorsArray.join('\n')
-            this.$toast.error(errors)
+            this.showErrors(response.errors)
           }
         }
       })
+    },
+
+    // Metodo para insertar Item
+    insertItem(response) {
+      this.desserts.push(response.data)
+      this.close()
+      this.showMessage(response.message)
+    },
+
+    // Metodo para Actualizar Item
+    updateItem(response) {
+      Object.assign(this.desserts[this.editedIndex], response.data)
+      this.close()
+      this.showMessage(response.message)
+    },
+
+    // Metodo para Eliminar Item
+    deleteItem(item, response) {
+      const index = this.desserts.indexOf(item)
+      this.desserts.splice(index, 1)
+      this.showMessage(response.message)
+    },
+
+    // Metodo para mostrar en Toast Mensaje
+    showMessage(message) {
+      this.$toast.success(message)
+    },
+
+    // Metodo para mostrar en Toast Errors
+    showErrors(errors) {
+      const errorsArray = Object.values(errors)
+      const errosList = errorsArray.join('\n')
+      this.$toast.error(errosList)
     },
 
     // Metodo Para restablecer valores por default
