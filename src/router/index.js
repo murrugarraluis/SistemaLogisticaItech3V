@@ -89,10 +89,11 @@ const routes = [
     name: 'almacenes',
     component: () => import('@/views/manteiners/WarehouseMantainer.vue'),
   },
+
   {
     path: '/requerimientos',
     name: 'requerimientos',
-    component: () => import('@/views/simple-table/demos/RequirementTable.vue'),
+    component: () => import('@/views/manteiners/RequestMantainer.vue'),
   },
   {
     path: '/ordenes-compra',
