@@ -177,9 +177,9 @@
                                         </v-card-title>
                                         <!--      Tabla-->
                                         <v-data-table
-                                          :headers="headers_detail"
-                                          :items="desserts_detail"
-                                          :search="search_detail"
+                                          :headers="headers_products"
+                                          :items="desserts_products"
+                                          :search="search_products"
                                           :sort-by.sync="sortBy"
                                           :sort-desc.sync="sortDesc"
                                         >
@@ -187,17 +187,24 @@
                                             v-slot:item.actions="{ item }"
                                           >
                                             <div class="pa-2">
-                                              <v-btn
-                                                color="#C62828"
-                                                fab
-                                                x-small
-                                                class="ma-1"
-                                                @click="destroy(item)"
-                                              >
-                                                <v-icon color="white">
-                                                  {{ icons.mdiDelete }}
-                                                </v-icon>
-                                              </v-btn>
+                                              <v-checkbox
+                                                :ref="item.code"
+                                                :key="item.code"
+                                                type="checkbox"
+                                                color="success"
+                                                @change="toggleMaterial(item,$event)"
+                                              ></v-checkbox>
+                                              <!--                                              <v-btn-->
+                                              <!--                                                color="#C62828"-->
+                                              <!--                                                fab-->
+                                              <!--                                                x-small-->
+                                              <!--                                                class="ma-1"-->
+                                              <!--                                                @click="destroy(item)"-->
+                                              <!--                                              >-->
+                                              <!--                                                <v-icon color="white">-->
+                                              <!--                                                  {{ icons.mdiDelete }}-->
+                                              <!--                                                </v-icon>-->
+                                              <!--                                              </v-btn>-->
                                             </div>
                                           </template>
                                           <template v-slot:no-data>
@@ -216,20 +223,20 @@
                             <v-card-actions>
                               <v-spacer></v-spacer>
                               <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
-                                <v-btn
-                                  color="primary"
-                                  class="ma-1"
-                                  @click="save"
-                                >
-                                  Guardar
-                                </v-btn>
+                                <!--                                <v-btn-->
+                                <!--                                  color="primary"-->
+                                <!--                                  class="ma-1"-->
+                                <!--                                  @click="save"-->
+                                <!--                                >-->
+                                <!--                                  Guardar-->
+                                <!--                                </v-btn>-->
                                 <v-btn
                                   type="reset"
                                   outlined
                                   class="ma-1"
                                   @click="closeProduct"
                                 >
-                                  Cancelar
+                                  cerrar
                                 </v-btn>
                               </div>
                             </v-card-actions>
@@ -453,8 +460,20 @@ export default {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
       },
     ],
+    headers_products: [
+      { text: 'Codigo', align: 'start', value: 'code' },
+      { text: 'Nombre', value: 'name' },
+      { text: 'Unidad de Medida', value: 'measure_unit' },
+      { text: 'Categoria', align: 'center', value: 'category' },
+      { text: 'Marca', align: 'center', value: 'mark' },
+      {
+        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+      },
+    ],
     desserts: [],
+
     desserts_detail: [],
+    desserts_products: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -463,6 +482,7 @@ export default {
     // Variables de busqueda o filtrado
     search: '',
     search_detail: '',
+    search_products: '',
 
     // Iconos
     icons: {
@@ -494,6 +514,7 @@ export default {
     items_importance: [
       'Baja', 'Media', 'Alta',
     ],
+    checkbox: true,
 
   }),
   computed: {
@@ -512,6 +533,7 @@ export default {
   },
   created() {
     this.initialize()
+    this.getAllMaterials()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -674,6 +696,27 @@ export default {
       if (importance.toLowerCase() === 'media') return '#FFAB40'
 
       return '#00897B'
+    },
+
+    //  Metodo para optener productos
+    async getAllMaterials() {
+      const url = `${this.$URL_SERVE}/materials`
+      this.desserts_products = await api.getAll(url)
+    },
+    toggleMaterial(item, event) {
+      if (event) {
+        this.addMaterial(item)
+      } else {
+        this.removeMaterial(item)
+      }
+    },
+    addMaterial(item) {
+      const data = { ...item }
+      this.desserts_detail.push(data)
+    },
+    removeMaterial(item) {
+      const index = this.desserts_detail.indexOf(item)
+      this.desserts_detail.splice(index, 1)
     },
   },
 }
