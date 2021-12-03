@@ -7,6 +7,10 @@
           <v-dialog
             v-model="dialog"
             width="500"
+            persistent
+            fullscreen
+            hide-overlay
+            transition="dialog-bottom-transition"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -46,7 +50,36 @@
                       <!--    Columnas de Inputs-->
                       <v-row>
                         <v-col
-                          cols="12"
+                          cols="4"
+                        >
+                          <v-menu
+                            v-model="menu2"
+                            :close-on-content-click="false"
+                            :nudge-right="40"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                          >
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-text-field
+                                v-model="date"
+                                readonly
+                                v-bind="attrs"
+                                label="Fecha Requerida"
+                                :rules="nameRules"
+                                outlined
+                                dense
+                                v-on="on"
+                              ></v-text-field>
+                            </template>
+                            <v-date-picker
+                              v-model="date"
+                              @input="menu2 = false"
+                            ></v-date-picker>
+                          </v-menu>
+                        </v-col>
+                        <v-col
+                          cols="4"
                         >
                           <v-text-field
                             v-model="editedItem.name"
@@ -55,6 +88,27 @@
                             outlined
                             dense
                           ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="4"
+                        >
+                          <v-text-field
+                            v-model="editedItem.name"
+                            label="Nombre"
+                            :rules="nameRules"
+                            outlined
+                            dense
+                          ></v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-textarea
+                            v-model="editedItem.description"
+                            label="Comentario"
+                            outlined
+                            dense
+                          ></v-textarea>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -145,14 +199,14 @@
         >
           <div class="pa-2">
             <v-btn
-              color="#F9A825"
+              color="#0277BD"
               fab
               x-small
               class="ma-1"
               @click="edit(item)"
             >
               <v-icon color="white">
-                {{ icons.mdiPencil }}
+                {{ icons.mdiEye }}
               </v-icon>
             </v-btn>
             <v-btn
@@ -177,7 +231,7 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline,
+  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
 } from '@mdi/js'
 
 import api from '@/api'
@@ -209,11 +263,11 @@ export default {
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline,
+      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline, mdiEye,
     },
 
     // Variable para uso de modal
-    dialog: false,
+    dialog: true,
 
     // Variable para formulario
     editedItem: {},
@@ -226,6 +280,11 @@ export default {
 
     // Reglas de Validacion
     nameRules: [v => !!v || 'Nombre es obligatorio'],
+
+    date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    menu: false,
+    modal: false,
+    menu2: false,
 
   }),
   computed: {
