@@ -65,7 +65,7 @@
                                 readonly
                                 v-bind="attrs"
                                 label="Fecha Requerida"
-                                :rules="nameRules"
+                                :rules="dateRequiredRules"
                                 outlined
                                 dense
                                 :value="computedDateFormattedDatefns"
@@ -86,8 +86,8 @@
                         >
                           <v-text-field
                             v-model="editedItem.name"
-                            label="Nombre"
-                            :rules="nameRules"
+                            label="Tipo Requerimiento"
+                            :rules="typeRequiredRules"
                             outlined
                             dense
                           ></v-text-field>
@@ -95,13 +95,13 @@
                         <v-col
                           cols="4"
                         >
-                          <v-text-field
-                            v-model="editedItem.name"
-                            label="Nombre"
-                            :rules="nameRules"
+                          <v-select
+                            :items="items_importance"
+                            label="Importancia"
                             outlined
                             dense
-                          ></v-text-field>
+                            :rules="importanceRules"
+                          ></v-select>
                         </v-col>
                         <v-col
                           cols="12"
@@ -117,6 +117,174 @@
                     </v-form>
                   </v-col>
                 </v-row>
+                <!--                Tabla Detalle-->
+                <v-card>
+                  <v-card-text>
+                    <!--      Modal-->
+                    <template>
+                      <div class="d-flex justify-center justify-sm-end">
+                        <v-dialog
+                          v-model="dialogProduct"
+                          width="500"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="primary"
+                              dark
+                              class="mb-2"
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              <v-icon class="mr-1">
+                                {{ icons.mdiPlusCircleOutline }}
+                              </v-icon>
+                              Agregar
+                            </v-btn>
+                          </template>
+                          <!--            Contenido Modal-->
+                          <v-card>
+                            <v-card-title class="primary">
+                              <span class="white--text text-2xl pa-0">
+                                {{ formTitle }}
+                              </span>
+                            </v-card-title>
+
+                            <v-card-text>
+                              <v-row
+                                class-name="match-height"
+                                class="py-8"
+                              >
+                                <v-col cols="12">
+                                  <!-- Formulario-->
+                                  <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    class="multi-col-validation"
+                                    lazy-validation
+                                  >
+                                    <!--    Columnas de Inputs-->
+                                    <v-row>
+                                      <v-col
+                                        cols="12"
+                                      >
+                                        <v-text-field
+                                          v-model="editedItem.name"
+                                          label="Nombre"
+                                          :rules="nameRules"
+                                          outlined
+                                          dense
+                                        ></v-text-field>
+                                      </v-col>
+                                      <v-col
+                                        cols="12"
+                                      >
+                                        <v-textarea
+                                          v-model="editedItem.description"
+                                          label="Descripcion"
+                                          outlined
+                                          dense
+                                        ></v-textarea>
+                                      </v-col>
+                                    </v-row>
+                                  </v-form>
+                                </v-col>
+                              </v-row>
+                            </v-card-text>
+
+                            <v-divider></v-divider>
+
+                            <v-card-actions>
+                              <v-spacer></v-spacer>
+                              <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
+                                <v-btn
+                                  color="primary"
+                                  class="ma-1"
+                                  @click="save"
+                                >
+                                  Guardar
+                                </v-btn>
+                                <v-btn
+                                  type="reset"
+                                  outlined
+                                  class="ma-1"
+                                  @click="closeProduct"
+                                >
+                                  Cancelar
+                                </v-btn>
+                              </div>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                      </div>
+                    </template>
+                    <!--      Encabezado de Tabla-->
+                    <v-card-title class="d-flex flex-column justify-center flex-sm-row">
+                      <v-text-field
+                        v-model="search"
+                        :append-icon="icons.mdiMagnify"
+                        label="Buscar"
+                        single-line
+                        hide-details
+                      ></v-text-field>
+                      <v-divider
+                        class="mx-4"
+                        inset
+                        vertical
+                      ></v-divider>
+                      <v-btn-toggle>
+                        <v-btn elevation="0">
+                          <span class="hidden-sm-and-down">Excel</span>
+                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+                            {{ icons.mdiFileExcel }}
+                          </v-icon>
+                        </v-btn>
+
+                        <v-btn elevation="0">
+                          <span class="hidden-sm-and-down">CSV</span>
+                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+                            {{ icons.mdiFileDelimited }}
+                          </v-icon>
+                        </v-btn>
+
+                        <v-btn elevation="0">
+                          <span class="hidden-sm-and-down">PDF</span>
+                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
+                            {{ icons.mdiFilePdfBox }}
+                          </v-icon>
+                        </v-btn>
+                      </v-btn-toggle>
+                    </v-card-title>
+                    <!--      Tabla-->
+                    <v-data-table
+                      :headers="headers_detail"
+                      :items="desserts_detail"
+                      :search="search_detail"
+                      :sort-by.sync="sortBy"
+                      :sort-desc.sync="sortDesc"
+                    >
+                      <template
+                        v-slot:item.actions="{ item }"
+                      >
+                        <div class="pa-2">
+                          <v-btn
+                            color="#C62828"
+                            fab
+                            x-small
+                            class="ma-1"
+                            @click="destroy(item)"
+                          >
+                            <v-icon color="white">
+                              {{ icons.mdiDelete }}
+                            </v-icon>
+                          </v-btn>
+                        </div>
+                      </template>
+                      <template v-slot:no-data>
+                        No hay datos disponibles
+                      </template>
+                    </v-data-table>
+                  </v-card-text>
+                </v-card>
               </v-card-text>
 
               <v-divider></v-divider>
@@ -256,7 +424,17 @@ export default {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
       },
     ],
+    headers_detail: [
+      { text: 'Codigo', align: 'start', value: 'code' },
+      { text: 'Nombre', value: 'name' },
+      { text: 'Unidad de Medida', value: 'measure_unit' },
+      { text: 'Cantidad', align: 'center', value: 'quantity' },
+      {
+        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+      },
+    ],
     desserts: [],
+    desserts_detail: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -264,6 +442,7 @@ export default {
 
     // Variables de busqueda o filtrado
     search: '',
+    search_detail: '',
 
     // Iconos
     icons: {
@@ -272,6 +451,7 @@ export default {
 
     // Variable para uso de modal
     dialog: true,
+    dialogProduct: false,
 
     // Variable para formulario
     editedItem: {},
@@ -283,13 +463,17 @@ export default {
     editedIndex: -1,
 
     // Reglas de Validacion
-    nameRules: [v => !!v || 'Nombre es obligatorio'],
+    dateRequiredRules: [v => !!v || 'Fecha Requerida es obligatorio'],
+    typeRequiredRules: [v => !!v || 'Tipo Requerimiento es obligatorio'],
+    importanceRules: [v => !!v || 'Importancia es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
-    menu: false,
-    modal: false,
     menu2: false,
+
+    items_importance: [
+      'Baja', 'Media', 'Alta',
+    ],
 
   }),
   computed: {
@@ -447,6 +631,11 @@ export default {
         this.editedItem = { ...this.defaultItem }
         this.editedIndex = -1
       })
+    },
+
+    // Metodo Para restablecer valores por default
+    closeProduct() {
+      this.dialogProduct = false
     },
 
     // Metodo para limpiar reseatear formulario (limpiar campos)
