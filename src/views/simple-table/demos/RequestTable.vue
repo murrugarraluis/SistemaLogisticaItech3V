@@ -298,7 +298,7 @@
                             fab
                             x-small
                             class="ma-1"
-                            @click="destroy(item)"
+                            @click="removeMaterial(item)"
                           >
                             <v-icon color="white">
                               {{ icons.mdiDelete }}
@@ -715,7 +715,7 @@ export default {
       this.desserts_detail.push(data)
     },
     removeMaterial(item) {
-      const index = this.desserts_detail.indexOf(item)
+      const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail.splice(index, 1)
     },
   },
