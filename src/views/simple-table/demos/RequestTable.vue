@@ -62,19 +62,22 @@
                           >
                             <template v-slot:activator="{ on, attrs }">
                               <v-text-field
-                                v-model="date"
                                 readonly
                                 v-bind="attrs"
                                 label="Fecha Requerida"
                                 :rules="nameRules"
                                 outlined
                                 dense
+                                :value="computedDateFormattedDatefns"
                                 v-on="on"
+                                @click:clear="date = null"
                               ></v-text-field>
                             </template>
                             <v-date-picker
                               v-model="date"
-                              @input="menu2 = false"
+                              elevation="15"
+                              :min="date_min"
+                              @change="menu2 = false"
                             ></v-date-picker>
                           </v-menu>
                         </v-col>
@@ -234,6 +237,7 @@ import {
   mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
 } from '@mdi/js'
 
+import { format, parseISO } from 'date-fns'
 import api from '@/api'
 
 export default {
@@ -281,7 +285,8 @@ export default {
     // Reglas de Validacion
     nameRules: [v => !!v || 'Nombre es obligatorio'],
 
-    date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+    date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu: false,
     modal: false,
     menu2: false,
@@ -290,6 +295,9 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
+    },
+    computedDateFormattedDatefns() {
+      return this.date ? format(parseISO(this.date), 'dd/MM/yyyy') : ''
     },
   },
   watch: {
