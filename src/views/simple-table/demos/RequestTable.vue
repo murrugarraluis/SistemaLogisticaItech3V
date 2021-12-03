@@ -85,7 +85,7 @@
                           cols="4"
                         >
                           <v-text-field
-                            v-model="editedItem.type_required"
+                            v-model="editedItem.type_request"
                             label="Tipo Requerimiento"
                             :rules="typeRequiredRules"
                             outlined
@@ -96,7 +96,7 @@
                           cols="4"
                         >
                           <v-select
-                            v-model='editedItem.importance'
+                            v-model="editedItem.importance"
                             :items="items_importance"
                             label="Importancia"
                             outlined
@@ -511,8 +511,9 @@ export default {
     // Variable para formulario
     editedItem: {
       date_required: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
-      type_required: '',
+      type_request: '',
       importance: '',
+      materials: {},
     },
     defaultItem: {
       id: '',
@@ -573,10 +574,8 @@ export default {
       if (this.editedIndex > -1) {
         await this.update()
       } else {
-        console.log('Registrar')
-        console.log(this.editedItem)
-
-        // await this.register()
+        // Object.assign(this.editedItem.materials, { ...this.desserts_detail })
+        await this.register()
       }
     },
 
@@ -586,13 +585,18 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
       if (validation) {
-        const response = await api.register(url, data)
-        if (response.status === 201) {
-          this.insertItem(response)
-        } else if (await this.isDeleted(data.name)) {
-          this.restore(data.name)
+        // no esta vacio
+        if (Object.keys(this.desserts_detail).length !== 0) {
+          Object.assign(this.editedItem.materials, { ...this.desserts_detail })
+          const response = await api.register(url, data)
+          if (response.status === 201) {
+            // this.insertItem(response)
+            this.$toast.success('Genial')
+          } else {
+            this.showErrors(response.errors)
+          }
         } else {
-          this.showErrors(response.errors)
+          this.$toast.error('Debe Agregar al menos un producto')
         }
       }
     },
