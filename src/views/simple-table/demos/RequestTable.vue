@@ -34,297 +34,289 @@
                 </span>
               </v-card-title>
 
-              <v-card-text>
-                <v-row
-                  class-name="match-height"
-                  class="py-8"
-                >
-                  <v-col cols="12">
-                    <!-- Formulario-->
-                    <v-form
-                      ref="form"
-                      v-model="valid"
-                      class="multi-col-validation"
-                      lazy-validation
-                    >
-                      <!--    Columnas de Inputs-->
-                      <v-row>
-                        <v-col
-                          cols="4"
-                        >
-                          <v-menu
-                            v-model="menu2"
-                            :close-on-content-click="false"
-                            :nudge-right="40"
-                            transition="scale-transition"
-                            offset-y
-                            min-width="auto"
+              <v-card-text class="pa-6">
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="4"
+                  >
+                    <v-card class="pa-4">
+                      <v-row
+                        class-name="match-height"
+                      >
+                        <v-col cols="12">
+                          <!-- Formulario-->
+                          <div class='d-flex justify-center justify-md-start'>
+                            <h3 class="py-4 ">
+                              Datos {{ this.table }}
+                            </h3>
+                          </div>
+                          <v-form
+                            ref="form"
+                            v-model="valid"
+                            class="multi-col-validation"
+                            lazy-validation
                           >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                                readonly
-                                v-bind="attrs"
-                                label="Fecha Requerida"
-                                :rules="dateRequiredRules"
-                                outlined
-                                dense
-                                :value="computedDateFormattedDatefns"
-                                v-on="on"
-                                @click:clear="date = null"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="editedItem.date_required"
-                              elevation="15"
-                              :min="date_min"
-                              @change="menu2 = false"
-                            ></v-date-picker>
-                          </v-menu>
-                        </v-col>
-                        <v-col
-                          cols="4"
-                        >
-                          <v-text-field
-                            v-model="editedItem.type_request"
-                            label="Tipo Requerimiento"
-                            :rules="typeRequiredRules"
-                            outlined
-                            dense
-                          ></v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="4"
-                        >
-                          <v-select
-                            v-model="editedItem.importance"
-                            :items="items_importance"
-                            label="Importancia"
-                            outlined
-                            dense
-                            :rules="importanceRules"
-                          ></v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                        >
-                          <v-textarea
-                            v-model="editedItem.comment"
-                            label="Comentario"
-                            outlined
-                            dense
-                          ></v-textarea>
+                            <!--    Columnas de Inputs-->
+                            <v-row>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-menu
+                                  v-model="menu2"
+                                  :close-on-content-click="false"
+                                  :nudge-right="40"
+                                  transition="scale-transition"
+                                  offset-y
+                                  min-width="auto"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-text-field
+                                      readonly
+                                      v-bind="attrs"
+                                      label="Fecha Requerida"
+                                      :rules="dateRequiredRules"
+                                      outlined
+                                      dense
+                                      :value="computedDateFormattedDatefns"
+                                      v-on="on"
+                                      @click:clear="date = null"
+                                    ></v-text-field>
+                                  </template>
+                                  <v-date-picker
+                                    v-model="editedItem.date_required"
+                                    elevation="15"
+                                    :min="date_min"
+                                    @change="menu2 = false"
+                                  ></v-date-picker>
+                                </v-menu>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.type_request"
+                                  label="Tipo Requerimiento"
+                                  :rules="typeRequiredRules"
+                                  outlined
+                                  dense
+                                ></v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-select
+                                  v-model="editedItem.importance"
+                                  :items="items_importance"
+                                  label="Importancia"
+                                  outlined
+                                  dense
+                                  :rules="importanceRules"
+                                ></v-select>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                              >
+                                <v-textarea
+                                  v-model="editedItem.comment"
+                                  label="Comentario"
+                                  outlined
+                                  dense
+                                ></v-textarea>
+                              </v-col>
+                            </v-row>
+                          </v-form>
                         </v-col>
                       </v-row>
-                    </v-form>
+                    </v-card>
                   </v-col>
-                </v-row>
-                <!--                Tabla Detalle-->
-                <v-card>
-                  <v-card-text>
-                    <!--      Modal-->
-                    <template>
-                      <div class="d-flex justify-center justify-sm-end">
-                        <v-dialog
-                          v-model="dialogProduct"
-                          width="900"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                              color="primary"
-                              dark
-                              class="mb-2"
-                              v-bind="attrs"
-                              v-on="on"
+                  <v-col
+                    cols="12"
+                    md="8"
+                  >
+                    <!--                Tabla Detalle-->
+                    <v-card class="pa-4">
+                      <!--      Modal-->
+                      <template>
+                        <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                          <h3 class="py-4">
+                            Detalle {{ this.table }}
+                          </h3>
+                          <div class="d-flex justify-center justify-sm-end">
+                            <v-dialog
+                              v-model="dialogProduct"
+                              width="900"
                             >
-                              <v-icon class="mr-1">
-                                {{ icons.mdiPlusCircleOutline }}
-                              </v-icon>
-                              Agregar
-                            </v-btn>
-                          </template>
-                          <!--            Contenido Modal-->
-                          <v-card>
-                            <v-card-title class="primary">
-                              <span class="white--text text-2xl pa-0">
-                                {{ formTitle }}
-                              </span>
-                            </v-card-title>
-
-                            <v-card-text>
-                              <v-row
-                                class-name="match-height"
-                                class="py-8"
-                              >
-                                <v-col cols="12">
-                                  <!-- Formulario-->
-                                  <v-form
-                                    ref="form"
-                                    v-model="valid"
-                                    class="multi-col-validation"
-                                    lazy-validation
-                                  >
-                                    <!--    Columnas de Inputs-->
-                                    <v-card>
-                                      <v-card-text>
-                                        <!--      Encabezado de Tabla-->
-                                        <v-card-title class="d-flex flex-column justify-center flex-sm-row">
-                                          <v-text-field
-                                            v-model="search"
-                                            :append-icon="icons.mdiMagnify"
-                                            label="Buscar"
-                                            single-line
-                                            hide-details
-                                          ></v-text-field>
-                                        </v-card-title>
-                                        <!--      Tabla-->
-                                        <v-data-table
-                                          :headers="headers_products"
-                                          :items="desserts_products"
-                                          :search="search_products"
-                                          :sort-by.sync="sortBy"
-                                          :sort-desc.sync="sortDesc"
-                                        >
-                                          <template
-                                            v-slot:item.actions="{ item }"
-                                          >
-                                            <div class="pa-2">
-                                              <v-checkbox
-                                                :ref="item.code"
-                                                :key="item.code"
-                                                type="checkbox"
-                                                color="success"
-                                                @change="toggleMaterial(item,$event)"
-                                              ></v-checkbox>
-                                              <!--                                              <v-btn-->
-                                              <!--                                                color="#C62828"-->
-                                              <!--                                                fab-->
-                                              <!--                                                x-small-->
-                                              <!--                                                class="ma-1"-->
-                                              <!--                                                @click="destroy(item)"-->
-                                              <!--                                              >-->
-                                              <!--                                                <v-icon color="white">-->
-                                              <!--                                                  {{ icons.mdiDelete }}-->
-                                              <!--                                                </v-icon>-->
-                                              <!--                                              </v-btn>-->
-                                            </div>
-                                          </template>
-                                          <template v-slot:no-data>
-                                            No hay datos disponibles
-                                          </template>
-                                        </v-data-table>
-                                      </v-card-text>
-                                    </v-card>
-                                  </v-form>
-                                </v-col>
-                              </v-row>
-                            </v-card-text>
-
-                            <v-divider></v-divider>
-
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
-                                <!--                                <v-btn-->
-                                <!--                                  color="primary"-->
-                                <!--                                  class="ma-1"-->
-                                <!--                                  @click="save"-->
-                                <!--                                >-->
-                                <!--                                  Guardar-->
-                                <!--                                </v-btn>-->
+                              <template v-slot:activator="{ on, attrs }">
                                 <v-btn
-                                  type="reset"
-                                  outlined
-                                  class="ma-1"
-                                  @click="closeProduct"
+                                  color="primary"
+                                  dark
+                                  class="mb-2"
+                                  v-bind="attrs"
+                                  v-on="on"
                                 >
-                                  cerrar
+                                  <v-icon class="mr-1">
+                                    {{ icons.mdiPlusCircleOutline }}
+                                  </v-icon>
+                                  Agregar
                                 </v-btn>
-                              </div>
-                            </v-card-actions>
-                          </v-card>
-                        </v-dialog>
-                      </div>
-                    </template>
-                    <!--      Encabezado de Tabla-->
-                    <v-card-title class="d-flex flex-column justify-center flex-sm-row">
-                      <v-text-field
-                        v-model="search"
-                        :append-icon="icons.mdiMagnify"
-                        label="Buscar"
-                        single-line
-                        hide-details
-                      ></v-text-field>
-                      <v-divider
-                        class="mx-4"
-                        inset
-                        vertical
-                      ></v-divider>
-                      <v-btn-toggle>
-                        <v-btn elevation="0">
-                          <span class="hidden-sm-and-down">Excel</span>
-                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
-                            {{ icons.mdiFileExcel }}
-                          </v-icon>
-                        </v-btn>
+                              </template>
+                              <!--            Contenido Modal-->
+                              <v-card>
+                                <v-card-title class="primary">
+                                  <span class="white--text text-2xl pa-0">
+                                    {{ formTitle }}
+                                  </span>
+                                </v-card-title>
 
-                        <v-btn elevation="0">
-                          <span class="hidden-sm-and-down">CSV</span>
-                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
-                            {{ icons.mdiFileDelimited }}
-                          </v-icon>
-                        </v-btn>
+                                <v-card-text>
+                                  <v-row
+                                    class-name="match-height"
+                                    class="py-8"
+                                  >
+                                    <v-col cols="12">
+                                      <!-- Formulario-->
+                                      <v-form
+                                        class="multi-col-validation"
+                                        lazy-validation
+                                      >
+                                        <!--    Columnas de Inputs-->
+                                        <v-card>
+                                          <v-card-text>
+                                            <!--      Encabezado de Tabla-->
+                                            <v-card-title class="d-flex flex-column justify-center flex-sm-row">
+                                              <v-text-field
+                                                v-model="search"
+                                                :append-icon="icons.mdiMagnify"
+                                                label="Buscar"
+                                                single-line
+                                                hide-details
+                                              ></v-text-field>
+                                            </v-card-title>
+                                            <!--      Tabla-->
+                                            <v-data-table
+                                              :headers="headers_products"
+                                              :items="desserts_products"
+                                              :search="search_products"
+                                              :sort-by.sync="sortBy"
+                                              :sort-desc.sync="sortDesc"
+                                            >
+                                              <template
+                                                v-slot:item.actions="{ item }"
+                                              >
+                                                <div class="pa-2">
+                                                  <v-checkbox
+                                                    :ref="item.code"
+                                                    :key="item.code"
+                                                    type="checkbox"
+                                                    color="success"
+                                                    @change="toggleMaterial(item,$event)"
+                                                  ></v-checkbox>
+                                                  <!--                                              <v-btn-->
+                                                  <!--                                                color="#C62828"-->
+                                                  <!--                                                fab-->
+                                                  <!--                                                x-small-->
+                                                  <!--                                                class="ma-1"-->
+                                                  <!--                                                @click="destroy(item)"-->
+                                                  <!--                                              >-->
+                                                  <!--                                                <v-icon color="white">-->
+                                                  <!--                                                  {{ icons.mdiDelete }}-->
+                                                  <!--                                                </v-icon>-->
+                                                  <!--                                              </v-btn>-->
+                                                </div>
+                                              </template>
+                                              <template v-slot:no-data>
+                                                No hay datos disponibles
+                                              </template>
+                                            </v-data-table>
+                                          </v-card-text>
+                                        </v-card>
+                                      </v-form>
+                                    </v-col>
+                                  </v-row>
+                                </v-card-text>
 
-                        <v-btn elevation="0">
-                          <span class="hidden-sm-and-down">PDF</span>
-                          <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
-                            {{ icons.mdiFilePdfBox }}
-                          </v-icon>
-                        </v-btn>
-                      </v-btn-toggle>
-                    </v-card-title>
-                    <!--      Tabla-->
-                    <v-data-table
-                      :headers="headers_detail"
-                      :items="desserts_detail"
-                      :search="search_detail"
-                      :sort-by.sync="sortBy"
-                      :sort-desc.sync="sortDesc"
-                    >
-                      <template v-slot:item.quantity="{ item }">
-                        <v-text-field
-                          :key="item.id"
-                          :hide-details="true"
-                          dense
-                          single-line
-                          type="number"
-                          min="1"
-                          value="1"
-                        ></v-text-field>
-                      </template>
+                                <v-divider></v-divider>
 
-                      <template
-                        v-slot:item.actions="{ item }"
-                      >
-                        <div class="pa-2">
-                          <v-btn
-                            color="#C62828"
-                            fab
-                            x-small
-                            class="ma-1"
-                            @click="removeMaterial(item)"
-                          >
-                            <v-icon color="white">
-                              {{ icons.mdiDelete }}
-                            </v-icon>
-                          </v-btn>
+                                <v-card-actions>
+                                  <v-spacer></v-spacer>
+                                  <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
+                                    <!--                                <v-btn-->
+                                    <!--                                  color="primary"-->
+                                    <!--                                  class="ma-1"-->
+                                    <!--                                  @click="save"-->
+                                    <!--                                >-->
+                                    <!--                                  Guardar-->
+                                    <!--                                </v-btn>-->
+                                    <v-btn
+                                      type="reset"
+                                      outlined
+                                      class="ma-1"
+                                      @click="closeProduct"
+                                    >
+                                      cerrar
+                                    </v-btn>
+                                  </div>
+                                </v-card-actions>
+                              </v-card>
+                            </v-dialog>
+                          </div>
                         </div>
                       </template>
-                      <template v-slot:no-data>
-                        No hay datos disponibles
-                      </template>
-                    </v-data-table>
-                  </v-card-text>
-                </v-card>
+                      <!--      Encabezado de Tabla-->
+                      <v-card-title class="d-flex flex-column justify-center flex-sm-row">
+                        <v-text-field
+                          v-model="search"
+                          :append-icon="icons.mdiMagnify"
+                          label="Buscar"
+                          single-line
+                          hide-details
+                        ></v-text-field>
+                      </v-card-title>
+                      <!--      Tabla-->
+                      <v-data-table
+                        :headers="headers_detail"
+                        :items="desserts_detail"
+                        :search="search_detail"
+                        :sort-by.sync="sortBy"
+                        :sort-desc.sync="sortDesc"
+                      >
+                        <template v-slot:item.quantity="{ item }">
+                          <v-text-field
+                            :key="item.id"
+                            :hide-details="true"
+                            dense
+                            single-line
+                            type="number"
+                            min="1"
+                            value="1"
+                          ></v-text-field>
+                        </template>
+
+                        <template
+                          v-slot:item.actions="{ item }"
+                        >
+                          <div class="pa-2">
+                            <v-btn
+                              color="#C62828"
+                              fab
+                              x-small
+                              class="ma-1"
+                              @click="removeMaterial(item)"
+                            >
+                              <v-icon color="white">
+                                {{ icons.mdiDelete }}
+                              </v-icon>
+                            </v-btn>
+                          </div>
+                        </template>
+                        <template v-slot:no-data>
+                          No hay datos disponibles
+                        </template>
+                      </v-data-table>
+                    </v-card>
+                  </v-col>
+                </v-row>
               </v-card-text>
 
               <v-divider></v-divider>
@@ -469,7 +461,7 @@ export default {
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
       {
-        text: 'Cantidad', value: 'quantity', width: '10%', sortable: false,
+        text: 'Cantidad', value: 'quantity', width: '5%', sortable: false,
       },
       {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
@@ -510,15 +502,16 @@ export default {
 
     // Variable para formulario
     editedItem: {
-      date_required: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+      date_required: '',
       type_request: '',
       importance: '',
       materials: {},
     },
     defaultItem: {
-      id: '',
-      code: '',
-      name: '',
+      date_required: '',
+      type_request: '',
+      importance: '',
+      materials: {},
     },
     editedIndex: -1,
 
@@ -590,8 +583,7 @@ export default {
           Object.assign(this.editedItem.materials, { ...this.desserts_detail })
           const response = await api.register(url, data)
           if (response.status === 201) {
-            // this.insertItem(response)
-            this.$toast.success('Genial')
+            this.insertItem(response)
           } else {
             this.showErrors(response.errors)
           }
@@ -696,6 +688,7 @@ export default {
       this.reset()
       this.dialog = false
       this.$nextTick(() => {
+        this.desserts_detail = []
         this.editedItem = { ...this.defaultItem }
         this.editedIndex = -1
       })
