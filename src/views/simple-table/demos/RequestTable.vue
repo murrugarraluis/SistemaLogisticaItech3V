@@ -74,7 +74,7 @@
                               ></v-text-field>
                             </template>
                             <v-date-picker
-                              v-model="date"
+                              v-model="editedItem.date_required"
                               elevation="15"
                               :min="date_min"
                               @change="menu2 = false"
@@ -85,7 +85,7 @@
                           cols="4"
                         >
                           <v-text-field
-                            v-model="editedItem.name"
+                            v-model="editedItem.type_required"
                             label="Tipo Requerimiento"
                             :rules="typeRequiredRules"
                             outlined
@@ -96,6 +96,7 @@
                           cols="4"
                         >
                           <v-select
+                            v-model='editedItem.importance'
                             :items="items_importance"
                             label="Importancia"
                             outlined
@@ -107,7 +108,7 @@
                           cols="12"
                         >
                           <v-textarea
-                            v-model="editedItem.description"
+                            v-model="editedItem.comment"
                             label="Comentario"
                             outlined
                             dense
@@ -289,6 +290,18 @@
                       :sort-by.sync="sortBy"
                       :sort-desc.sync="sortDesc"
                     >
+                      <template v-slot:item.quantity="{ item }">
+                        <v-text-field
+                          :key="item.id"
+                          :hide-details="true"
+                          dense
+                          single-line
+                          type="number"
+                          min="1"
+                          value="1"
+                        ></v-text-field>
+                      </template>
+
                       <template
                         v-slot:item.actions="{ item }"
                       >
@@ -455,7 +468,9 @@ export default {
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
-      { text: 'Cantidad', align: 'center', value: 'quantity' },
+      {
+        text: 'Cantidad', value: 'quantity', width: '10%', sortable: false,
+      },
       {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
       },
@@ -494,7 +509,11 @@ export default {
     dialogProduct: false,
 
     // Variable para formulario
-    editedItem: {},
+    editedItem: {
+      date_required: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+      type_required: '',
+      importance: '',
+    },
     defaultItem: {
       id: '',
       code: '',
@@ -522,7 +541,7 @@ export default {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
     },
     computedDateFormattedDatefns() {
-      return this.date ? format(parseISO(this.date), 'dd/MM/yyyy') : ''
+      return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
     },
   },
   watch: {
@@ -554,7 +573,10 @@ export default {
       if (this.editedIndex > -1) {
         await this.update()
       } else {
-        await this.register()
+        console.log('Registrar')
+        console.log(this.editedItem)
+
+        // await this.register()
       }
     },
 
