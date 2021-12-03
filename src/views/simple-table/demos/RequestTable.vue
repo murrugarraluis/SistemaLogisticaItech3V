@@ -125,7 +125,7 @@
                       <div class="d-flex justify-center justify-sm-end">
                         <v-dialog
                           v-model="dialogProduct"
-                          width="500"
+                          width="900"
                         >
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
@@ -163,29 +163,49 @@
                                     lazy-validation
                                   >
                                     <!--    Columnas de Inputs-->
-                                    <v-row>
-                                      <v-col
-                                        cols="12"
-                                      >
-                                        <v-text-field
-                                          v-model="editedItem.name"
-                                          label="Nombre"
-                                          :rules="nameRules"
-                                          outlined
-                                          dense
-                                        ></v-text-field>
-                                      </v-col>
-                                      <v-col
-                                        cols="12"
-                                      >
-                                        <v-textarea
-                                          v-model="editedItem.description"
-                                          label="Descripcion"
-                                          outlined
-                                          dense
-                                        ></v-textarea>
-                                      </v-col>
-                                    </v-row>
+                                    <v-card>
+                                      <v-card-text>
+                                        <!--      Encabezado de Tabla-->
+                                        <v-card-title class="d-flex flex-column justify-center flex-sm-row">
+                                          <v-text-field
+                                            v-model="search"
+                                            :append-icon="icons.mdiMagnify"
+                                            label="Buscar"
+                                            single-line
+                                            hide-details
+                                          ></v-text-field>
+                                        </v-card-title>
+                                        <!--      Tabla-->
+                                        <v-data-table
+                                          :headers="headers_detail"
+                                          :items="desserts_detail"
+                                          :search="search_detail"
+                                          :sort-by.sync="sortBy"
+                                          :sort-desc.sync="sortDesc"
+                                        >
+                                          <template
+                                            v-slot:item.actions="{ item }"
+                                          >
+                                            <div class="pa-2">
+                                              <v-btn
+                                                color="#C62828"
+                                                fab
+                                                x-small
+                                                class="ma-1"
+                                                @click="destroy(item)"
+                                              >
+                                                <v-icon color="white">
+                                                  {{ icons.mdiDelete }}
+                                                </v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <template v-slot:no-data>
+                                            No hay datos disponibles
+                                          </template>
+                                        </v-data-table>
+                                      </v-card-text>
+                                    </v-card>
                                   </v-form>
                                 </v-col>
                               </v-row>
