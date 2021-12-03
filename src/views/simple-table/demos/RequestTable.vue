@@ -471,20 +471,9 @@ export default {
         text: 'Acciones', align: 'end', value: 'actions', sortable: false,
       },
     ],
-    headers_products: [
-      { text: 'Codigo', align: 'start', value: 'code' },
-      { text: 'Nombre', value: 'name' },
-      { text: 'Unidad de Medida', value: 'measure_unit' },
-      { text: 'Categoria', align: 'center', value: 'category' },
-      { text: 'Marca', align: 'center', value: 'mark' },
-      {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
-      },
-    ],
     desserts: [],
 
     desserts_detail: [],
-    desserts_products: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -493,7 +482,6 @@ export default {
     // Variables de busqueda o filtrado
     search: '',
     search_detail: '',
-    search_products: '',
 
     // Iconos
     icons: {
@@ -501,8 +489,7 @@ export default {
     },
 
     // Variable para uso de modal
-    dialog: true,
-    dialogProduct: false,
+    dialog: false,
 
     // Variable para formulario
     editedItem: {
@@ -531,7 +518,6 @@ export default {
     items_importance: [
       'Baja', 'Media', 'Alta',
     ],
-    checkbox: true,
 
   }),
   computed: {
@@ -563,6 +549,7 @@ export default {
     edit(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
+      this.desserts_detail = item.materials
       this.dialog = true
     },
 

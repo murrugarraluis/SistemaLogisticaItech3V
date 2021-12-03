@@ -43,7 +43,7 @@
                     <!--      Encabezado de Tabla-->
                     <v-card-title class="d-flex flex-column justify-center flex-sm-row">
                       <v-text-field
-                        v-model="search"
+                        v-model="search_products"
                         :append-icon="icons.mdiMagnify"
                         label="Buscar"
                         single-line
@@ -104,7 +104,7 @@
 
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
+  mdiPlusCircleOutline,
 } from '@mdi/js'
 import api from '@/api'
 
@@ -135,9 +135,7 @@ export default {
     search_products: '',
 
     // Iconos
-    icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline, mdiEye,
-    },
+    icons: { mdiPlusCircleOutline },
 
     // Variable para uso de modal
     dialog: false,
@@ -153,23 +151,6 @@ export default {
     this.getAllMaterials()
   },
   methods: {
-    // Metodo para mostrar en Toast Mensaje
-    showMessage(message) {
-      this.$toast.success(message)
-    },
-
-    // Metodo para mostrar en Toast Errors
-    showErrors(errors) {
-      const errorsArray = Object.values(errors)
-      const errosList = errorsArray.join('\n')
-      this.$toast.error(errosList)
-    },
-
-    // Metodo Para restablecer valores por default
-    close() {
-      this.dialog = false
-    },
-
     //  Metodo para optener productos
     async getAllMaterials() {
       const url = `${this.$URL_SERVE}/materials`
@@ -177,6 +158,11 @@ export default {
     },
     toggleMaterial(item, event) {
       this.$emit('toggleMaterial', item, event)
+    },
+
+    // Metodo Para restablecer valores por default
+    close() {
+      this.dialog = false
     },
   },
 }
