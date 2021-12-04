@@ -2,6 +2,7 @@
   <div class="d-flex justify-center justify-sm-end">
     <v-dialog
       v-model="dialog"
+      scrollable
       width="900"
     >
       <template v-slot:activator="{ on, attrs }">

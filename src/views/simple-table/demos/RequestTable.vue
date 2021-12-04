@@ -178,8 +178,10 @@
                             single-line
                             type="number"
                             min="1"
-                            :value="item.quantity"
+                            :value="item.quantity > 0 ? item.quantity:1"
                             :disabled="editedIndex !== -1"
+                            oninput="validity.valid||(value='1');"
+                            @change="setQuantityItem($event,item)"
                           ></v-text-field>
                         </template>
 
@@ -448,7 +450,6 @@ export default {
       if (this.editedIndex > -1) {
         await this.update()
       } else {
-        // Object.assign(this.editedItem.materials, { ...this.desserts_detail })
         await this.register()
       }
     },
@@ -612,11 +613,16 @@ export default {
     },
     addMaterial(item) {
       const data = { ...item }
+      data.quantity = 1
       this.desserts_detail.push(data)
     },
     removeMaterial(item) {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail.splice(index, 1)
+    },
+    setQuantityItem(event, item) {
+      const index = this.desserts_detail.findIndex(val => val.name === item.name)
+      this.desserts_detail[index].quantity = event
     },
   },
 }
