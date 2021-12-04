@@ -143,11 +143,11 @@
         :to="{ name: 'almacenes' }"
         :icon="icons.mdiStore"
       ></nav-menu-link>
-<!--      <nav-menu-link-->
-<!--        title="Requerimientos"-->
-<!--        :to="{ name: 'requerimientos' }"-->
-<!--        :icon="icons.mdiNotebook"-->
-<!--      ></nav-menu-link>-->
+      <nav-menu-link
+        title="Requerimientos"
+        :to="{ name: 'requerimientos' }"
+        :icon="icons.mdiNotebook"
+      ></nav-menu-link>
 <!--      <nav-menu-link-->
 <!--        title="Ordenes de Compra"-->
 <!--        :to="{ name: 'ordenes-compra' }"-->
