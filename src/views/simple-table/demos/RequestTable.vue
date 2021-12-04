@@ -79,6 +79,7 @@
                                       outlined
                                       dense
                                       :value="computedDateFormattedDatefns"
+                                      :disabled="editedIndex !== -1"
                                       v-on="on"
                                       @click:clear="date = null"
                                     ></v-text-field>
@@ -100,6 +101,7 @@
                                   :rules="typeRequiredRules"
                                   outlined
                                   dense
+                                  :disabled="editedIndex !== -1"
                                 ></v-text-field>
                               </v-col>
                               <v-col
@@ -112,6 +114,7 @@
                                   outlined
                                   dense
                                   :rules="importanceRules"
+                                  :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
                               <v-col
@@ -122,6 +125,7 @@
                                   label="Comentario"
                                   outlined
                                   dense
+                                  :disabled="editedIndex !== -1"
                                 ></v-textarea>
                               </v-col>
                             </v-row>
@@ -142,126 +146,10 @@
                           <h3 class="py-4">
                             Detalle {{ table }}
                           </h3>
-                          <add-product-dialog @toggleMaterial="toggleMaterial"></add-product-dialog>
-                          <!--                          <div class="d-flex justify-center justify-sm-end">-->
-                          <!--                            <v-dialog-->
-                          <!--                              v-model="dialogProduct"-->
-                          <!--                              width="900"-->
-                          <!--                            >-->
-                          <!--                              <template v-slot:activator="{ on, attrs }">-->
-                          <!--                                <v-btn-->
-                          <!--                                  color="primary"-->
-                          <!--                                  dark-->
-                          <!--                                  class="mb-2"-->
-                          <!--                                  v-bind="attrs"-->
-                          <!--                                  v-on="on"-->
-                          <!--                                >-->
-                          <!--                                  <v-icon class="mr-1">-->
-                          <!--                                    {{ icons.mdiPlusCircleOutline }}-->
-                          <!--                                  </v-icon>-->
-                          <!--                                  Agregar-->
-                          <!--                                </v-btn>-->
-                          <!--                              </template>-->
-                          <!--                              &lt;!&ndash;            Contenido Modal&ndash;&gt;-->
-                          <!--                              <v-card>-->
-                          <!--                                <v-card-title class="primary">-->
-                          <!--                                  <span class="white&#45;&#45;text text-2xl pa-0">-->
-                          <!--                                    {{ formTitle }}-->
-                          <!--                                  </span>-->
-                          <!--                                </v-card-title>-->
-
-                          <!--                                <v-card-text>-->
-                          <!--                                  <v-row-->
-                          <!--                                    class-name="match-height"-->
-                          <!--                                    class="py-8"-->
-                          <!--                                  >-->
-                          <!--                                    <v-col cols="12">-->
-                          <!--                                      &lt;!&ndash; Formulario&ndash;&gt;-->
-                          <!--                                      <v-form-->
-                          <!--                                        class="multi-col-validation"-->
-                          <!--                                        lazy-validation-->
-                          <!--                                      >-->
-                          <!--                                        &lt;!&ndash;    Columnas de Inputs&ndash;&gt;-->
-                          <!--                                        <v-card>-->
-                          <!--                                          <v-card-text>-->
-                          <!--                                            &lt;!&ndash;      Encabezado de Tabla&ndash;&gt;-->
-                          <!--                                            <v-card-title class="d-flex flex-column justify-center flex-sm-row">-->
-                          <!--                                              <v-text-field-->
-                          <!--                                                v-model="search"-->
-                          <!--                                                :append-icon="icons.mdiMagnify"-->
-                          <!--                                                label="Buscar"-->
-                          <!--                                                single-line-->
-                          <!--                                                hide-details-->
-                          <!--                                              ></v-text-field>-->
-                          <!--                                            </v-card-title>-->
-                          <!--                                            &lt;!&ndash;      Tabla&ndash;&gt;-->
-                          <!--                                            <v-data-table-->
-                          <!--                                              :headers="headers_products"-->
-                          <!--                                              :items="desserts_products"-->
-                          <!--                                              :search="search_products"-->
-                          <!--                                              :sort-by.sync="sortBy"-->
-                          <!--                                              :sort-desc.sync="sortDesc"-->
-                          <!--                                            >-->
-                          <!--                                              <template-->
-                          <!--                                                v-slot:item.actions="{ item }"-->
-                          <!--                                              >-->
-                          <!--                                                <div class="pa-2">-->
-                          <!--                                                  <v-checkbox-->
-                          <!--                                                    :ref="item.code"-->
-                          <!--                                                    :key="item.code"-->
-                          <!--                                                    type="checkbox"-->
-                          <!--                                                    color="success"-->
-                          <!--                                                    @change="toggleMaterial(item,$event)"-->
-                          <!--                                                  ></v-checkbox>-->
-                          <!--                                                  &lt;!&ndash;                                              <v-btn&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                color="#C62828"&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                fab&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                x-small&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                class="ma-1"&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                @click="destroy(item)"&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                              >&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                <v-icon color="white">&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                  {{ icons.mdiDelete }}&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                                </v-icon>&ndash;&gt;-->
-                          <!--                                                  &lt;!&ndash;                                              </v-btn>&ndash;&gt;-->
-                          <!--                                                </div>-->
-                          <!--                                              </template>-->
-                          <!--                                              <template v-slot:no-data>-->
-                          <!--                                                No hay datos disponibles-->
-                          <!--                                              </template>-->
-                          <!--                                            </v-data-table>-->
-                          <!--                                          </v-card-text>-->
-                          <!--                                        </v-card>-->
-                          <!--                                      </v-form>-->
-                          <!--                                    </v-col>-->
-                          <!--                                  </v-row>-->
-                          <!--                                </v-card-text>-->
-
-                          <!--                                <v-divider></v-divider>-->
-
-                          <!--                                <v-card-actions>-->
-                          <!--                                  <v-spacer></v-spacer>-->
-                          <!--                                  <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">-->
-                          <!--                                    &lt;!&ndash;                                <v-btn&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                  color="primary"&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                  class="ma-1"&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                  @click="save"&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                >&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                  Guardar&ndash;&gt;-->
-                          <!--                                    &lt;!&ndash;                                </v-btn>&ndash;&gt;-->
-                          <!--                                    <v-btn-->
-                          <!--                                      type="reset"-->
-                          <!--                                      outlined-->
-                          <!--                                      class="ma-1"-->
-                          <!--                                      @click="closeProduct"-->
-                          <!--                                    >-->
-                          <!--                                      cerrar-->
-                          <!--                                    </v-btn>-->
-                          <!--                                  </div>-->
-                          <!--                                </v-card-actions>-->
-                          <!--                              </v-card>-->
-                          <!--                            </v-dialog>-->
-                          <!--                          </div>-->
+                          <add-product-dialog
+                            v-if="editedIndex === -1"
+                            @toggleMaterial="toggleMaterial"
+                          ></add-product-dialog>
                         </div>
                       </template>
                       <!--      Encabezado de Tabla-->
@@ -290,7 +178,8 @@
                             single-line
                             type="number"
                             min="1"
-                            value="1"
+                            :value="item.quantity"
+                            :disabled="editedIndex !== -1"
                           ></v-text-field>
                         </template>
 
@@ -303,6 +192,7 @@
                               fab
                               x-small
                               class="ma-1"
+                              :disabled="editedIndex !== -1"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -330,7 +220,7 @@
                     class="ma-1"
                     @click="save"
                   >
-                    Guardar
+                    {{ editedIndex === -1 ? 'Guardar':'Imprimir' }}
                   </v-btn>
                   <v-btn
                     type="reset"
