@@ -14,7 +14,7 @@ import 'sweetalert2/dist/sweetalert2.css'
 
 Vue.config.productionTip = false
 
-Vue.prototype.$URL_SERVE = 'https://pacific-woodland-24253.herokuapp.com/api'
+Vue.prototype.$URL_SERVE = 'https://whispering-fjord-62899.herokuapp.com/api'
 
 const options = {
   confirmButtonColor: '#C62828',
