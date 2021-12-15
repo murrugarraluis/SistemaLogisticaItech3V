@@ -71,11 +71,11 @@
         title="Materiales"
         :icon="icons.mdiPackageVariantClosed"
       >
-<!--        <nav-menu-link-->
-<!--          title="Materiales"-->
-<!--          :to="{ name: 'productos' }"-->
-<!--          :icon="icons.mdiPackageVariantClosed "-->
-<!--        ></nav-menu-link>-->
+        <nav-menu-link
+          title="Materiales"
+          :to="{ name: 'materiales' }"
+          :icon="icons.mdiPackageVariantClosed "
+        ></nav-menu-link>
         <nav-menu-link
           title="Categorias"
           :to="{ name: 'categorias' }"

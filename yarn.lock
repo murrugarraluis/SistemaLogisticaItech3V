@@ -14,7 +14,7 @@
   "resolved" "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.16.0.tgz"
   "version" "7.16.0"
 
-"@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.11.0", "@babel/core@^7.12.0", "@babel/core@^7.13.0", "@babel/core@^7.4.0-0":
+"@babel/core@*", "@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.11.0", "@babel/core@^7.12.0", "@babel/core@^7.13.0", "@babel/core@^7.4.0-0":
   "integrity" "sha512-mYZEvshBRHGsIAiyH5PzCFTCfbWfoYbO/jcSdXQSUQu1/pW0xDZAUP7KEc32heqWTAfAHhV9j1vH8Sav7l+JNQ=="
   "resolved" "https://registry.npmjs.org/@babel/core/-/core-7.16.0.tgz"
   "version" "7.16.0"
@@ -2816,7 +2816,7 @@
     "browserslist" "^4.17.6"
     "semver" "7.0.0"
 
-"core-js@^3.6.5":
+"core-js@^3", "core-js@^3.6.5":
   "integrity" "sha512-Tnc7E9iKd/b/ff7GFbhwPVzJzPztGrChB8X8GLqoYGdEOG8IpLnK1xPyo3ZoO3HsK6TodJS58VGPOxA+hLHQMg=="
   "resolved" "https://registry.npmjs.org/core-js/-/core-js-3.19.1.tgz"
   "version" "3.19.1"
@@ -3661,7 +3661,7 @@
     "find-up" "^2.1.0"
     "pkg-dir" "^2.0.0"
 
-"eslint-plugin-import@^2.20.2", "eslint-plugin-import@^2.21.2", "eslint-plugin-import@^2.22.1", "eslint-plugin-import@>=1.4.0":
+"eslint-plugin-import@^2.18.2", "eslint-plugin-import@^2.20.2", "eslint-plugin-import@^2.22.1", "eslint-plugin-import@>=1.4.0":
   "integrity" "sha512-RzAVbby+72IB3iOEL8clzPLzL3wpDrlwjsTBAQXgyp5SeTqqY+0bFubwuo+y/HLhNZcXV4XqTBO4LGsfyHIDXg=="
   "resolved" "https://registry.npmjs.org/eslint-plugin-import/-/eslint-plugin-import-2.25.3.tgz"
   "version" "2.25.3"
