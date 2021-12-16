@@ -6,13 +6,17 @@
         <div class="d-flex justify-center justify-sm-end">
           <v-dialog
             v-model="dialog"
+            fullscreen
+            hide-overlay
+            persistent
+            transition="dialog-bottom-transition"
             width="500"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
+                class="mb-2"
                 color="primary"
                 dark
-                class="mb-2"
                 v-bind="attrs"
                 v-on="on"
               >
@@ -30,34 +34,158 @@
                 </span>
               </v-card-title>
 
-              <v-card-text>
-                <v-row
-                  class-name="match-height"
-                  class="py-8"
-                >
-                  <v-col cols="12">
-                    <!-- Formulario-->
-                    <v-form
-                      ref="form"
-                      v-model="valid"
-                      class="multi-col-validation"
-                      lazy-validation
-                    >
-                      <!--    Columnas de Inputs-->
-                      <v-row>
-                        <v-col
-                          cols="12"
-                        >
-                          <v-text-field
-                            v-model="editedItem.name"
-                            label="Nombre"
-                            :rules="nameRules"
-                            outlined
-                            dense
-                          ></v-text-field>
+              <v-card-text class="pa-6">
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="4"
+                  >
+                    <v-card class="pa-4">
+                      <v-row class-name="match-height">
+                        <v-col cols="12">
+                          <!-- Formulario-->
+                          <div class="d-flex justify-center justify-md-start">
+                            <h3 class="py-4">
+                              Datos {{ table }}
+                            </h3>
+                          </div>
+                          <v-form
+                            ref="form"
+                            v-model="valid"
+                            class="multi-col-validation"
+                            lazy-validation
+                          >
+                            <!--    Columnas de Inputs-->
+                            <v-row>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="editedItem.name"
+                                  :disabled="editedIndex !== -1"
+                                  :rules="nameRules"
+                                  dense
+                                  label="Nombre"
+                                  outlined
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.category"
+                                  :disabled="editedIndex !== -1"
+                                  :items="items_category"
+                                  :rules="categoryRules"
+                                  item-text="name"
+                                  item-value="id"
+                                  dense
+                                  label="Categoria"
+                                  outlined
+                                >
+                                </v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.mark"
+                                  :disabled="editedIndex !== -1"
+                                  :items="items_mark"
+                                  :rules="markRules"
+                                  item-text="name"
+                                  item-value="id"
+                                  dense
+                                  label="Marca"
+                                  outlined
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.measure_unit"
+                                  :disabled="editedIndex !== -1"
+                                  :items="items_measure_unit"
+                                  :rules="measureUnitRules"
+                                  item-text="name"
+                                  item-value="id"
+                                  dense
+                                  label="Unidad de Medida"
+                                  outlined
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="editedItem.minimum_stock"
+                                  :disabled="editedIndex !== -1"
+                                  :rules="minimumStockRules"
+                                  dense
+                                  label="Stock Minimo"
+                                  outlined
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                          </v-form>
                         </v-col>
                       </v-row>
-                    </v-form>
+                    </v-card>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="8"
+                  >
+                    <!--                Tabla Detalle-->
+                    <v-card class="pa-4">
+                      <!--      Modal-->
+                      <template>
+                        <div
+                          class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between"
+                        >
+                          <h3 class="py-4">
+                            {{ table }} en Almacen
+                          </h3>
+                        </div>
+                      </template>
+                      <!--      Encabezado de Tabla-->
+                      <v-card-title class="d-flex flex-column justify-center flex-sm-row">
+                      </v-card-title>
+                      <!--      Tabla-->
+                      <v-data-table
+                        :headers="headers_detail"
+                        :items="desserts_detail"
+                        :search="search_detail"
+                        :sort-by.sync="sortBy"
+                        :sort-desc.sync="sortDesc"
+                      >
+                        <template v-slot:item.quantity="{ item }">
+                          <v-text-field
+                            :key="item.id"
+                            :disabled="editedIndex !== -1"
+                            :hide-details="true"
+                            :value="item.quantity > 0 ? item.quantity : 1"
+                            dense
+                            min="1"
+                            oninput="validity.valid||(value='1');"
+                            single-line
+                            type="number"
+                            @change="setQuantityItem($event, item)"
+                          ></v-text-field>
+                        </template>
+
+                        <template v-slot:item.actions="{ item }">
+                          <div class="pa-2">
+                            <v-btn
+                              :disabled="editedIndex !== -1"
+                              class="ma-1"
+                              color="#C62828"
+                              fab
+                              x-small
+                              @click="removeMaterial(item)"
+                            >
+                              <v-icon color="white">
+                                {{ icons.mdiDelete }}
+                              </v-icon>
+                            </v-btn>
+                          </div>
+                        </template>
+                        <template v-slot:no-data>
+                          No hay datos disponibles
+                        </template>
+                      </v-data-table>
+                    </v-card>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -68,16 +196,16 @@
                 <v-spacer></v-spacer>
                 <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
                   <v-btn
-                    color="primary"
                     class="ma-1"
+                    color="primary"
                     @click="save"
                   >
-                    Guardar
+                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}
                   </v-btn>
                   <v-btn
-                    type="reset"
-                    outlined
                     class="ma-1"
+                    outlined
+                    type="reset"
                     @click="close"
                   >
                     Cancelar
@@ -93,9 +221,9 @@
         <v-text-field
           v-model="search"
           :append-icon="icons.mdiMagnify"
+          hide-details
           label="Buscar"
           single-line
-          hide-details
         ></v-text-field>
         <v-divider
           class="mx-4"
@@ -133,15 +261,13 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
       >
-        <template
-          v-slot:item.actions="{ item }"
-        >
+        <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
+              class="ma-1"
               color="#F9A825"
               fab
               x-small
-              class="ma-1"
               @click="edit(item)"
             >
               <v-icon color="white">
@@ -149,10 +275,10 @@
               </v-icon>
             </v-btn>
             <v-btn
+              class="ma-1"
               color="#C62828"
               fab
               x-small
-              class="ma-1"
               @click="destroy(item)"
             >
               <v-icon color="white">
@@ -170,7 +296,13 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline,
+  mdiDelete,
+  mdiFileDelimited,
+  mdiFileExcel,
+  mdiFilePdfBox,
+  mdiMagnify,
+  mdiPencil,
+  mdiPlusCircleOutline,
 } from '@mdi/js'
 
 import api from '@/api'
@@ -179,14 +311,22 @@ export default {
   data: () => ({
     valid: true,
     table: 'Material',
-    uri: 'categories',
+    uri: 'materials',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
+      { text: 'Categoria', align: 'center', value: 'category' },
+      { text: 'Marca', align: 'center', value: 'mark' },
+      { text: 'Unidad de Medida', value: 'measure_unit' },
+      { text: 'Stock Minimo', value: 'minimum_stock' },
+      { text: 'Stock Actual', value: 'stock' },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
     desserts: [],
@@ -200,11 +340,17 @@ export default {
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline,
+      mdiPencil,
+      mdiDelete,
+      mdiMagnify,
+      mdiFileExcel,
+      mdiFileDelimited,
+      mdiFilePdfBox,
+      mdiPlusCircleOutline,
     },
 
     // Variable para uso de modal
-    dialog: false,
+    dialog: true,
 
     // Variable para formulario
     editedItem: {},
@@ -212,12 +358,24 @@ export default {
       id: '',
       code: '',
       name: '',
+      category: '',
+      mark: '',
+      measure_unit: '',
+      minimum_stock: '',
+      warehouses: '',
     },
     editedIndex: -1,
 
     // Reglas de Validacion
     nameRules: [v => !!v || 'Nombre es obligatorio'],
+    categoryRules: [v => !!v || 'Categoria es obligatorio'],
+    markRules: [v => !!v || 'Marca es obligatorio'],
+    measureUnitRules: [v => !!v || 'Unidad de Medida es obligatorio'],
+    minimumStockRules: [v => !!v || 'Stock Minimo es obligatorio'],
 
+    items_category: [],
+    items_mark: [],
+    items_measure_unit: [],
   }),
   computed: {
     formTitle() {
@@ -232,6 +390,9 @@ export default {
   },
   created() {
     this.initialize()
+    this.getCategories()
+    this.getMarks()
+    this.getMeasureUnits()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -291,7 +452,12 @@ export default {
     destroy(item) {
       const { id } = { ...item }
       this.$swal({
-        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+        title: '¿Está Seguro?',
+        text: 'Una vez eliminado ya no se podrá recuperar!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Eliminar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
@@ -310,13 +476,18 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
       const response = await api.getDeleted(url)
 
-      return (response.status === 200)
+      return response.status === 200
     },
 
     // Metodo para restaurar un recurso eliminado
     restore(name) {
       this.$swal({
-        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+        title: '¿Desea Restaurar?',
+        text: 'Este recurso ha sido eliminado anteriormente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Restaurar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
@@ -383,6 +554,18 @@ export default {
       this.$refs.form.resetValidation()
     },
 
+    async getCategories() {
+      const url = `${this.$URL_SERVE}/categories`
+      this.items_category = await api.getAll(url)
+    },
+    async getMarks() {
+      const url = `${this.$URL_SERVE}/marks`
+      this.items_mark = await api.getAll(url)
+    },
+    async getMeasureUnits() {
+      const url = `${this.$URL_SERVE}/measure-units`
+      this.items_measure_unit = await api.getAll(url)
+    },
   },
 }
 </script>
