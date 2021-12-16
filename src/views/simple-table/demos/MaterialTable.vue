@@ -6,17 +6,17 @@
         <div class="d-flex justify-center justify-sm-end">
           <v-dialog
             v-model="dialog"
-            width="500"
-            persistent
             fullscreen
             hide-overlay
+            persistent
             transition="dialog-bottom-transition"
+            width="500"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
+                class="mb-2"
                 color="primary"
                 dark
-                class="mb-2"
                 v-bind="attrs"
                 v-on="on"
               >
@@ -41,13 +41,11 @@
                     md="4"
                   >
                     <v-card class="pa-4">
-                      <v-row
-                        class-name="match-height"
-                      >
+                      <v-row class-name="match-height">
                         <v-col cols="12">
                           <!-- Formulario-->
                           <div class="d-flex justify-center justify-md-start">
-                            <h3 class="py-4 ">
+                            <h3 class="py-4">
                               Datos {{ table }}
                             </h3>
                           </div>
@@ -59,74 +57,63 @@
                           >
                             <!--    Columnas de Inputs-->
                             <v-row>
-                              <v-col
-                                cols="12"
-                              >
-                                <v-menu
-                                  v-model="menu2"
-                                  :close-on-content-click="false"
-                                  :nudge-right="40"
-                                  transition="scale-transition"
-                                  offset-y
-                                  min-width="auto"
-                                >
-                                  <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field
-                                      readonly
-                                      v-bind="attrs"
-                                      label="Fecha Requerida"
-                                      :rules="dateRequiredRules"
-                                      outlined
-                                      dense
-                                      :value="computedDateFormattedDatefns"
-                                      :disabled="editedIndex !== -1"
-                                      v-on="on"
-                                      @click:clear="date = null"
-                                    ></v-text-field>
-                                  </template>
-                                  <v-date-picker
-                                    v-model="editedItem.date_required"
-                                    elevation="15"
-                                    :min="date_min"
-                                    @change="menu2 = false"
-                                  ></v-date-picker>
-                                </v-menu>
-                              </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-text-field
-                                  v-model="editedItem.type_request"
-                                  label="Tipo Requerimiento"
-                                  :rules="typeRequiredRules"
-                                  outlined
+                                  v-model="editedItem.name"
+                                  :rules="nameRules"
                                   dense
-                                  :disabled="editedIndex !== -1"
+                                  label="Nombre"
+                                  outlined
                                 ></v-text-field>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.importance"
-                                  :items="items_importance"
-                                  label="Importancia"
-                                  outlined
+                                  v-model="editedItem.category"
+                                  :items="items_category"
+                                  :rules="categoryRules"
+                                  item-text="name"
+                                  item-value="id"
                                   dense
-                                  :rules="importanceRules"
-                                  :disabled="editedIndex !== -1"
+                                  label="Categoria"
+                                  outlined
+                                >
+                                </v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.mark"
+                                  :items="items_mark"
+                                  :rules="markRules"
+                                  item-text="name"
+                                  item-value="id"
+                                  dense
+                                  label="Marca"
+                                  outlined
                                 ></v-select>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
-                                <v-textarea
-                                  v-model="editedItem.comment"
-                                  label="Comentario"
-                                  outlined
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.measure_unit"
+                                  :items="items_measure_unit"
+                                  :rules="measureUnitRules"
+                                  item-text="name"
+                                  item-value="id"
                                   dense
-                                  :disabled="editedIndex !== -1"
-                                ></v-textarea>
+                                  label="Unidad de Medida"
+                                  outlined
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="editedItem.minimum_stock"
+                                  :rules="minimumStockRules"
+                                  dense
+                                  label="Stock Minimo"
+                                  outlined
+                                  type="number"
+                                  min="0"
+                                  oninput="validity.valid||(value='0');"
+                                ></v-text-field>
                               </v-col>
                             </v-row>
                           </v-form>
@@ -142,31 +129,21 @@
                     <v-card class="pa-4">
                       <!--      Modal-->
                       <template>
-                        <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                        <div
+                          class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between"
+                        >
                           <h3 class="py-4">
-                            Detalle {{ table }}
+                            {{ table }} en Almacen
                           </h3>
-                          <add-product-dialog
-                            v-if="editedIndex === -1"
-                            @toggleMaterial="toggleMaterial"
-                          ></add-product-dialog>
                         </div>
                       </template>
                       <!--      Encabezado de Tabla-->
                       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
-                        <v-text-field
-                          v-model="search"
-                          :append-icon="icons.mdiMagnify"
-                          label="Buscar"
-                          single-line
-                          hide-details
-                        ></v-text-field>
                       </v-card-title>
                       <!--      Tabla-->
                       <v-data-table
                         :headers="headers_detail"
                         :items="desserts_detail"
-                        :search="search_detail"
                         :sort-by.sync="sortBy"
                         :sort-desc.sync="sortDesc"
                       >
@@ -177,24 +154,21 @@
                             dense
                             single-line
                             type="number"
-                            min="1"
-                            :value="item.quantity > 0 ? item.quantity:1"
-                            :disabled="editedIndex !== -1"
-                            oninput="validity.valid||(value='1');"
+                            min="0"
+                            :value="item.quantity > -1 ? item.quantity:0"
+                            oninput="validity.valid||(value='0');"
                             @change="setQuantityItem($event,item)"
                           ></v-text-field>
                         </template>
 
-                        <template
-                          v-slot:item.actions="{ item }"
-                        >
+                        <template v-slot:item.actions="{ item }">
                           <div class="pa-2">
                             <v-btn
+                              :disabled="editedIndex !== -1"
+                              class="ma-1"
                               color="#C62828"
                               fab
                               x-small
-                              class="ma-1"
-                              :disabled="editedIndex !== -1"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -218,16 +192,17 @@
                 <v-spacer></v-spacer>
                 <div class="w-full d-flex flex-column flex-sm-row justify-sm-end">
                   <v-btn
-                    color="primary"
                     class="ma-1"
+                    color="primary"
                     @click="save"
                   >
-                    {{ editedIndex === -1 ? 'Guardar':'Imprimir' }}
+                    Guardar
+                    <!--                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}-->
                   </v-btn>
                   <v-btn
-                    type="reset"
-                    outlined
                     class="ma-1"
+                    outlined
+                    type="reset"
                     @click="close"
                   >
                     Cancelar
@@ -243,9 +218,9 @@
         <v-text-field
           v-model="search"
           :append-icon="icons.mdiMagnify"
+          hide-details
           label="Buscar"
           single-line
-          hide-details
         ></v-text-field>
         <v-divider
           class="mx-4"
@@ -283,33 +258,24 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
       >
-        <template v-slot:item.importance="{ item }">
-          <v-chip
-            :color="getColor(item.importance)"
-          >
-            {{ item.importance }}
-          </v-chip>
-        </template>
-        <template
-          v-slot:item.actions="{ item }"
-        >
+        <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
-              color="#0277BD"
+              class="ma-1"
+              color="#F9A825"
               fab
               x-small
-              class="ma-1"
               @click="edit(item)"
             >
               <v-icon color="white">
-                {{ icons.mdiEye }}
+                {{ icons.mdiPencil }}
               </v-icon>
             </v-btn>
             <v-btn
+              class="ma-1"
               color="#C62828"
               fab
               x-small
-              class="ma-1"
               @click="destroy(item)"
             >
               <v-icon color="white">
@@ -327,44 +293,47 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
+  mdiDelete,
+  mdiFileDelimited,
+  mdiFileExcel,
+  mdiFilePdfBox,
+  mdiMagnify,
+  mdiPencil,
+  mdiPlusCircleOutline,
 } from '@mdi/js'
-import { format, parseISO } from 'date-fns'
-import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
+
 import api from '@/api'
 
 export default {
-  components: {
-    AddProductDialog,
-  },
   data: () => ({
     valid: true,
-    table: 'Requerimiento',
-    uri: 'requests',
+    table: 'Material',
+    uri: 'materials',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
-      { text: 'Fecha Requerida', value: 'date_required' },
-      { text: 'Tipo Requerimiento', value: 'type_request' },
-      { text: 'Importancia', align: 'center', value: 'importance' },
+      { text: 'Nombre', value: 'name' },
+      { text: 'Categoria', align: 'center', value: 'category' },
+      { text: 'Marca', align: 'center', value: 'mark' },
+      { text: 'Unidad de Medida', value: 'measure_unit' },
+      { text: 'Stock Minimo', value: 'minimum_stock' },
+      { text: 'Stock Actual', value: 'stock' },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
     headers_detail: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
-      { text: 'Unidad de Medida', value: 'measure_unit' },
       {
         text: 'Cantidad', value: 'quantity', width: '5%', sortable: false,
       },
-      {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
-      },
     ],
     desserts: [],
-
     desserts_detail: [],
 
     // Variables para ordenamiento de tabla
@@ -373,11 +342,16 @@ export default {
 
     // Variables de busqueda o filtrado
     search: '',
-    search_detail: '',
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline, mdiEye,
+      mdiPencil,
+      mdiDelete,
+      mdiMagnify,
+      mdiFileExcel,
+      mdiFileDelimited,
+      mdiFilePdfBox,
+      mdiPlusCircleOutline,
     },
 
     // Variable para uso de modal
@@ -385,39 +359,41 @@ export default {
 
     // Variable para formulario
     editedItem: {
-      date_required: '',
-      type_request: '',
-      importance: '',
-      materials: {},
+      id: '',
+      code: '',
+      name: '',
+      category: '',
+      mark: '',
+      measure_unit: '',
+      minimum_stock: '',
+      warehouses: {},
     },
     defaultItem: {
-      date_required: '',
-      type_request: '',
-      importance: '',
-      materials: {},
+      id: '',
+      code: '',
+      name: '',
+      category: '',
+      mark: '',
+      measure_unit: '',
+      minimum_stock: '',
+      warehouses: {},
     },
     editedIndex: -1,
 
     // Reglas de Validacion
-    dateRequiredRules: [v => !!v || 'Fecha Requerida es obligatorio'],
-    typeRequiredRules: [v => !!v || 'Tipo Requerimiento es obligatorio'],
-    importanceRules: [v => !!v || 'Importancia es obligatorio'],
+    nameRules: [v => !!v || 'Nombre es obligatorio'],
+    categoryRules: [v => !!v || 'Categoria es obligatorio'],
+    markRules: [v => !!v || 'Marca es obligatorio'],
+    measureUnitRules: [v => !!v || 'Unidad de Medida es obligatorio'],
+    minimumStockRules: [v => !!v || 'Stock Minimo es obligatorio'],
 
-    date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
-    date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
-    menu2: false,
-
-    items_importance: [
-      'Baja', 'Media', 'Alta',
-    ],
-
+    items_category: [],
+    items_mark: [],
+    items_measure_unit: [],
   }),
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
-    },
-    computedDateFormattedDatefns() {
-      return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
     },
   },
   watch: {
@@ -428,7 +404,10 @@ export default {
   },
   created() {
     this.initialize()
-    this.getAllMaterials()
+    this.getCategories()
+    this.getMarks()
+    this.getMeasureUnits()
+    this.getWarehouses()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -441,8 +420,26 @@ export default {
     edit(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
-      this.desserts_detail = item.materials
+      this.editedItem.category = this.getIdItemCategory(item)
+      this.editedItem.mark = this.getIdItemMark(item)
+      this.editedItem.measure_unit = this.getIdItemMeasureUnit(item)
+      this.desserts_detail = item.warehouses
       this.dialog = true
+    },
+    getIdItemCategory(item) {
+      const index = this.items_category.findIndex(val => val.name === item.category)
+
+      return this.items_category[index].id
+    },
+    getIdItemMark(item) {
+      const index = this.items_mark.findIndex(val => val.name === item.mark)
+
+      return this.items_mark[index].id
+    },
+    getIdItemMeasureUnit(item) {
+      const index = this.items_measure_unit.findIndex(val => val.name === item.measure_unit)
+
+      return this.items_measure_unit[index].id
     },
 
     // Metodo para guardar cambios(crear o editar)
@@ -460,17 +457,14 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
       if (validation) {
-        // no esta vacio
-        if (Object.keys(this.desserts_detail).length !== 0) {
-          Object.assign(this.editedItem.materials, { ...this.desserts_detail })
-          const response = await api.register(url, data)
-          if (response.status === 201) {
-            this.insertItem(response)
-          } else {
-            this.showErrors(response.errors)
-          }
+        Object.assign(this.editedItem.warehouses, { ...this.desserts_detail })
+        const response = await api.register(url, data)
+        if (response.status === 201) {
+          this.insertItem(response)
+        } else if (await this.isDeleted(data.name)) {
+          this.restore(data.name)
         } else {
-          this.$toast.error('Debe Agregar al menos un producto')
+          this.showErrors(response.errors)
         }
       }
     },
@@ -493,7 +487,12 @@ export default {
     destroy(item) {
       const { id } = { ...item }
       this.$swal({
-        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+        title: '¿Está Seguro?',
+        text: 'Una vez eliminado ya no se podrá recuperar!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Eliminar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
@@ -512,13 +511,18 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
       const response = await api.getDeleted(url)
 
-      return (response.status === 200)
+      return response.status === 200
     },
 
     // Metodo para restaurar un recurso eliminado
     restore(name) {
       this.$swal({
-        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+        title: '¿Desea Restaurar?',
+        text: 'Este recurso ha sido eliminado anteriormente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Restaurar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
@@ -570,15 +574,10 @@ export default {
       this.reset()
       this.dialog = false
       this.$nextTick(() => {
-        this.desserts_detail = []
         this.editedItem = { ...this.defaultItem }
+        this.getWarehouses()
         this.editedIndex = -1
       })
-    },
-
-    // Metodo Para restablecer valores por default
-    closeProduct() {
-      this.dialogProduct = false
     },
 
     // Metodo para limpiar reseatear formulario (limpiar campos)
@@ -591,34 +590,21 @@ export default {
       this.$refs.form.resetValidation()
     },
 
-    // Metodo para Obternet color de IMportancia
-    getColor(importance) {
-      if (importance.toLowerCase() === 'alta') return '#C62828'
-      if (importance.toLowerCase() === 'media') return '#FFAB40'
-
-      return '#00897B'
+    async getCategories() {
+      const url = `${this.$URL_SERVE}/categories`
+      this.items_category = await api.getAll(url)
     },
-
-    //  Metodo para optener productos
-    async getAllMaterials() {
-      const url = `${this.$URL_SERVE}/materials`
-      this.desserts_products = await api.getAll(url)
+    async getMarks() {
+      const url = `${this.$URL_SERVE}/marks`
+      this.items_mark = await api.getAll(url)
     },
-    toggleMaterial(item, event) {
-      if (event) {
-        this.addMaterial(item)
-      } else {
-        this.removeMaterial(item)
-      }
+    async getMeasureUnits() {
+      const url = `${this.$URL_SERVE}/measure-units`
+      this.items_measure_unit = await api.getAll(url)
     },
-    addMaterial(item) {
-      const data = { ...item }
-      data.quantity = 1
-      this.desserts_detail.push(data)
-    },
-    removeMaterial(item) {
-      const index = this.desserts_detail.findIndex(val => val.name === item.name)
-      this.desserts_detail.splice(index, 1)
+    async getWarehouses() {
+      const url = `${this.$URL_SERVE}/warehouses`
+      this.desserts_detail = await api.getAll(url)
     },
 
     // Metodo para insertar detalle de cantidad a data (editItem)

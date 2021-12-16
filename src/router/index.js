@@ -69,10 +69,11 @@ const routes = [
     name: 'personal',
     component: () => import('@/views/simple-table/demos/PersonalTable.vue'),
   },
+
   {
-    path: '/productos',
-    name: 'productos',
-    component: () => import('@/views/simple-table/demos/ProductTable.vue'),
+    path: '/materiales',
+    name: 'materiales',
+    component: () => import('@/views/manteiners/MaterialMantainer.vue'),
   },
   {
     path: '/proveedores',
