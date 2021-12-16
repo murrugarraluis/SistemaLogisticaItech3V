@@ -620,6 +620,8 @@ export default {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail.splice(index, 1)
     },
+
+    // Metodo para insertar detalle de cantidad a data (editItem)
     setQuantityItem(event, item) {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail[index].quantity = event

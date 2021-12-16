@@ -60,7 +60,6 @@
                               <v-col cols="12">
                                 <v-text-field
                                   v-model="editedItem.name"
-                                  :disabled="editedIndex !== -1"
                                   :rules="nameRules"
                                   dense
                                   label="Nombre"
@@ -70,7 +69,6 @@
                               <v-col cols="12">
                                 <v-select
                                   v-model="editedItem.category"
-                                  :disabled="editedIndex !== -1"
                                   :items="items_category"
                                   :rules="categoryRules"
                                   item-text="name"
@@ -84,7 +82,6 @@
                               <v-col cols="12">
                                 <v-select
                                   v-model="editedItem.mark"
-                                  :disabled="editedIndex !== -1"
                                   :items="items_mark"
                                   :rules="markRules"
                                   item-text="name"
@@ -97,7 +94,6 @@
                               <v-col cols="12">
                                 <v-select
                                   v-model="editedItem.measure_unit"
-                                  :disabled="editedIndex !== -1"
                                   :items="items_measure_unit"
                                   :rules="measureUnitRules"
                                   item-text="name"
@@ -110,11 +106,13 @@
                               <v-col cols="12">
                                 <v-text-field
                                   v-model="editedItem.minimum_stock"
-                                  :disabled="editedIndex !== -1"
                                   :rules="minimumStockRules"
                                   dense
                                   label="Stock Minimo"
                                   outlined
+                                  type="number"
+                                  min="0"
+                                  oninput="validity.valid||(value='0');"
                                 ></v-text-field>
                               </v-col>
                             </v-row>
@@ -146,22 +144,20 @@
                       <v-data-table
                         :headers="headers_detail"
                         :items="desserts_detail"
-                        :search="search_detail"
                         :sort-by.sync="sortBy"
                         :sort-desc.sync="sortDesc"
                       >
                         <template v-slot:item.quantity="{ item }">
                           <v-text-field
                             :key="item.id"
-                            :disabled="editedIndex !== -1"
                             :hide-details="true"
-                            :value="item.quantity > 0 ? item.quantity : 1"
                             dense
-                            min="1"
-                            oninput="validity.valid||(value='1');"
                             single-line
                             type="number"
-                            @change="setQuantityItem($event, item)"
+                            min="0"
+                            :value="item.quantity > -1 ? item.quantity:0"
+                            oninput="validity.valid||(value='0');"
+                            @change="setQuantityItem($event,item)"
                           ></v-text-field>
                         </template>
 
@@ -200,7 +196,8 @@
                     color="primary"
                     @click="save"
                   >
-                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}
+                    Guardar
+                    <!--                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}-->
                   </v-btn>
                   <v-btn
                     class="ma-1"
@@ -329,7 +326,15 @@ export default {
         sortable: false,
       },
     ],
+    headers_detail: [
+      { text: 'Codigo', align: 'start', value: 'code' },
+      { text: 'Nombre', value: 'name' },
+      {
+        text: 'Cantidad', value: 'quantity', width: '5%', sortable: false,
+      },
+    ],
     desserts: [],
+    desserts_detail: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -350,10 +355,19 @@ export default {
     },
 
     // Variable para uso de modal
-    dialog: true,
+    dialog: false,
 
     // Variable para formulario
-    editedItem: {},
+    editedItem: {
+      id: '',
+      code: '',
+      name: '',
+      category: '',
+      mark: '',
+      measure_unit: '',
+      minimum_stock: '',
+      warehouses: {},
+    },
     defaultItem: {
       id: '',
       code: '',
@@ -362,7 +376,7 @@ export default {
       mark: '',
       measure_unit: '',
       minimum_stock: '',
-      warehouses: '',
+      warehouses: {},
     },
     editedIndex: -1,
 
@@ -393,6 +407,7 @@ export default {
     this.getCategories()
     this.getMarks()
     this.getMeasureUnits()
+    this.getWarehouses()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -405,7 +420,26 @@ export default {
     edit(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
+      this.editedItem.category = this.getIdItemCategory(item)
+      this.editedItem.mark = this.getIdItemMark(item)
+      this.editedItem.measure_unit = this.getIdItemMeasureUnit(item)
+      this.desserts_detail = item.warehouses
       this.dialog = true
+    },
+    getIdItemCategory(item) {
+      const index = this.items_category.findIndex(val => val.name === item.category)
+
+      return this.items_category[index].id
+    },
+    getIdItemMark(item) {
+      const index = this.items_mark.findIndex(val => val.name === item.mark)
+
+      return this.items_mark[index].id
+    },
+    getIdItemMeasureUnit(item) {
+      const index = this.items_measure_unit.findIndex(val => val.name === item.measure_unit)
+
+      return this.items_measure_unit[index].id
     },
 
     // Metodo para guardar cambios(crear o editar)
@@ -423,6 +457,7 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
       if (validation) {
+        Object.assign(this.editedItem.warehouses, { ...this.desserts_detail })
         const response = await api.register(url, data)
         if (response.status === 201) {
           this.insertItem(response)
@@ -540,6 +575,7 @@ export default {
       this.dialog = false
       this.$nextTick(() => {
         this.editedItem = { ...this.defaultItem }
+        this.getWarehouses()
         this.editedIndex = -1
       })
     },
@@ -565,6 +601,16 @@ export default {
     async getMeasureUnits() {
       const url = `${this.$URL_SERVE}/measure-units`
       this.items_measure_unit = await api.getAll(url)
+    },
+    async getWarehouses() {
+      const url = `${this.$URL_SERVE}/warehouses`
+      this.desserts_detail = await api.getAll(url)
+    },
+
+    // Metodo para insertar detalle de cantidad a data (editItem)
+    setQuantityItem(event, item) {
+      const index = this.desserts_detail.findIndex(val => val.name === item.name)
+      this.desserts_detail[index].quantity = event
     },
   },
 }
