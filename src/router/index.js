@@ -1,17 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    redirect: 'dashboard',
+    redirect: 'login',
   },
   {
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('@/views/dashboard/Dashboard.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/typography',
@@ -44,8 +48,8 @@ const routes = [
     component: () => import('@/views/pages/account-settings/AccountSettings.vue'),
   },
   {
-    path: '/pages/login',
-    name: 'pages-login',
+    path: '/login',
+    name: 'login',
     component: () => import('@/views/pages/Login.vue'),
     meta: {
       layout: 'blank',
@@ -146,7 +150,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: 'error-404',
+    redirect: 'login',
   },
 ]
 
@@ -154,6 +158,18 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.state.auth) {
+      next()
+    } else {
+      next({ name: 'login' })
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
