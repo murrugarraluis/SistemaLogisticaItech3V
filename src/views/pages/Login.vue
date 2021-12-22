@@ -203,7 +203,6 @@ export default {
 
           await this.$store.dispatch('doLogin', user)
           this.$router.push({ name: 'dashboard' })
-          console.log(this.$store.state)
         } else {
           console.log(response.errors)
         }
