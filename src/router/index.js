@@ -72,73 +72,115 @@ const routes = [
     path: '/personal',
     name: 'personal',
     component: () => import('@/views/simple-table/demos/PersonalTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
     path: '/materiales',
     name: 'materiales',
     component: () => import('@/views/manteiners/MaterialMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/proveedores',
     name: 'proveedores',
     component: () => import('@/views/simple-table/demos/SupplierTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/compras',
     name: 'compras',
     component: () => import('@/views/simple-table/demos/PurcharseTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/almacenes',
     name: 'almacenes',
     component: () => import('@/views/manteiners/WarehouseMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
 
   {
     path: '/requerimientos',
     name: 'requerimientos',
     component: () => import('@/views/manteiners/RequestMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/ordenes-compra',
     name: 'ordenes-compra',
     component: () => import('@/views/simple-table/demos/PurcharseOrderTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/notas-ingreso',
     name: 'notas-ingreso',
     component: () => import('@/views/simple-table/demos/EntryNoteTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/notas-salida',
     name: 'notas-salida',
     component: () => import('@/views/simple-table/demos/ExitNoteTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/cotizaciones',
     name: 'cotizaciones',
     component: () => import('@/views/simple-table/demos/QuotationTable.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/configuracion',
     name: 'configuracion',
     component: () => import('@/views/simple-table/demos/DemoSimpleTableDense.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/categorias',
     name: 'categorias',
     component: () => import('@/views/manteiners/CategoryMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/marcas',
     name: 'marcas',
     component: () => import('@/views/manteiners/MarkMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/unidades-medida',
     name: 'unidades-medida',
     component: () => import('@/views/manteiners/MeasureUnitMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/error-404',
@@ -162,10 +204,11 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
+    console.log(store.state.auth)
     if (store.state.auth) {
       next()
     } else {
-      next({ name: 'login' })
+      next('login')
     }
   } else {
     next()
