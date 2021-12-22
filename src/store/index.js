@@ -5,22 +5,27 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    username: null,
     auth: null,
+    user: {
+      username: null,
+      token: '',
+    },
   },
   mutations: {
-    doLogin(state, username) {
+    doLogin(state, user) {
       state.auth = true
-      state.username = username
+      state.user.username = user.email
+      state.user.token = user.token
     },
     doLogout(state) {
       state.auth = false
-      state.username = null
+      state.user.username = null
+      state.user.token = null
     },
   },
   actions: {
-    doLogin({ commit }, username) {
-      commit('doLogin', username)
+    doLogin({ commit }, user) {
+      commit('doLogin', user)
     },
     doLogout({ commit }) {
       commit('doLogout')

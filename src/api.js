@@ -1,6 +1,10 @@
 import axios from 'axios'
 
 async function getAll(url) {
+  // const header = {
+  //   Authorization: 'Bearer ',
+  // }
+  // console.log(header)
   let items = null
   await axios.get(url).then(result => {
     const { data } = result.data
@@ -145,13 +149,14 @@ async function login(url, json) {
   await axios
     .post(url, json)
     .then(result => {
-      const { data } = result.data
+      const { token } = result.data
       const { message } = result.data
       const { status } = result
       JSON = {
-        data,
+        token,
         message,
         status,
+        info: result,
       }
     })
     .catch(error => {

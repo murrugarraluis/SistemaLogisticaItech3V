@@ -197,8 +197,13 @@ export default {
         const data = this.editedItem
         const response = await api.login(url, data)
         if (response.status === 200) {
-          await this.$store.dispatch('doLogin', this.email)
+          const user = {}
+          user.email = this.email
+          user.token = response.token
+
+          await this.$store.dispatch('doLogin', user)
           this.$router.push({ name: 'dashboard' })
+          console.log(this.$store.state)
         } else {
           console.log(response.errors)
         }
