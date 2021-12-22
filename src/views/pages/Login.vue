@@ -202,6 +202,7 @@ export default {
 
           await this.$store.dispatch('doLogin', user)
           this.$router.push({ name: 'dashboard' })
+          localStorage.setItem('token', user.token)
         } else {
           this.showErrors(response.errors)
         }

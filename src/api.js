@@ -1,35 +1,20 @@
 import axios from 'axios'
-import store from '@/store'
 
 async function getAll(url) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let items = null
   await axios
-    .get(url, config)
+    .get(url)
     .then(result => {
       const { data } = result.data
       items = [...data]
-      console.log(result)
-    })
-    .catch(error => {
-      if (error.response) {
-        console.log(error.response)
-      }
     })
 
   return items
 }
 async function register(url, json) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let JSON = {}
   await axios
-    .post(url, json, config)
+    .post(url, json)
     .then(result => {
       const { data } = result.data
       const { message } = result.data
@@ -54,13 +39,9 @@ async function register(url, json) {
   return JSON
 }
 async function update(url, json) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let JSON = {}
   await axios
-    .put(url, json, config)
+    .put(url, json)
     .then(result => {
       const { data } = result.data
       const { message } = result.data
@@ -85,13 +66,9 @@ async function update(url, json) {
   return JSON
 }
 async function destroy(url) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let JSON = {}
   await axios
-    .delete(url, config)
+    .delete(url)
     .then(result => {
       const { message } = result.data
       const { status } = result
@@ -114,13 +91,9 @@ async function destroy(url) {
   return JSON
 }
 async function getDeleted(url) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let JSON = {}
   await axios
-    .get(url, config)
+    .get(url)
     .then(result => {
       const { data } = result.data
       const { status } = result
@@ -143,13 +116,9 @@ async function getDeleted(url) {
   return JSON
 }
 async function restore(url) {
-  const { token } = store.state.user
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  }
   let JSON = {}
   await axios
-    .put(url, config)
+    .put(url)
     .then(result => {
       const { data } = result.data
       const { message } = result.data

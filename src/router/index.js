@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -81,9 +80,10 @@ const routes = [
     path: '/materiales',
     name: 'materiales',
     component: () => import('@/views/manteiners/MaterialMantainer.vue'),
-    meta: {
-      requiresAuth: true,
-    },
+
+    // meta: {
+    //   requiresAuth: true,
+    // },
   },
   {
     path: '/proveedores',
@@ -204,8 +204,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log(store.state.auth)
-    if (store.state.auth) {
+    if (localStorage.getItem('token')) {
       next()
     } else {
       next('login')
