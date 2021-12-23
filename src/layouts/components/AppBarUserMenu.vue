@@ -42,11 +42,9 @@
         </v-badge>
         <div
           class="d-inline-flex flex-column justify-center ms-3"
-          style="vertical-align:middle"
+          style="vertical-align: middle"
         >
-          <span class="text--primary font-weight-semibold mb-n1">
-            John Doe
-          </span>
+          <span class="text--primary font-weight-semibold mb-n1"> John Doe </span>
           <small class="text--disabled text-capitalize">Admin</small>
         </div>
       </div>
@@ -139,7 +137,10 @@
       <v-divider class="my-2"></v-divider>
 
       <!-- Logout -->
-      <v-list-item link>
+      <v-list-item
+        link
+        @click="logout"
+      >
         <v-list-item-icon class="me-2">
           <v-icon size="22">
             {{ icons.mdiLogoutVariant }}
@@ -165,6 +166,8 @@ import {
   mdiLogoutVariant,
 } from '@mdi/js'
 
+import api from '@/api'
+
 export default {
   setup() {
     return {
@@ -179,6 +182,19 @@ export default {
         mdiLogoutVariant,
       },
     }
+  },
+  methods: {
+    async logout() {
+      const url = `${this.$URL_SERVE}/logout`
+      const response = await api.logout(url)
+      if (response.status === 200) {
+        localStorage.removeItem('token')
+        this.$store.dispatch('doLogout')
+        this.$router.push('/login')
+      } else {
+        console.log(response.errors)
+      }
+    },
   },
 }
 </script>

@@ -3,6 +3,7 @@ import '@/styles/styles.scss'
 import Vue from 'vue'
 import VueSweetalert2 from 'vue-sweetalert2'
 import Toast from 'vue-toastification'
+import axios from 'axios'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
@@ -36,6 +37,10 @@ const optionsToast = {
   transition: 'Vue-Toastification__fade',
   maxToasts: 20,
   newestOnTop: true,
+}
+const token = localStorage.getItem('token')
+if (token) {
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`
 }
 Vue.use(Toast, optionsToast)
 Vue.use(VueSweetalert2, options)

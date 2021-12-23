@@ -414,7 +414,7 @@ export default {
   }),
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
+      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Informacion ${this.table}`
     },
     computedDateFormattedDatefns() {
       return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''

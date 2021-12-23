@@ -64,6 +64,7 @@
                                   dense
                                   label="Nombre"
                                   outlined
+                                  :disabled="editedIndex === -2"
                                 ></v-text-field>
                               </v-col>
                               <v-col cols="12">
@@ -76,6 +77,7 @@
                                   dense
                                   label="Categoria"
                                   outlined
+                                  :disabled="editedIndex === -2"
                                 >
                                 </v-select>
                               </v-col>
@@ -89,6 +91,7 @@
                                   dense
                                   label="Marca"
                                   outlined
+                                  :disabled="editedIndex === -2"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
@@ -101,6 +104,7 @@
                                   dense
                                   label="Unidad de Medida"
                                   outlined
+                                  :disabled="editedIndex === -2"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
@@ -113,6 +117,7 @@
                                   type="number"
                                   min="0"
                                   oninput="validity.valid||(value='0');"
+                                  :disabled="editedIndex === -2"
                                 ></v-text-field>
                               </v-col>
                             </v-row>
@@ -157,6 +162,7 @@
                             min="0"
                             :value="item.quantity > -1 ? item.quantity:0"
                             oninput="validity.valid||(value='0');"
+                            :disabled="editedIndex === -2"
                             @change="setQuantityItem($event,item)"
                           ></v-text-field>
                         </template>
@@ -164,11 +170,11 @@
                         <template v-slot:item.actions="{ item }">
                           <div class="pa-2">
                             <v-btn
-                              :disabled="editedIndex !== -1"
                               class="ma-1"
                               color="#C62828"
                               fab
                               x-small
+                              :disabled="editedIndex === -2"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -196,8 +202,7 @@
                     color="primary"
                     @click="save"
                   >
-                    Guardar
-                    <!--                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}-->
+                    {{ editedIndex !== -2 ? 'Guardar' : 'Imprimir' }}
                   </v-btn>
                   <v-btn
                     class="ma-1"
@@ -261,6 +266,17 @@
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
+              color="#0277BD"
+              fab
+              x-small
+              class="ma-1"
+              @click="view(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiEye }}
+              </v-icon>
+            </v-btn>
+            <v-btn
               class="ma-1"
               color="#F9A825"
               fab
@@ -300,6 +316,7 @@ import {
   mdiMagnify,
   mdiPencil,
   mdiPlusCircleOutline,
+  mdiEye,
 } from '@mdi/js'
 
 import api from '@/api'
@@ -352,6 +369,7 @@ export default {
       mdiFileDelimited,
       mdiFilePdfBox,
       mdiPlusCircleOutline,
+      mdiEye,
     },
 
     // Variable para uso de modal
@@ -393,7 +411,10 @@ export default {
   }),
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Editar ${this.table}`
+      if (this.editedIndex === -1) return `Nuevo ${this.table}`
+      if (this.editedIndex === -2) return `Información ${this.table}`
+
+      return `Editar ${this.table}`
     },
   },
   watch: {
@@ -419,6 +440,18 @@ export default {
     // Metodo para abrir modal de editar y capturar data
     edit(item) {
       this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      this.editedItem.category = this.getIdItemCategory(item)
+      this.editedItem.mark = this.getIdItemMark(item)
+      this.editedItem.measure_unit = this.getIdItemMeasureUnit(item)
+      this.desserts_detail = item.warehouses
+      this.dialog = true
+    },
+
+    // Metodo para abrir modal de editar y capturar data
+    view(item) {
+      // -2 es el valor para activar el modo view en campos y botones
+      this.editedIndex = -2
       this.editedItem = { ...item }
       this.editedItem.category = this.getIdItemCategory(item)
       this.editedItem.mark = this.getIdItemMark(item)
