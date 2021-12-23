@@ -141,6 +141,7 @@
 // eslint-disable-next-line object-curly-newline
 import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
 import { ref } from '@vue/composition-api'
+import axios from 'axios'
 import api from '@/api'
 
 export default {
@@ -201,8 +202,12 @@ export default {
           user.token = response.token
 
           await this.$store.dispatch('doLogin', user)
-          this.$router.push({ name: 'dashboard' })
           localStorage.setItem('token', user.token)
+          const token = localStorage.getItem('token')
+          if (token) {
+            axios.defaults.headers.common.Authorization = `Bearer ${token}`
+          }
+          this.$router.push({ name: 'dashboard' })
         } else {
           this.showErrors(response.errors)
         }

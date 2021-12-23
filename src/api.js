@@ -169,10 +169,32 @@ async function login(url, json) {
 
   return JSON
 }
-async function csrf() {
-  const response = axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie')
+async function logout(url) {
+  let JSON = {}
+  await axios
+    .post(url)
+    .then(result => {
+      const { token } = result.data
+      const { message } = result.data
+      const { status } = result
+      JSON = {
+        token,
+        message,
+        status,
+        info: result,
+      }
+    })
+    .catch(error => {
+      if (error.response) {
+        // const { errors } = error.response.data
+        // const { status } = error.response
+        JSON = {
+          errors: error.response,
+        }
+      }
+    })
 
-  return response
+  return JSON
 }
 export default {
   getAll,
@@ -182,5 +204,5 @@ export default {
   getDeleted,
   restore,
   login,
-  csrf,
+  logout,
 }

@@ -192,7 +192,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: 'login',
+    redirect: 'error-404',
   },
 ]
 
@@ -210,6 +210,9 @@ router.beforeEach((to, from, next) => {
       next('login')
     }
   } else {
+    if (to.name === 'login' && localStorage.getItem('token')) {
+      next('dashboard')
+    }
     next()
   }
 })
