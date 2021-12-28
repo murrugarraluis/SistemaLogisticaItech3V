@@ -103,11 +103,11 @@
       <!--        :to="{ name: 'icons' }"-->
       <!--        :icon="icons.mdiEyeOutline"-->
       <!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Cards"-->
-<!--        :to="{ name: 'cards' }"-->
-<!--        :icon="icons.mdiCreditCardOutline"-->
-<!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Cards"-->
+      <!--        :to="{ name: 'cards' }"-->
+      <!--        :icon="icons.mdiCreditCardOutline"-->
+      <!--      ></nav-menu-link>-->
       <!--      <nav-menu-link-->
       <!--        title="Tables"-->
       <!--        :to="{ name: 'simple-table' }"-->
@@ -118,26 +118,26 @@
       <!--        :to="{ name: 'form-layouts' }"-->
       <!--        :icon="icons.mdiFormSelect"-->
       <!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Usuarios"-->
-<!--        :to="{ name: 'usuarios' }"-->
-<!--        :icon="icons.mdiAccountGroup"-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Personal"-->
-<!--        :to="{ name: 'personal' }"-->
-<!--        :icon="icons.mdiAccount"-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Proveedores"-->
-<!--        :to="{ name: 'proveedores' }"-->
-<!--        :icon="icons.mdiAccountTie"-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Compras"-->
-<!--        :to="{ name: 'compras' }"-->
-<!--        :icon="icons.mdiCartVariant"-->
-<!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Usuarios"-->
+      <!--        :to="{ name: 'usuarios' }"-->
+      <!--        :icon="icons.mdiAccountGroup"-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Personal"-->
+      <!--        :to="{ name: 'personal' }"-->
+      <!--        :icon="icons.mdiAccount"-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Proveedores"-->
+      <!--        :to="{ name: 'proveedores' }"-->
+      <!--        :icon="icons.mdiAccountTie"-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Compras"-->
+      <!--        :to="{ name: 'compras' }"-->
+      <!--        :icon="icons.mdiCartVariant"-->
+      <!--      ></nav-menu-link>-->
       <nav-menu-link
         title="Almacen"
         :to="{ name: 'almacenes' }"
@@ -148,31 +148,31 @@
         :to="{ name: 'requerimientos' }"
         :icon="icons.mdiNotebook"
       ></nav-menu-link>
-<!--      <nav-menu-link-->
-<!--        title="Ordenes de Compra"-->
-<!--        :to="{ name: 'ordenes-compra' }"-->
-<!--        :icon="icons.mdiNotebook"-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Nota de Ingreso"-->
-<!--        :to="{ name: 'notas-ingreso' }"-->
-<!--        :icon="icons.mdiClipboardTextOutline "-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Nota de Salida"-->
-<!--        :to="{ name: 'notas-salida' }"-->
-<!--        :icon="icons.mdiClipboardTextOutline "-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Cotizaciones"-->
-<!--        :to="{ name: 'cotizaciones' }"-->
-<!--        :icon="icons.mdiCurrencyUsd"-->
-<!--      ></nav-menu-link>-->
-<!--      <nav-menu-link-->
-<!--        title="Configuracion"-->
-<!--        :to="{ name: 'configuracion' }"-->
-<!--        :icon="icons.mdiCog"-->
-<!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Ordenes de Compra"-->
+      <!--        :to="{ name: 'ordenes-compra' }"-->
+      <!--        :icon="icons.mdiNotebook"-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Nota de Ingreso"-->
+      <!--        :to="{ name: 'notas-ingreso' }"-->
+      <!--        :icon="icons.mdiClipboardTextOutline "-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Nota de Salida"-->
+      <!--        :to="{ name: 'notas-salida' }"-->
+      <!--        :icon="icons.mdiClipboardTextOutline "-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Cotizaciones"-->
+      <!--        :to="{ name: 'cotizaciones' }"-->
+      <!--        :icon="icons.mdiCurrencyUsd"-->
+      <!--      ></nav-menu-link>-->
+      <!--      <nav-menu-link-->
+      <!--        title="Configuracion"-->
+      <!--        :to="{ name: 'configuracion' }"-->
+      <!--        :icon="icons.mdiCog"-->
+      <!--      ></nav-menu-link>-->
     </v-list>
   </v-navigation-drawer>
 </template>
