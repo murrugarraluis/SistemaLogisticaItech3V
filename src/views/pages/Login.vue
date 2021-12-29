@@ -207,6 +207,14 @@ export default {
           if (token) {
             axios.defaults.headers.common.Authorization = `Bearer ${token}`
           }
+
+          // Asuminedo que un usuario solo puede tener 1 rol
+          const listPermissions = []
+          const { permissions } = response.info.data.data[0].roles[0]
+          permissions.forEach(permission => {
+            listPermissions.push(permission.name)
+          })
+          localStorage.setItem('permissions', listPermissions)
           this.$router.push({ name: 'dashboard' })
         } else {
           this.showErrors(response.errors)

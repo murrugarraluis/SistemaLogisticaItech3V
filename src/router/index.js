@@ -81,9 +81,9 @@ const routes = [
     name: 'materiales',
     component: () => import('@/views/manteiners/MaterialMantainer.vue'),
 
-    // meta: {
-    //   requiresAuth: true,
-    // },
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/proveedores',
@@ -190,6 +190,15 @@ const routes = [
       layout: 'blank',
     },
   },
+
+  {
+    path: '/page-not-authorized',
+    name: 'page-not-authorized',
+    component: () => import('@/views/PageNotAuthorized.vue'),
+    meta: {
+      layout: 'blank',
+    },
+  },
   {
     path: '*',
     redirect: 'error-404',
@@ -201,20 +210,40 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
 })
+function hasAccess(name) {
+  const permissions = localStorage.getItem('permissions')
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (localStorage.getItem('token')) {
-      next()
-    } else {
-      next('login')
-    }
-  } else {
-    if (to.name === 'login' && localStorage.getItem('token')) {
-      next('dashboard')
-    }
-    next()
+  switch (name) {
+    case 'dashboard':
+      return true
+
+    case 'users':
+      return permissions.includes('View All Users')
+
+    case 'permissions':
+      return permissions.includes('View All Permissions')
+
+    case 'roles':
+      return permissions.includes('View All Roles')
+
+    default:
+      return false
   }
-})
+}
+router.beforeEach((to, from, next) => {
+  // A Logged-in user can't go to login page again
+  if (to.name === 'login' && localStorage.getItem('token')) {
+    next('dashboard')
 
+    // the route requires authentication
+  } else if (to.meta.requiresAuth) {
+    if (!localStorage.getItem('token')) {
+      // user not logged in, send them to login page
+      next('login')
+    } else if (!hasAccess(to.name)) {
+      next('page-not-authorized')
+    }
+  }
+  next()
+})
 export default router
