@@ -189,6 +189,7 @@ export default {
       const response = await api.logout(url)
       if (response.status === 200) {
         localStorage.removeItem('token')
+        localStorage.removeItem('permissions')
         this.$store.dispatch('doLogout')
         this.$router.push('/login')
       } else {
