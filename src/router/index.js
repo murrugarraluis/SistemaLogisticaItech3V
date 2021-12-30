@@ -217,14 +217,23 @@ function hasAccess(name) {
     case 'dashboard':
       return true
 
-    case 'users':
-      return permissions.includes('View All Users')
+    case 'materiales':
+      return permissions.includes('view materials')
 
-    case 'permissions':
-      return permissions.includes('View All Permissions')
+    case 'categorias':
+      return permissions.includes('view categories')
 
-    case 'roles':
-      return permissions.includes('View All Roles')
+    case 'marcas':
+      return permissions.includes('view marks')
+
+    case 'unidades-medida':
+      return permissions.includes('view measure units')
+
+    case 'almacenes':
+      return permissions.includes('view warehouses')
+
+    case 'requerimientos':
+      return permissions.includes('view requests')
 
     default:
       return false
