@@ -68,6 +68,7 @@
       <!--        ></nav-menu-link>-->
       <!--      </nav-menu-group> -->
       <nav-menu-group
+        v-if="canViewMaterials"
         title="Materiales"
         :icon="icons.mdiPackageVariantClosed"
       >
@@ -129,16 +130,19 @@
         :icon="icons.mdiAccount"
       ></nav-menu-link> -->
       <nav-menu-link
+        v-if="canViewWarehouses"
         title="Almacen"
         :to="{ name: 'almacenes' }"
         :icon="icons.mdiStore"
       ></nav-menu-link>
       <nav-menu-link
+        v-if="canViewSuppliers"
         title="Proveedores"
         :to="{ name: 'proveedores' }"
         :icon="icons.mdiAccountTie"
       ></nav-menu-link>
       <nav-menu-link
+        v-if="canViewRequests"
         title="Requerimientos"
         :to="{ name: 'requerimientos' }"
         :icon="icons.mdiNotebook"
@@ -150,11 +154,13 @@
         :icon="icons.mdiCurrencyUsd"
       ></nav-menu-link>
       <nav-menu-link
+        v-if="canViewOrdersPurchase"
         title="Ordenes de Compra"
         :to="{ name: 'ordenes-compra' }"
         :icon="icons.mdiNotebook"
       ></nav-menu-link>
       <nav-menu-link
+        v-if="canViewPurchases"
         title="Compras"
         :to="{ name: 'compras' }"
         :icon="icons.mdiCartVariant"
@@ -252,8 +258,26 @@ export default {
     }
   },
   computed: {
+    canViewMaterials() {
+      return this.permissions.includes('view materials')
+    },
+    canViewWarehouses() {
+      return this.permissions.includes('view warehouses')
+    },
+    canViewSuppliers() {
+      return this.permissions.includes('view suppliers')
+    },
+    canViewRequests() {
+      return this.permissions.includes('view requests')
+    },
     canViewQuotes() {
       return this.permissions.includes('view quotes')
+    },
+    canViewOrdersPurchase() {
+      return this.permissions.includes('view orders purchase')
+    },
+    canViewPurchases() {
+      return this.permissions.includes('view purchases')
     },
     canViewEntryNote() {
       return this.permissions.includes('view entry note')
