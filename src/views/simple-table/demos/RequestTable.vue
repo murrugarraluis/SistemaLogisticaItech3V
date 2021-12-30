@@ -41,13 +41,11 @@
                     md="4"
                   >
                     <v-card class="pa-4">
-                      <v-row
-                        class-name="match-height"
-                      >
+                      <v-row class-name="match-height">
                         <v-col cols="12">
                           <!-- Formulario-->
                           <div class="d-flex justify-center justify-md-start">
-                            <h3 class="py-4 ">
+                            <h3 class="py-4">
                               Datos {{ table }}
                             </h3>
                           </div>
@@ -59,9 +57,7 @@
                           >
                             <!--    Columnas de Inputs-->
                             <v-row>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-menu
                                   v-model="menu2"
                                   :close-on-content-click="false"
@@ -92,9 +88,7 @@
                                   ></v-date-picker>
                                 </v-menu>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-text-field
                                   v-model="editedItem.type_request"
                                   label="Tipo Requerimiento"
@@ -104,9 +98,7 @@
                                   :disabled="editedIndex !== -1"
                                 ></v-text-field>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-select
                                   v-model="editedItem.importance"
                                   :items="items_importance"
@@ -117,9 +109,7 @@
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-textarea
                                   v-model="editedItem.comment"
                                   label="Comentario"
@@ -142,7 +132,9 @@
                     <v-card class="pa-4">
                       <!--      Modal-->
                       <template>
-                        <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                        <div
+                          class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between"
+                        >
                           <h3 class="py-4">
                             Detalle {{ table }}
                           </h3>
@@ -178,16 +170,14 @@
                             single-line
                             type="number"
                             min="1"
-                            :value="item.quantity > 0 ? item.quantity:1"
+                            :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
-                            @change="setQuantityItem($event,item)"
+                            @change="setQuantityItem($event, item)"
                           ></v-text-field>
                         </template>
 
-                        <template
-                          v-slot:item.actions="{ item }"
-                        >
+                        <template v-slot:item.actions="{ item }">
                           <div class="pa-2">
                             <v-btn
                               color="#C62828"
@@ -222,7 +212,7 @@
                     class="ma-1"
                     @click="save"
                   >
-                    {{ editedIndex === -1 ? 'Guardar':'Imprimir' }}
+                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}
                   </v-btn>
                   <v-btn
                     type="reset"
@@ -284,15 +274,11 @@
         :sort-desc.sync="sortDesc"
       >
         <template v-slot:item.importance="{ item }">
-          <v-chip
-            :color="getColor(item.importance)"
-          >
+          <v-chip :color="getColor(item.importance)">
             {{ item.importance }}
           </v-chip>
         </template>
-        <template
-          v-slot:item.actions="{ item }"
-        >
+        <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
               color="#0277BD"
@@ -327,7 +313,14 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
+  mdiDelete,
+  mdiFileDelimited,
+  mdiFileExcel,
+  mdiFilePdfBox,
+  mdiMagnify,
+  mdiPencil,
+  mdiPlusCircleOutline,
+  mdiEye,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
 import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
@@ -349,7 +342,10 @@ export default {
       { text: 'Tipo Requerimiento', value: 'type_request' },
       { text: 'Importancia', align: 'center', value: 'importance' },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
     headers_detail: [
@@ -357,10 +353,16 @@ export default {
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
       {
-        text: 'Cantidad', value: 'quantity', width: '5%', sortable: false,
+        text: 'Cantidad',
+        value: 'quantity',
+        width: '5%',
+        sortable: false,
       },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
     desserts: [],
@@ -377,7 +379,14 @@ export default {
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline, mdiEye,
+      mdiPencil,
+      mdiDelete,
+      mdiMagnify,
+      mdiFileExcel,
+      mdiFileDelimited,
+      mdiFilePdfBox,
+      mdiPlusCircleOutline,
+      mdiEye,
     },
 
     // Variable para uso de modal
@@ -407,10 +416,7 @@ export default {
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu2: false,
 
-    items_importance: [
-      'Baja', 'Media', 'Alta',
-    ],
-
+    items_importance: ['Baja', 'Media', 'Alta'],
   }),
   computed: {
     formTitle() {
@@ -433,7 +439,13 @@ export default {
   methods: {
     // Metodo para cargar recursos (API)
     async initialize() {
-      const url = `${this.$URL_SERVE}/${this.uri}`
+      const roles = localStorage.getItem('roles')
+      let url = `${this.$URL_SERVE}/${this.uri}`
+
+      if (!roles.includes('logistica')) {
+        const userID = localStorage.getItem('user_id')
+        url = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+      }
       this.desserts = await api.getAll(url)
     },
 
@@ -493,7 +505,12 @@ export default {
     destroy(item) {
       const { id } = { ...item }
       this.$swal({
-        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+        title: '¿Está Seguro?',
+        text: 'Una vez eliminado ya no se podrá recuperar!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Eliminar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
@@ -512,13 +529,18 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
       const response = await api.getDeleted(url)
 
-      return (response.status === 200)
+      return response.status === 200
     },
 
     // Metodo para restaurar un recurso eliminado
     restore(name) {
       this.$swal({
-        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+        title: '¿Desea Restaurar?',
+        text: 'Este recurso ha sido eliminado anteriormente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Restaurar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`

@@ -210,10 +210,15 @@ export default {
 
           // Asuminedo que un usuario solo puede tener 1 rol
           const listPermissions = []
+          const userId = response.info.data.data[0].id
+          const roles = response.info.data.data[0].roles[0].name
           const { permissions } = response.info.data.data[0].roles[0]
           permissions.forEach(permission => {
             listPermissions.push(permission.name)
           })
+
+          localStorage.setItem('user_id', userId)
+          localStorage.setItem('roles', roles)
           localStorage.setItem('permissions', listPermissions)
           this.$router.push({ name: 'dashboard' })
         } else {

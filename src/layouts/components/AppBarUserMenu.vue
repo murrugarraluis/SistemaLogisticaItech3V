@@ -188,7 +188,9 @@ export default {
       const url = `${this.$URL_SERVE}/logout`
       const response = await api.logout(url)
       if (response.status === 200) {
+        localStorage.removeItem('user_id')
         localStorage.removeItem('token')
+        localStorage.removeItem('roles')
         localStorage.removeItem('permissions')
         this.$store.dispatch('doLogout')
         this.$router.push('/login')
