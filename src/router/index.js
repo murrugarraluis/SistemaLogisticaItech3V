@@ -232,8 +232,19 @@ function hasAccess(name) {
     case 'almacenes':
       return permissions.includes('view warehouses')
 
+    case 'proveedores':
+      return permissions.includes('view suppliers')
+
     case 'requerimientos':
       return permissions.includes('view requests')
+
+    case 'cotizaciones':
+      return permissions.includes('view quotes')
+
+    case 'ordenes-compra':
+      return permissions.includes('view orders purchase')
+    case 'compras':
+      return permissions.includes('view purchases')
 
     default:
       return false
