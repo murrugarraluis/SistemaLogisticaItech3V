@@ -93,7 +93,7 @@
           :icon="icons.mdiCounter"
         ></nav-menu-link>
       </nav-menu-group>
-      <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title>
+      <!-- <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title> -->
       <!-- <nav-menu-link
         title="Typography"
         :to="{ name: 'typography' }"
