@@ -471,6 +471,7 @@ export default {
       const data = this.editedItem
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
+      data.user_id = localStorage.getItem('user_id')
       if (validation) {
         // no esta vacio
         if (Object.keys(this.desserts_detail).length !== 0) {
