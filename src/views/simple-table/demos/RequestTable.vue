@@ -274,12 +274,27 @@
         :sort-desc.sync="sortDesc"
       >
         <template v-slot:item.importance="{ item }">
-          <v-chip :color="getColor(item.importance)">
-            {{ item.importance }}
+          <span :class="getColorImportance(item.importance)"> {{ item.importance }}</span>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip :color="getColorStatus(item.status)">
+            {{ item.status }}
           </v-chip>
         </template>
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
+            <v-btn
+              v-if="canRoleLogistics"
+              color="#8E24AA"
+              fab
+              x-small
+              class="ma-1"
+              @click="edit(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiSend }}
+              </v-icon>
+            </v-btn>
             <v-btn
               color="#0277BD"
               fab
@@ -321,6 +336,7 @@ import {
   mdiPencil,
   mdiPlusCircleOutline,
   mdiEye,
+  mdiSend,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
 import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
@@ -341,6 +357,7 @@ export default {
       { text: 'Fecha Requerida', value: 'date_required' },
       { text: 'Tipo Requerimiento', value: 'type_request' },
       { text: 'Importancia', align: 'center', value: 'importance' },
+      { text: 'Estado', align: 'center', value: 'status' },
       {
         text: 'Acciones',
         align: 'end',
@@ -387,6 +404,7 @@ export default {
       mdiFilePdfBox,
       mdiPlusCircleOutline,
       mdiEye,
+      mdiSend,
     },
 
     // Variable para uso de modal
@@ -417,6 +435,8 @@ export default {
     menu2: false,
 
     items_importance: ['Baja', 'Media', 'Alta'],
+
+    roles: localStorage.getItem('roles'),
   }),
   computed: {
     formTitle() {
@@ -424,6 +444,9 @@ export default {
     },
     computedDateFormattedDatefns() {
       return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
+    },
+    canRoleLogistics() {
+      return this.roles.includes('logistica')
     },
   },
   watch: {
@@ -615,9 +638,16 @@ export default {
     },
 
     // Metodo para Obternet color de IMportancia
-    getColor(importance) {
-      if (importance.toLowerCase() === 'alta') return '#C62828'
-      if (importance.toLowerCase() === 'media') return '#FFAB40'
+    getColorImportance(importance) {
+      if (importance.toLowerCase() === 'alta') return 'color-importance--red'
+      if (importance.toLowerCase() === 'media') return 'color-importance--yellow'
+
+      return 'color-importance--green'
+    },
+
+    // Metodo para Obternet color de IMportancia
+    getColorStatus(status) {
+      if (status.toLowerCase() === 'pendiente') return '#FFC400'
 
       return '#00897B'
     },
@@ -652,3 +682,17 @@ export default {
   },
 }
 </script>
+<style scoped>
+.color-importance--red {
+  color: #b71c1c;
+  font-weight: 600;
+}
+.color-importance--yellow {
+  color: #ff9100;
+  font-weight: 600;
+}
+.color-importance--green {
+  color: #00897b;
+  font-weight: 600;
+}
+</style>
