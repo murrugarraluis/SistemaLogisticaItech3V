@@ -289,7 +289,7 @@
               fab
               x-small
               class="ma-1"
-              @click="checkRequest(item)"
+              @click="evaluateRequest(item)"
             >
               <v-icon color="white">
                 {{ icons.mdiBookCheckOutline }}
@@ -603,6 +603,20 @@ export default {
 
       if (response.status === 200) {
         this.updateItem(response)
+      } else {
+        this.showErrors(response.errors)
+      }
+    },
+
+    // Metodo para Evaluar Requerimiento
+    async evaluateRequest(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      const data = this.editedItem
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/evaluate`
+      const response = await api.get(url)
+      if (response.status === 200) {
+        this.showMessage(response.message)
       } else {
         this.showErrors(response.errors)
       }

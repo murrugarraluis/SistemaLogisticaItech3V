@@ -11,6 +11,33 @@ async function getAll(url) {
 
   return items
 }
+async function get(url) {
+  let JSON = {}
+  await axios
+    .get(url)
+    .then(result => {
+      const { data } = result.data
+      const { message } = result.data
+      const { status } = result
+      JSON = {
+        data,
+        message,
+        status,
+      }
+    })
+    .catch(error => {
+      if (error.response) {
+        const { errors } = error.response.data
+        const { status } = error.response
+        JSON = {
+          errors,
+          status,
+        }
+      }
+    })
+
+  return JSON
+}
 async function register(url, json) {
   let JSON = {}
   await axios
@@ -225,6 +252,7 @@ async function logout(url) {
 }
 export default {
   getAll,
+  get,
   register,
   update,
   updatePatch,
