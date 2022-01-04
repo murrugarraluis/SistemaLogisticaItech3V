@@ -289,7 +289,7 @@
               fab
               x-small
               class="ma-1"
-              @click="edit(item)"
+              @click="sendToWarehouse(item)"
             >
               <v-icon color="white">
                 {{ icons.mdiSend }}
@@ -412,12 +412,14 @@ export default {
 
     // Variable para formulario
     editedItem: {
+      id: '',
       date_required: '',
       type_request: '',
       importance: '',
       materials: {},
     },
     defaultItem: {
+      id: '',
       date_required: '',
       type_request: '',
       importance: '',
@@ -511,20 +513,6 @@ export default {
       }
     },
 
-    // Metodo oara editar recurso (API)
-    async update() {
-      const data = this.editedItem
-      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
-      const response = await api.update(url, data)
-      if (response.status === 200) {
-        this.updateItem(response)
-      } else if (await this.isDeleted(data.name)) {
-        this.restore(data.name)
-      } else {
-        this.showErrors(response.errors)
-      }
-    },
-
     // Metodo para eliminar un recurso (API)
     destroy(item) {
       const { id } = { ...item }
@@ -578,6 +566,27 @@ export default {
       })
     },
 
+    // Metodo para Enviar Requerimiento a almacen
+    async sendToWarehouse(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      const data = this.editedItem
+
+      const json = {
+        status: 'Pendiente',
+        status_message: 'Enviado a Almacen',
+      }
+
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/change-status`
+      const response = await api.updatePatch(url, json)
+
+      if (response.status === 200) {
+        this.updateItem(response)
+      } else {
+        this.showErrors(response.errors)
+      }
+    },
+
     // Metodo para insertar Item
     insertItem(response) {
       this.desserts.push(response.data)
@@ -613,7 +622,7 @@ export default {
 
     // Metodo Para restablecer valores por default
     close() {
-      this.reset()
+      // this.reset()
       this.dialog = false
       this.$nextTick(() => {
         this.desserts_detail = []
