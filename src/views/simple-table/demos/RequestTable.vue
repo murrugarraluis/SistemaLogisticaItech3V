@@ -284,6 +284,18 @@
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
+              v-if="canRoleWarehouse"
+              color="#8E24AA"
+              fab
+              x-small
+              class="ma-1"
+              @click="checkRequest(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiBookCheckOutline }}
+              </v-icon>
+            </v-btn>
+            <v-btn
               v-if="canRoleLogistics"
               color="#8E24AA"
               fab
@@ -337,6 +349,7 @@ import {
   mdiPlusCircleOutline,
   mdiEye,
   mdiSend,
+  mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
 import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
@@ -405,6 +418,7 @@ export default {
       mdiPlusCircleOutline,
       mdiEye,
       mdiSend,
+      mdiBookCheckOutline,
     },
 
     // Variable para uso de modal
@@ -448,7 +462,10 @@ export default {
       return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
     },
     canRoleLogistics() {
-      return this.roles.includes('logistica')
+      return this.roles.includes('logistics')
+    },
+    canRoleWarehouse() {
+      return this.roles.includes('warehouse')
     },
   },
   watch: {
@@ -465,11 +482,15 @@ export default {
     // Metodo para cargar recursos (API)
     async initialize() {
       const roles = localStorage.getItem('roles')
-      let url = `${this.$URL_SERVE}/${this.uri}`
+      const userID = localStorage.getItem('user_id')
+      let url = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
 
-      if (!roles.includes('logistica')) {
-        const userID = localStorage.getItem('user_id')
-        url = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+      if (roles.includes('logistics')) {
+        url = `${this.$URL_SERVE}/${this.uri}`
+      }
+      if (roles.includes('warehouse')) {
+        // Logica para obotener los requerimientos con estado enviado a almacen
+        url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
       }
       this.desserts = await api.getAll(url)
     },
