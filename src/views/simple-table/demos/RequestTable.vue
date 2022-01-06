@@ -229,6 +229,15 @@
         </div>
       </template>
       <!--      Encabezado de Tabla-->
+      <div class="d-flex flex-column justify-center align-center align-sm-start px-5">
+        <v-select
+          v-model="select_status"
+          :items="items_status_request"
+          label="Estado"
+          style="max-width: 170px"
+          hide-details
+        ></v-select>
+      </div>
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
           v-model="search"
@@ -399,6 +408,8 @@ export default {
 
     desserts_detail: [],
 
+    items_status_request: ['Pendiente', 'Confirmado'],
+
     // Variables para ordenamiento de tabla
     sortBy: 'code',
     sortDesc: true,
@@ -406,6 +417,7 @@ export default {
     // Variables de busqueda o filtrado
     search: '',
     search_detail: '',
+    select_status: 'Pendiente',
 
     // Iconos
     icons: {
@@ -473,6 +485,10 @@ export default {
       // eslint-disable-next-line no-unused-expressions
       val || this.close()
     },
+
+    select_status() {
+      this.initialize()
+    },
   },
   created() {
     this.initialize()
@@ -492,7 +508,8 @@ export default {
         // Logica para obotener los requerimientos con estado enviado a almacen
         url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
       }
-      this.desserts = await api.getAll(url)
+      const data = await api.getAll(url)
+      this.desserts = data.filter(item => item.status === this.select_status)
     },
 
     // Metodo para abrir modal de editar y capturar data
