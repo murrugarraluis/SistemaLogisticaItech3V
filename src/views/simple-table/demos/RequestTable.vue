@@ -290,7 +290,10 @@
             </v-icon>
           </v-btn>
 
-          <v-btn elevation="0">
+          <v-btn
+            elevation="0"
+            @click="generatePDF()"
+          >
             <span class="hidden-sm-and-down">PDF</span>
             <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
               {{ icons.mdiFilePdfBox }}
@@ -388,6 +391,7 @@ import {
 import { format, parseISO } from 'date-fns'
 import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
 import api from '@/api'
+import generatePDF from '@/reports/jsPDF/jsPDF'
 
 export default {
   components: {
@@ -807,6 +811,20 @@ export default {
     setQuantityItem(event, item) {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail[index].quantity = event
+    },
+
+    generatePDF() {
+      // Default export is a4 paper, portrait, using millimeters for units
+      const name = `${this.table}s`
+      const columns = [
+        { header: 'Codigo', dataKey: 'code' },
+        { header: 'Fecha Requerida', dataKey: 'date_required' },
+        { header: 'Tipo Requerimiento', dataKey: 'type_request' },
+        { header: 'Importancia', dataKey: 'importance' },
+        { header: 'Estado', dataKey: 'status' },
+      ]
+      const data = this.desserts
+      generatePDF.report(name, columns, data)
     },
   },
 }

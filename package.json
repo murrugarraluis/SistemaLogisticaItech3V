@@ -33,6 +33,8 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "date-fns": "^2.27.0",
+    "jspdf": "^2.5.0",
+    "jspdf-autotable": "^3.5.23",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.6.2",
     "vue-router": "^3.2.0",
