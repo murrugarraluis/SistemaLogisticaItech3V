@@ -118,6 +118,30 @@
                                   :disabled="editedIndex !== -1"
                                 ></v-textarea>
                               </v-col>
+                              <v-col
+                                v-if="editedIndex !== -1"
+                                cols="12"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.status"
+                                  label="Estado"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col
+                                v-if="editedIndex !== -1"
+                                cols="12"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.status_message"
+                                  label="Estado"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
+                              </v-col>
                             </v-row>
                           </v-form>
                         </v-col>
@@ -147,7 +171,7 @@
                       <!--      Encabezado de Tabla-->
                       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
                         <v-text-field
-                          v-model="search"
+                          v-model="search_detail"
                           :append-icon="icons.mdiMagnify"
                           label="Buscar"
                           single-line
@@ -328,6 +352,7 @@
               </v-icon>
             </v-btn>
             <v-btn
+              v-if="item.status === 'Pendiente'"
               color="#C62828"
               fab
               x-small
