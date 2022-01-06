@@ -616,7 +616,7 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/evaluate`
       const response = await api.get(url)
       if (response.status === 200) {
-        this.showMessage(response.message)
+        this.showConfirmation(response.message, response.data)
       } else {
         this.showErrors(response.errors)
       }
@@ -655,9 +655,52 @@ export default {
       this.$toast.error(errosList)
     },
 
+    showConfirmation(message, data) {
+      if (message === 'Requerimiento Satisfecho') {
+        // Mostrar Confirmacion a nota de salida
+        this.confirmationNewExitNote(data)
+      } else {
+        // Mostrar Confirmacion a nota de salida a Nuevo Requerimiento
+        this.confirmationNewRequest(data)
+      }
+    },
+    confirmationNewExitNote() {
+      this.$swal({
+        title: '¿Desea Crear una Nueva Nota de Salida?',
+        text: 'Requerimiento Satisfecho',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Crear!',
+        cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          // Redirigiri a nueva nota de salida
+        }
+      })
+    },
+    confirmationNewRequest(data) {
+      this.$swal({
+        title: '¿Desea Crear una Nuevo Requerimiento de Compra?',
+        text: 'Requerimiento Insatisfecho',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Crear!',
+        cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          // Redirigiri a nuevo Requerimiento
+          this.desserts_detail = []
+          this.editedItem = { ...this.defaultItem }
+          this.editedIndex = -1
+          this.desserts_detail = data
+          this.dialog = true
+        }
+      })
+    },
+
     // Metodo Para restablecer valores por default
     close() {
-      // this.reset()
+      this.reset()
       this.dialog = false
       this.$nextTick(() => {
         this.desserts_detail = []
