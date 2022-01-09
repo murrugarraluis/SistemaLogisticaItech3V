@@ -261,6 +261,14 @@
           style="max-width: 170px"
           hide-details
         ></v-select>
+        <v-switch
+          v-if="canRoleLogistics || canRoleWarehouse"
+          v-model="switch_my_request"
+          label="Mis Requerimientos"
+          color="primary"
+          value="Mis Requerimientos"
+          hide-details
+        ></v-switch>
       </div>
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
@@ -320,7 +328,7 @@
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
-              v-if="canRoleWarehouse"
+              v-if="canRoleWarehouse && !switch_my_request"
               color="#8E24AA"
               fab
               x-small
@@ -433,6 +441,8 @@ export default {
         sortable: false,
       },
     ],
+    desserts_global: [],
+    desserts_global_my_data: [],
     desserts: [],
 
     desserts_detail: [],
@@ -447,6 +457,8 @@ export default {
     search: '',
     search_detail: '',
     select_status: 'Pendiente',
+
+    switch_my_request: false,
 
     // Iconos
     icons: {
@@ -515,8 +527,19 @@ export default {
       val || this.close()
     },
 
-    select_status() {
-      this.initialize()
+    select_status(val) {
+      if (this.switch_my_request) {
+        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else {
+        this.desserts = this.desserts_global.filter(item => item.status === val)
+      }
+    },
+    switch_my_request(val) {
+      if (val) {
+        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else {
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
+      }
     },
   },
   created() {
@@ -535,10 +558,14 @@ export default {
       }
       if (roles.includes('warehouse')) {
         // Logica para obotener los requerimientos con estado enviado a almacen
+        const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+        const myData = await api.getAll(urlMyData)
+        this.desserts_global_my_data = myData
         url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
       }
       const data = await api.getAll(url)
-      this.desserts = data.filter(item => item.status === this.select_status)
+      this.desserts_global = data
+      this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
     },
 
     // Metodo para abrir modal de editar y capturar data
