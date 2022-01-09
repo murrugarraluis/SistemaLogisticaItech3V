@@ -269,6 +269,14 @@
           value="Mis Requerimientos"
           hide-details
         ></v-switch>
+        <v-switch
+          v-if="!switch_my_request && canRoleLogistics"
+          v-model="switch_purchase"
+          label="Para Compra"
+          color="primary"
+          value="Para Compra"
+          hide-details
+        ></v-switch>
       </div>
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
@@ -340,7 +348,7 @@
               </v-icon>
             </v-btn>
             <v-btn
-              v-if="canRoleLogistics && select_status === 'Pendiente'"
+              v-if="canRoleLogistics && select_status === 'Pendiente' && !switch_purchase"
               color="#8E24AA"
               fab
               x-small
@@ -459,6 +467,7 @@ export default {
     select_status: 'Pendiente',
 
     switch_my_request: false,
+    switch_purchase: false,
 
     // Iconos
     icons: {
@@ -532,7 +541,9 @@ export default {
         this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
       } else if (this.canRoleLogistics) {
         this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
         )
       } else {
         this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
@@ -543,10 +554,25 @@ export default {
         this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
       } else if (this.canRoleLogistics) {
         this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
         )
       } else {
         this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
+      }
+    },
+    switch_purchase(val) {
+      if (val) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status && item.type_request === 'Para Compra',
+        )
+      } else {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
+        )
       }
     },
   },
@@ -574,7 +600,9 @@ export default {
         const data = await api.getAll(url)
         this.desserts_global = data
         this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
         )
       }
       if (roles.includes('warehouse')) {
