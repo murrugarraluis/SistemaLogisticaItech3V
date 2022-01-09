@@ -328,7 +328,7 @@
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
-              v-if="canRoleWarehouse && !switch_my_request"
+              v-if="canRoleWarehouse && !switch_my_request && select_status === 'Pendiente'"
               color="#8E24AA"
               fab
               x-small
@@ -340,7 +340,7 @@
               </v-icon>
             </v-btn>
             <v-btn
-              v-if="canRoleLogistics"
+              v-if="canRoleLogistics && select_status === 'Pendiente'"
               color="#8E24AA"
               fab
               x-small
@@ -527,16 +527,24 @@ export default {
       val || this.close()
     },
 
-    select_status(val) {
-      if (this.switch_my_request) {
+    select_status() {
+      if (this.switch_my_request || (!this.canRoleWarehouse && !this.canRoleLogistics)) {
         this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else if (this.canRoleLogistics) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+        )
       } else {
-        this.desserts = this.desserts_global.filter(item => item.status === val)
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
       }
     },
     switch_my_request(val) {
       if (val) {
         this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else if (this.canRoleLogistics) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+        )
       } else {
         this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
       }
@@ -553,19 +561,29 @@ export default {
       const userID = localStorage.getItem('user_id')
       let url = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
 
+      const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+      const myData = await api.getAll(urlMyData)
+      this.desserts_global_my_data = myData
+      this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+
       if (roles.includes('logistics')) {
+        // const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+        // const myData = await api.getAll(urlMyData)
+        // this.desserts_global_my_data = myData
         url = `${this.$URL_SERVE}/${this.uri}`
+        const data = await api.getAll(url)
+        this.desserts_global = data
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status && item.type_request !== 'Para Logistica',
+        )
       }
       if (roles.includes('warehouse')) {
         // Logica para obotener los requerimientos con estado enviado a almacen
-        const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
-        const myData = await api.getAll(urlMyData)
-        this.desserts_global_my_data = myData
         url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
+        const data = await api.getAll(url)
+        this.desserts_global = data
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
       }
-      const data = await api.getAll(url)
-      this.desserts_global = data
-      this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
     },
 
     // Metodo para abrir modal de editar y capturar data
@@ -697,7 +715,14 @@ export default {
 
     // Metodo para insertar Item
     insertItem(response) {
-      this.desserts.push(response.data)
+      if (this.canRoleWarehouse || this.canRoleLogistics) {
+        this.desserts_global_my_data.push(response.data)
+        if (this.switch_my_request) {
+          this.desserts.push(response.data)
+        }
+      } else {
+        this.desserts.push(response.data)
+      }
       this.close()
       this.showMessage(response.message)
     },
