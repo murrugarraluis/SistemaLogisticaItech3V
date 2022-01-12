@@ -137,7 +137,7 @@ const routes = [
   {
     path: '/notas-salida',
     name: 'notas-salida',
-    component: () => import('@/views/simple-table/demos/ExitNoteTable.vue'),
+    component: () => import('@/views/manteiners/ExitNoteMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -243,8 +243,15 @@ function hasAccess(name) {
 
     case 'ordenes-compra':
       return permissions.includes('view orders purchase')
+
     case 'compras':
       return permissions.includes('view purchases')
+
+    case 'notas-ingreso':
+      return permissions.includes('view entry notes')
+
+    case 'notas-salida':
+      return permissions.includes('view exit notes')
 
     default:
       return false

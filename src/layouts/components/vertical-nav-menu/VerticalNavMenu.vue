@@ -280,10 +280,10 @@ export default {
       return this.permissions.includes('view purchases')
     },
     canViewEntryNote() {
-      return this.permissions.includes('view entry note')
+      return this.permissions.includes('view entry notes')
     },
     canViewExitNote() {
-      return this.permissions.includes('view exit note')
+      return this.permissions.includes('view exit notes')
     },
   },
 }
