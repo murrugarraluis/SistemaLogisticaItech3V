@@ -89,20 +89,35 @@
                                 </v-menu>
                               </v-col>
                               <v-col cols="12">
-                                <v-text-field
-                                  v-model="editedItem.type_exit"
-                                  label="Tipo Salida"
-                                  :rules="typeRequiredRules"
+                                <v-select
+                                  v-model="editedItem.warehouse"
+                                  :items="items_warehouse"
+                                  label="Almacen"
+                                  item-text="name"
+                                  item-value="id"
                                   outlined
                                   dense
+                                  :rules="warehouseRules"
                                   :disabled="editedIndex !== -1"
-                                ></v-text-field>
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.type_exit"
+                                  :items="items_type_exit"
+                                  label="Tipo Salida"
+                                  outlined
+                                  dense
+                                  :rules="typeExitRules"
+                                  :disabled="editedIndex !== -1"
+                                ></v-select>
                               </v-col>
                               <v-col cols="12">
                                 <v-text-field
+                                  v-if="editedItem.type_exit === 'Por Requerimiento'"
                                   v-model="editedItem.document_number"
                                   label="Numero Documento"
-                                  :rules="typeRequiredRules"
+                                  :rules="documentnumberRules"
                                   outlined
                                   dense
                                   :disabled="editedIndex !== -1"
@@ -139,6 +154,7 @@
                           </h3>
                           <add-product-dialog
                             v-if="editedIndex === -1"
+                            :warehouse="editedItem.warehouse"
                             @toggleMaterial="toggleMaterial"
                           ></add-product-dialog>
                         </div>
@@ -169,6 +185,7 @@
                             single-line
                             type="number"
                             min="1"
+                            :max="item.stock"
                             :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
@@ -355,7 +372,7 @@ import {
   mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
-import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
+import AddProductDialog from '@/views/dialog/AddProductoDialogWithStock.vue'
 import api from '@/api'
 import generatePDF from '@/reports/jsPDF/jsPDF'
 
@@ -387,6 +404,7 @@ export default {
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
+      { text: 'Stock', value: 'stock' },
       {
         text: 'Cantidad',
         value: 'quantity',
@@ -406,7 +424,7 @@ export default {
 
     desserts_detail: [],
 
-    items_status_request: ['Pendiente', 'Confirmado'],
+    items_warehouse: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -440,6 +458,7 @@ export default {
     // Variable para formulario
     editedItem: {
       id: '',
+      warehouse: 1,
       date: '',
       type_exit: '',
       comment: '',
@@ -448,6 +467,7 @@ export default {
     },
     defaultItem: {
       id: '',
+      warehouse: 1,
       date: '',
       type_exit: '',
       comment: '',
@@ -458,14 +478,15 @@ export default {
 
     // Reglas de Validacion
     dateRequiredRules: [v => !!v || 'Fecha es obligatorio'],
-    typeRequiredRules: [v => !!v || 'Tipo Requerimiento es obligatorio'],
-    importanceRules: [v => !!v || 'Importancia es obligatorio'],
+    warehouseRules: [v => !!v || 'Almacen es obligatorio'],
+    typeExitRules: [v => !!v || 'Tipo Salida es obligatorio'],
+    documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu2: false,
 
-    items_importance: ['Baja', 'Media', 'Alta'],
+    items_type_exit: ['Por Requerimiento', 'Por Reparacion'],
 
     roles: localStorage.getItem('roles'),
   }),
@@ -528,36 +549,20 @@ export default {
         )
       }
     },
+    'editedItem.warehouse': function () {
+      this.desserts_detail = []
+    },
   },
   created() {
     this.initialize()
+    this.getAllWarehouses()
     this.getAllMaterials()
   },
   methods: {
     // Metodo para cargar recursos (API)
     async initialize() {
-      // const roles = localStorage.getItem('roles')
-      // const userID = localStorage.getItem('user_id')
       const url = `${this.$URL_SERVE}/exit-notes/`
       this.desserts = await api.getAll(url)
-
-      // if (roles.includes('logistics')) {
-      //   url = `${this.$URL_SERVE}/${this.uri}`
-      //   const data = await api.getAll(url)
-      //   this.desserts_global = data
-      //   this.desserts = this.desserts_global.filter(
-      //     item => item.status === this.select_status
-      //       && item.type_request !== 'Para Logistica'
-      //       && item.type_request !== 'Para Compra',
-      //   )
-      // }
-      // if (roles.includes('warehouse')) {
-      //   // Logica para obotener los requerimientos con estado enviado a almacen
-      //   url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
-      //   const data = await api.getAll(url)
-      //   this.desserts_global = data
-      //   this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
-      // }
     },
 
     // Metodo para abrir modal de editar y capturar data
@@ -583,7 +588,6 @@ export default {
       const data = this.editedItem
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
-      data.user_id = localStorage.getItem('user_id')
       if (validation) {
         // no esta vacio
         if (Object.keys(this.desserts_detail).length !== 0) {
@@ -690,14 +694,7 @@ export default {
 
     // Metodo para insertar Item
     insertItem(response) {
-      if (this.canRoleWarehouse || this.canRoleLogistics) {
-        this.desserts_global_my_data.push(response.data)
-        if (this.switch_my_request) {
-          this.desserts.push(response.data)
-        }
-      } else {
-        this.desserts.push(response.data)
-      }
+      this.desserts.push(response.data)
       this.close()
       this.showMessage(response.message)
     },
@@ -810,6 +807,12 @@ export default {
       if (status.toLowerCase() === 'pendiente') return '#FFC400'
 
       return '#00897B'
+    },
+
+    //  Metodo para optener productos
+    async getAllWarehouses() {
+      const url = `${this.$URL_SERVE}/warehouses`
+      this.items_warehouse = await api.getAll(url)
     },
 
     //  Metodo para optener productos
