@@ -59,7 +59,7 @@
                       :sort-desc.sync="sortDesc"
                     >
                       <template v-slot:item.actions="{ item }">
-                        <div class="pa-2">
+                        <!-- <div class="pa-2">
                           <v-checkbox
                             :ref="item.code"
                             :key="item.code"
@@ -67,6 +67,19 @@
                             color="success"
                             @change="toggleMaterial(item, $event)"
                           ></v-checkbox>
+                        </div> -->
+                        <div class="pa-2">
+                          <v-btn
+                            color="primary"
+                            fab
+                            x-small
+                            class="ma-1"
+                            @click="toggleMaterial(item)"
+                          >
+                            <v-icon color="white">
+                              {{ icons.mdiPlusThick }}
+                            </v-icon>
+                          </v-btn>
                         </div>
                       </template>
                       <template v-slot:no-data>
@@ -101,7 +114,7 @@
 </template>
 
 <script>
-import { mdiPlusCircleOutline } from '@mdi/js'
+import { mdiPlusThick } from '@mdi/js'
 import api from '@/api'
 
 export default {
@@ -141,7 +154,7 @@ export default {
     search_products: '',
 
     // Iconos
-    icons: { mdiPlusCircleOutline },
+    icons: { mdiPlusThick },
 
     // Variable para uso de modal
     dialog: false,
@@ -164,8 +177,8 @@ export default {
       const url = `${this.$URL_SERVE}/warehouses/${this.warehouse}/materials`
       this.desserts_products = await api.getAll(url)
     },
-    toggleMaterial(item, event) {
-      this.$emit('toggleMaterial', item, event)
+    toggleMaterial(item) {
+      this.$emit('toggleMaterial', item)
     },
     onActivateGetMaterial() {
       this.getAllMaterials()
