@@ -58,7 +58,7 @@
                       :sort-desc.sync="sortDesc"
                     >
                       <template v-slot:item.actions="{ item }">
-                        <div class="pa-2">
+                        <!-- <div class="pa-2">
                           <v-checkbox
                             :ref="item.code"
                             :key="item.code"
@@ -66,6 +66,19 @@
                             color="success"
                             @change="toggleMaterial(item, $event)"
                           ></v-checkbox>
+                        </div> -->
+                        <div class="pa-2">
+                          <v-btn
+                            color="primary"
+                            fab
+                            x-small
+                            class="ma-1"
+                            @click="toggleMaterial(item)"
+                          >
+                            <v-icon color="white">
+                              {{ icons.mdiPlusThick }}
+                            </v-icon>
+                          </v-btn>
                         </div>
                       </template>
                       <template v-slot:no-data>
@@ -100,7 +113,7 @@
 </template>
 
 <script>
-import { mdiPlusCircleOutline } from '@mdi/js'
+import { mdiPlusCircleOutline, mdiPlusThick } from '@mdi/js'
 import api from '@/api'
 
 export default {
@@ -139,7 +152,7 @@ export default {
     search_products: '',
 
     // Iconos
-    icons: { mdiPlusCircleOutline },
+    icons: { mdiPlusCircleOutline, mdiPlusThick },
 
     // Variable para uso de modal
     dialog: false,

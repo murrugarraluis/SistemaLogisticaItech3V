@@ -146,7 +146,7 @@ const routes = [
   {
     path: '/cotizaciones',
     name: 'cotizaciones',
-    component: () => import('@/views/simple-table/demos/QuotationTable.vue'),
+    component: () => import('@/views/manteiners/QuotationMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
