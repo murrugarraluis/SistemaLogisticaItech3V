@@ -12,6 +12,7 @@
           class="mb-2"
           v-bind="attrs"
           v-on="on"
+          @click="onActivateGetMaterial"
         >
           <v-icon class="mr-1">
             {{ icons.mdiPlusCircleOutline }}
@@ -113,7 +114,7 @@
 </template>
 
 <script>
-import { mdiPlusCircleOutline, mdiPlusThick } from '@mdi/js'
+import { mdiPlusThick } from '@mdi/js'
 import api from '@/api'
 
 export default {
@@ -135,6 +136,7 @@ export default {
       { text: 'Unidad de Medida', value: 'measure_unit' },
       { text: 'Categoria', align: 'center', value: 'category' },
       { text: 'Marca', align: 'center', value: 'mark' },
+      { text: 'Stock', align: 'center', value: 'stock' },
       {
         text: 'Acciones',
         align: 'end',
@@ -152,7 +154,7 @@ export default {
     search_products: '',
 
     // Iconos
-    icons: { mdiPlusCircleOutline, mdiPlusThick },
+    icons: { mdiPlusThick },
 
     // Variable para uso de modal
     dialog: false,
@@ -162,11 +164,8 @@ export default {
       // eslint-disable-next-line no-unused-expressions
       val || this.close()
     },
-    async warehouse(val) {
-      const url = `${this.$URL_SERVE}/warehouses/${val}/materials`
-      this.desserts_products = []
-      this.desserts_products = await api.getAll(url)
-      console.log(this.desserts_products)
+    warehouse() {
+      this.getAllMaterials()
     },
   },
   created() {
@@ -175,11 +174,14 @@ export default {
   methods: {
     //  Metodo para optener productos
     async getAllMaterials() {
-      const url = `${this.$URL_SERVE}/materials`
+      const url = `${this.$URL_SERVE}/warehouses/${this.warehouse}/materials`
       this.desserts_products = await api.getAll(url)
     },
-    toggleMaterial(item, event) {
-      this.$emit('toggleMaterial', item, event)
+    toggleMaterial(item) {
+      this.$emit('toggleMaterial', item)
+    },
+    onActivateGetMaterial() {
+      this.getAllMaterials()
     },
 
     // Metodo Para restablecer valores por default

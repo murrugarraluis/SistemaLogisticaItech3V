@@ -41,11 +41,11 @@
           </v-avatar>
         </v-badge>
         <div
-          class="d-inline-flex flex-column justify-center ms-3"
+          class="d-inline-flex flex-column justify-center ms-3 pr-4"
           style="vertical-align: middle"
         >
-          <span class="text--primary font-weight-semibold mb-n1"> John Doe </span>
-          <small class="text--disabled text-capitalize">Admin</small>
+          <span class="text--primary font-weight-semibold mb-n1"> {{ username }} </span>
+          <small class="text--disabled text-capitalize">{{ roles }}</small>
         </div>
       </div>
 
@@ -171,6 +171,8 @@ import api from '@/api'
 export default {
   setup() {
     return {
+      username: localStorage.getItem('username'),
+      roles: localStorage.getItem('roles'),
       icons: {
         mdiAccountOutline,
         mdiEmailOutline,
@@ -188,7 +190,10 @@ export default {
       const url = `${this.$URL_SERVE}/logout`
       const response = await api.logout(url)
       if (response.status === 200) {
+        localStorage.removeItem('user_id')
+        localStorage.removeItem('username')
         localStorage.removeItem('token')
+        localStorage.removeItem('roles')
         localStorage.removeItem('permissions')
         this.$store.dispatch('doLogout')
         this.$router.push('/login')

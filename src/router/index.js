@@ -126,10 +126,11 @@ const routes = [
       requiresAuth: true,
     },
   },
+
   {
     path: '/notas-ingreso',
     name: 'notas-ingreso',
-    component: () => import('@/views/simple-table/demos/EntryNoteTable.vue'),
+    component: () => import('@/views/manteiners/EntryNoteMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -137,7 +138,7 @@ const routes = [
   {
     path: '/notas-salida',
     name: 'notas-salida',
-    component: () => import('@/views/simple-table/demos/ExitNoteTable.vue'),
+    component: () => import('@/views/manteiners/ExitNoteMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -145,7 +146,7 @@ const routes = [
   {
     path: '/cotizaciones',
     name: 'cotizaciones',
-    component: () => import('@/views/simple-table/demos/QuotationTable.vue'),
+    component: () => import('@/views/manteiners/QuotationMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
@@ -217,14 +218,41 @@ function hasAccess(name) {
     case 'dashboard':
       return true
 
-    case 'users':
-      return permissions.includes('View All Users')
+    case 'materiales':
+      return permissions.includes('view materials')
 
-    case 'permissions':
-      return permissions.includes('View All Permissions')
+    case 'categorias':
+      return permissions.includes('view categories')
 
-    case 'roles':
-      return permissions.includes('View All Roles')
+    case 'marcas':
+      return permissions.includes('view marks')
+
+    case 'unidades-medida':
+      return permissions.includes('view measure units')
+
+    case 'almacenes':
+      return permissions.includes('view warehouses')
+
+    case 'proveedores':
+      return permissions.includes('view suppliers')
+
+    case 'requerimientos':
+      return permissions.includes('view requests')
+
+    case 'cotizaciones':
+      return permissions.includes('view quotes')
+
+    case 'ordenes-compra':
+      return permissions.includes('view orders purchase')
+
+    case 'compras':
+      return permissions.includes('view purchases')
+
+    case 'notas-ingreso':
+      return permissions.includes('view entry notes')
+
+    case 'notas-salida':
+      return permissions.includes('view exit notes')
 
     default:
       return false

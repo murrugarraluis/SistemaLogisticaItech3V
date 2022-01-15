@@ -58,6 +58,16 @@
                             <!--    Columnas de Inputs-->
                             <v-row>
                               <v-col cols="12">
+                                <v-text-field
+                                  v-model="editedItem.supplier"
+                                  label="Proveedor"
+                                  :rules="documentnumberRules"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
                                 <v-menu
                                   v-model="menu2"
                                   :close-on-content-click="false"
@@ -90,22 +100,20 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.warehouse"
-                                  :items="items_warehouse"
-                                  label="Almacen"
-                                  item-text="name"
-                                  item-value="id"
+                                  v-model="editedItem.type_exit"
+                                  :items="items_way_to_pay"
+                                  label="Forma Pago"
                                   outlined
                                   dense
-                                  :rules="warehouseRules"
+                                  :rules="typeExitRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_entry"
-                                  :items="items_type_entry"
-                                  label="Tipo Entrada"
+                                  v-model="editedItem.type_exit"
+                                  :items="items_type_exit"
+                                  label="Tipo Cotizacion"
                                   outlined
                                   dense
                                   :rules="typeExitRules"
@@ -115,7 +123,7 @@
                               <v-col cols="12">
                                 <div class="d-flex flex-row">
                                   <v-text-field
-                                    v-if="editedItem.type_entry === 'Por Compra'"
+                                    v-if="editedItem.type_exit === 'Por Requerimiento'"
                                     v-model="editedItem.document_number"
                                     label="Numero Documento"
                                     :rules="documentnumberRules"
@@ -135,15 +143,6 @@
                                     </v-icon>
                                   </v-btn> -->
                                 </div>
-                              </v-col>
-                              <v-col cols="12">
-                                <v-textarea
-                                  v-model="editedItem.comment"
-                                  label="Comentario"
-                                  outlined
-                                  dense
-                                  :disabled="editedIndex !== -1"
-                                ></v-textarea>
                               </v-col>
                             </v-row>
                           </v-form>
@@ -198,9 +197,23 @@
                             single-line
                             type="number"
                             min="1"
+                            :max="item.stock"
                             :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
+                            @change="setQuantityItem($event, item)"
+                          ></v-text-field>
+                        </template>
+                        <template v-slot:item.price="{ item }">
+                          <v-text-field
+                            :key="item.id"
+                            :hide-details="true"
+                            dense
+                            single-line
+                            type="number"
+                            min="1"
+                            :value="item.price > 0 ? item.price : 1"
+                            :disabled="editedIndex !== -1"
                             @change="setQuantityItem($event, item)"
                           ></v-text-field>
                         </template>
@@ -384,7 +397,7 @@ import {
   mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
-import AddProductDialog from '@/views/dialog/AddProductoDialogWithStock.vue'
+import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
 import api from '@/api'
 import generatePDF from '@/reports/jsPDF/jsPDF'
 
@@ -394,14 +407,18 @@ export default {
   },
   data: () => ({
     valid: true,
-    table: 'Nota de Ingreso',
-    uri: 'entry-notes',
+    table: 'Cotizaciones',
+    uri: 'quotations',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Fecha', value: 'date' },
-      { text: 'Tipo Entrada', value: 'type_entry' },
+      { text: 'Fecha Pactada', value: 'date_agreed' },
+      { text: 'Forma Pago', value: 'way_to_pay' },
+      { text: 'Proveedor', value: 'supplier' },
+      { text: 'Estado', value: 'status' },
+      { text: 'Total', value: 'total_amount' },
 
       // { text: 'Importancia', align: 'center', value: 'importance' },
       // { text: 'Estado', align: 'center', value: 'status' },
@@ -416,11 +433,16 @@ export default {
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
-      { text: 'Stock', value: 'stock' },
       {
         text: 'Cantidad',
         value: 'quantity',
         width: '5%',
+        sortable: false,
+      },
+      {
+        text: 'Precio',
+        value: 'price',
+        width: '14%',
         sortable: false,
       },
       {
@@ -472,7 +494,7 @@ export default {
       id: '',
       warehouse: 1,
       date: '',
-      type_entry: '',
+      type_exit: '',
       comment: '',
       document_number: '',
       materials: {},
@@ -481,7 +503,7 @@ export default {
       id: '',
       warehouse: 1,
       date: '',
-      type_entry: '',
+      type_exit: '',
       comment: '',
       document_number: '',
       materials: {},
@@ -498,7 +520,7 @@ export default {
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu2: false,
 
-    items_type_entry: ['Por Compra', 'Por Reingreso'],
+    items_type_exit: ['Por Requerimiento', 'Por Compra'],
 
     roles: localStorage.getItem('roles'),
   }),
@@ -573,11 +595,6 @@ export default {
     this.getAllWarehouses()
     this.getAllMaterials()
   },
-  mounted() {
-    this.$root.$on('eventing', data => {
-      console.log(data)
-    })
-  },
   methods: {
     // Metodo para cargar recursos (API)
     async initialize() {
@@ -640,6 +657,8 @@ export default {
           const response = await api.destroy(url)
           if (response.status === 200) {
             this.deleteItem(item, response)
+
+            // this.getAllMaterials()
           } else {
             this.showErrors(response.errors)
           }

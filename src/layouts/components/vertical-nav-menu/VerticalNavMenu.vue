@@ -42,7 +42,7 @@
         :to="{ name: 'dashboard' }"
         :icon="icons.mdiHomeOutline"
       ></nav-menu-link>
-      <!--      <nav-menu-link-->
+      <!-- <nav-menu-link-->
       <!--        title="Account Settings"-->
       <!--        :to="{ name: 'pages-account-settings'}"-->
       <!--        :icon="icons.mdiAccountCogOutline"-->
@@ -66,15 +66,16 @@
       <!--          :to="{ name: 'error-404' }"-->
       <!--          target="_blank"-->
       <!--        ></nav-menu-link>-->
-      <!--      </nav-menu-group>-->
+      <!--      </nav-menu-group> -->
       <nav-menu-group
+        v-if="canViewMaterials"
         title="Materiales"
         :icon="icons.mdiPackageVariantClosed"
       >
         <nav-menu-link
           title="Materiales"
           :to="{ name: 'materiales' }"
-          :icon="icons.mdiPackageVariantClosed "
+          :icon="icons.mdiPackageVariantClosed"
         ></nav-menu-link>
         <nav-menu-link
           title="Categorias"
@@ -92,87 +93,95 @@
           :icon="icons.mdiCounter"
         ></nav-menu-link>
       </nav-menu-group>
-      <!--      <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Typography"-->
-      <!--        :to="{ name: 'typography' }"-->
-      <!--        :icon="icons.mdiAlphaTBoxOutline"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Icons"-->
-      <!--        :to="{ name: 'icons' }"-->
-      <!--        :icon="icons.mdiEyeOutline"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Cards"-->
-      <!--        :to="{ name: 'cards' }"-->
-      <!--        :icon="icons.mdiCreditCardOutline"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Tables"-->
-      <!--        :to="{ name: 'simple-table' }"-->
-      <!--        :icon="icons.mdiTable"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Form Layouts"-->
-      <!--        :to="{ name: 'form-layouts' }"-->
-      <!--        :icon="icons.mdiFormSelect"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Usuarios"-->
-      <!--        :to="{ name: 'usuarios' }"-->
-      <!--        :icon="icons.mdiAccountGroup"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Personal"-->
-      <!--        :to="{ name: 'personal' }"-->
-      <!--        :icon="icons.mdiAccount"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Proveedores"-->
-      <!--        :to="{ name: 'proveedores' }"-->
-      <!--        :icon="icons.mdiAccountTie"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Compras"-->
-      <!--        :to="{ name: 'compras' }"-->
-      <!--        :icon="icons.mdiCartVariant"-->
-      <!--      ></nav-menu-link>-->
+      <!-- <nav-menu-section-title title="USER INTERFACE"></nav-menu-section-title> -->
+      <!-- <nav-menu-link
+        title="Typography"
+        :to="{ name: 'typography' }"
+        :icon="icons.mdiAlphaTBoxOutline"
+      ></nav-menu-link>
       <nav-menu-link
+        title="Icons"
+        :to="{ name: 'icons' }"
+        :icon="icons.mdiEyeOutline"
+      ></nav-menu-link>
+      <nav-menu-link
+        title="Cards"
+        :to="{ name: 'cards' }"
+        :icon="icons.mdiCreditCardOutline"
+      ></nav-menu-link>
+      <nav-menu-link
+        title="Tables"
+        :to="{ name: 'simple-table' }"
+        :icon="icons.mdiTable"
+      ></nav-menu-link>
+      <nav-menu-link
+        title="Form Layouts"
+        :to="{ name: 'form-layouts' }"
+        :icon="icons.mdiFormSelect"
+      ></nav-menu-link> -->
+      <!-- <nav-menu-link
+        title="Usuarios"
+        :to="{ name: 'usuarios' }"
+        :icon="icons.mdiAccountGroup"
+      ></nav-menu-link> -->
+      <!-- <nav-menu-link
+        title="Personal"
+        :to="{ name: 'personal' }"
+        :icon="icons.mdiAccount"
+      ></nav-menu-link> -->
+      <nav-menu-link
+        v-if="canViewWarehouses"
         title="Almacen"
         :to="{ name: 'almacenes' }"
         :icon="icons.mdiStore"
       ></nav-menu-link>
       <nav-menu-link
+        v-if="canViewSuppliers"
+        title="Proveedores"
+        :to="{ name: 'proveedores' }"
+        :icon="icons.mdiAccountTie"
+      ></nav-menu-link>
+      <nav-menu-link
+        v-if="canViewRequests"
         title="Requerimientos"
         :to="{ name: 'requerimientos' }"
         :icon="icons.mdiNotebook"
       ></nav-menu-link>
-      <!--      <nav-menu-link-->
-      <!--        title="Ordenes de Compra"-->
-      <!--        :to="{ name: 'ordenes-compra' }"-->
-      <!--        :icon="icons.mdiNotebook"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Nota de Ingreso"-->
-      <!--        :to="{ name: 'notas-ingreso' }"-->
-      <!--        :icon="icons.mdiClipboardTextOutline "-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Nota de Salida"-->
-      <!--        :to="{ name: 'notas-salida' }"-->
-      <!--        :icon="icons.mdiClipboardTextOutline "-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Cotizaciones"-->
-      <!--        :to="{ name: 'cotizaciones' }"-->
-      <!--        :icon="icons.mdiCurrencyUsd"-->
-      <!--      ></nav-menu-link>-->
-      <!--      <nav-menu-link-->
-      <!--        title="Configuracion"-->
-      <!--        :to="{ name: 'configuracion' }"-->
-      <!--        :icon="icons.mdiCog"-->
-      <!--      ></nav-menu-link>-->
+      <nav-menu-link
+        v-if="canViewQuotes"
+        title="Cotizaciones"
+        :to="{ name: 'cotizaciones' }"
+        :icon="icons.mdiCurrencyUsd"
+      ></nav-menu-link>
+      <nav-menu-link
+        v-if="canViewOrdersPurchase"
+        title="Ordenes de Compra"
+        :to="{ name: 'ordenes-compra' }"
+        :icon="icons.mdiNotebook"
+      ></nav-menu-link>
+      <nav-menu-link
+        v-if="canViewPurchases"
+        title="Compras"
+        :to="{ name: 'compras' }"
+        :icon="icons.mdiCartVariant"
+      ></nav-menu-link>
+      <nav-menu-link
+        v-if="canViewEntryNote"
+        title="Nota de Ingreso"
+        :to="{ name: 'notas-ingreso' }"
+        :icon="icons.mdiClipboardTextOutline"
+      ></nav-menu-link>
+      <nav-menu-link
+        v-if="canViewExitNote"
+        title="Nota de Salida"
+        :to="{ name: 'notas-salida' }"
+        :icon="icons.mdiClipboardTextOutline"
+      ></nav-menu-link>
+      <!-- <nav-menu-link
+        title="Configuracion"
+        :to="{ name: 'configuracion' }"
+        :icon="icons.mdiCog"
+      ></nav-menu-link> -->
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -245,7 +254,37 @@ export default {
         mdiBookmark,
         mdiCounter,
       },
+      permissions: localStorage.getItem('permissions'),
     }
+  },
+  computed: {
+    canViewMaterials() {
+      return this.permissions.includes('view materials')
+    },
+    canViewWarehouses() {
+      return this.permissions.includes('view warehouses')
+    },
+    canViewSuppliers() {
+      return this.permissions.includes('view suppliers')
+    },
+    canViewRequests() {
+      return this.permissions.includes('view requests')
+    },
+    canViewQuotes() {
+      return this.permissions.includes('view quotes')
+    },
+    canViewOrdersPurchase() {
+      return this.permissions.includes('view orders purchase')
+    },
+    canViewPurchases() {
+      return this.permissions.includes('view purchases')
+    },
+    canViewEntryNote() {
+      return this.permissions.includes('view entry notes')
+    },
+    canViewExitNote() {
+      return this.permissions.includes('view exit notes')
+    },
   },
 }
 </script>

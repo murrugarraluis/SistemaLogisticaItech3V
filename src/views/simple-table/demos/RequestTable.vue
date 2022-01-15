@@ -41,13 +41,11 @@
                     md="4"
                   >
                     <v-card class="pa-4">
-                      <v-row
-                        class-name="match-height"
-                      >
+                      <v-row class-name="match-height">
                         <v-col cols="12">
                           <!-- Formulario-->
                           <div class="d-flex justify-center justify-md-start">
-                            <h3 class="py-4 ">
+                            <h3 class="py-4">
                               Datos {{ table }}
                             </h3>
                           </div>
@@ -59,9 +57,7 @@
                           >
                             <!--    Columnas de Inputs-->
                             <v-row>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-menu
                                   v-model="menu2"
                                   :close-on-content-click="false"
@@ -92,9 +88,7 @@
                                   ></v-date-picker>
                                 </v-menu>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-text-field
                                   v-model="editedItem.type_request"
                                   label="Tipo Requerimiento"
@@ -104,9 +98,7 @@
                                   :disabled="editedIndex !== -1"
                                 ></v-text-field>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-select
                                   v-model="editedItem.importance"
                                   :items="items_importance"
@@ -117,9 +109,7 @@
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
-                              <v-col
-                                cols="12"
-                              >
+                              <v-col cols="12">
                                 <v-textarea
                                   v-model="editedItem.comment"
                                   label="Comentario"
@@ -127,6 +117,30 @@
                                   dense
                                   :disabled="editedIndex !== -1"
                                 ></v-textarea>
+                              </v-col>
+                              <v-col
+                                v-if="editedIndex !== -1"
+                                cols="12"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.status"
+                                  label="Estado"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col
+                                v-if="editedIndex !== -1"
+                                cols="12"
+                              >
+                                <v-text-field
+                                  v-model="editedItem.status_message"
+                                  label="Estado"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
                               </v-col>
                             </v-row>
                           </v-form>
@@ -142,7 +156,9 @@
                     <v-card class="pa-4">
                       <!--      Modal-->
                       <template>
-                        <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                        <div
+                          class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between"
+                        >
                           <h3 class="py-4">
                             Detalle {{ table }}
                           </h3>
@@ -155,7 +171,7 @@
                       <!--      Encabezado de Tabla-->
                       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
                         <v-text-field
-                          v-model="search"
+                          v-model="search_detail"
                           :append-icon="icons.mdiMagnify"
                           label="Buscar"
                           single-line
@@ -178,16 +194,14 @@
                             single-line
                             type="number"
                             min="1"
-                            :value="item.quantity > 0 ? item.quantity:1"
+                            :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
-                            @change="setQuantityItem($event,item)"
+                            @change="setQuantityItem($event, item)"
                           ></v-text-field>
                         </template>
 
-                        <template
-                          v-slot:item.actions="{ item }"
-                        >
+                        <template v-slot:item.actions="{ item }">
                           <div class="pa-2">
                             <v-btn
                               color="#C62828"
@@ -222,7 +236,7 @@
                     class="ma-1"
                     @click="save"
                   >
-                    {{ editedIndex === -1 ? 'Guardar':'Imprimir' }}
+                    {{ editedIndex === -1 ? 'Guardar' : 'Imprimir' }}
                   </v-btn>
                   <v-btn
                     type="reset"
@@ -239,6 +253,31 @@
         </div>
       </template>
       <!--      Encabezado de Tabla-->
+      <div class="d-flex flex-column justify-center align-center align-sm-start px-5">
+        <v-select
+          v-model="select_status"
+          :items="items_status_request"
+          label="Estado"
+          style="max-width: 170px"
+          hide-details
+        ></v-select>
+        <v-switch
+          v-if="canRoleLogistics || canRoleWarehouse"
+          v-model="switch_my_request"
+          label="Mis Requerimientos"
+          color="primary"
+          value="Mis Requerimientos"
+          hide-details
+        ></v-switch>
+        <v-switch
+          v-if="!switch_my_request && canRoleLogistics"
+          v-model="switch_purchase"
+          label="Para Compra"
+          color="primary"
+          value="Para Compra"
+          hide-details
+        ></v-switch>
+      </div>
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
           v-model="search"
@@ -267,7 +306,10 @@
             </v-icon>
           </v-btn>
 
-          <v-btn elevation="0">
+          <v-btn
+            elevation="0"
+            @click="generatePDF()"
+          >
             <span class="hidden-sm-and-down">PDF</span>
             <v-icon :right="this.$vuetify.breakpoint.name === 'md'">
               {{ icons.mdiFilePdfBox }}
@@ -284,16 +326,39 @@
         :sort-desc.sync="sortDesc"
       >
         <template v-slot:item.importance="{ item }">
-          <v-chip
-            :color="getColor(item.importance)"
-          >
-            {{ item.importance }}
+          <span :class="getColorImportance(item.importance)"> {{ item.importance }}</span>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip :color="getColorStatus(item.status)">
+            {{ item.status }}
           </v-chip>
         </template>
-        <template
-          v-slot:item.actions="{ item }"
-        >
+        <template v-slot:item.actions="{ item }">
           <div class="pa-2">
+            <v-btn
+              v-if="canRoleWarehouse && !switch_my_request && select_status === 'Pendiente'"
+              color="#8E24AA"
+              fab
+              x-small
+              class="ma-1"
+              @click="evaluateRequest(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiBookCheckOutline }}
+              </v-icon>
+            </v-btn>
+            <v-btn
+              v-if="canRoleLogistics && select_status === 'Pendiente' && !switch_purchase"
+              color="#8E24AA"
+              fab
+              x-small
+              class="ma-1"
+              @click="sendToWarehouse(item)"
+            >
+              <v-icon color="white">
+                {{ icons.mdiSend }}
+              </v-icon>
+            </v-btn>
             <v-btn
               color="#0277BD"
               fab
@@ -306,6 +371,7 @@
               </v-icon>
             </v-btn>
             <v-btn
+              v-if="item.status === 'Pendiente'"
               color="#C62828"
               fab
               x-small
@@ -327,11 +393,21 @@
 </template>
 <script>
 import {
-  mdiDelete, mdiFileDelimited, mdiFileExcel, mdiFilePdfBox, mdiMagnify, mdiPencil, mdiPlusCircleOutline, mdiEye,
+  mdiDelete,
+  mdiFileDelimited,
+  mdiFileExcel,
+  mdiFilePdfBox,
+  mdiMagnify,
+  mdiPencil,
+  mdiPlusCircleOutline,
+  mdiEye,
+  mdiSend,
+  mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
 import AddProductDialog from '@/views/dialog/AddProductDialog.vue'
 import api from '@/api'
+import generatePDF from '@/reports/jsPDF/jsPDF'
 
 export default {
   components: {
@@ -348,8 +424,12 @@ export default {
       { text: 'Fecha Requerida', value: 'date_required' },
       { text: 'Tipo Requerimiento', value: 'type_request' },
       { text: 'Importancia', align: 'center', value: 'importance' },
+      { text: 'Estado', align: 'center', value: 'status' },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
     headers_detail: [
@@ -357,15 +437,25 @@ export default {
       { text: 'Nombre', value: 'name' },
       { text: 'Unidad de Medida', value: 'measure_unit' },
       {
-        text: 'Cantidad', value: 'quantity', width: '5%', sortable: false,
+        text: 'Cantidad',
+        value: 'quantity',
+        width: '5%',
+        sortable: false,
       },
       {
-        text: 'Acciones', align: 'end', value: 'actions', sortable: false,
+        text: 'Acciones',
+        align: 'end',
+        value: 'actions',
+        sortable: false,
       },
     ],
+    desserts_global: [],
+    desserts_global_my_data: [],
     desserts: [],
 
     desserts_detail: [],
+
+    items_status_request: ['Pendiente', 'Confirmado'],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -374,10 +464,23 @@ export default {
     // Variables de busqueda o filtrado
     search: '',
     search_detail: '',
+    select_status: 'Pendiente',
+
+    switch_my_request: false,
+    switch_purchase: false,
 
     // Iconos
     icons: {
-      mdiPencil, mdiDelete, mdiMagnify, mdiFileExcel, mdiFileDelimited, mdiFilePdfBox, mdiPlusCircleOutline, mdiEye,
+      mdiPencil,
+      mdiDelete,
+      mdiMagnify,
+      mdiFileExcel,
+      mdiFileDelimited,
+      mdiFilePdfBox,
+      mdiPlusCircleOutline,
+      mdiEye,
+      mdiSend,
+      mdiBookCheckOutline,
     },
 
     // Variable para uso de modal
@@ -385,12 +488,14 @@ export default {
 
     // Variable para formulario
     editedItem: {
+      id: '',
       date_required: '',
       type_request: '',
       importance: '',
       materials: {},
     },
     defaultItem: {
+      id: '',
       date_required: '',
       type_request: '',
       importance: '',
@@ -407,10 +512,9 @@ export default {
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu2: false,
 
-    items_importance: [
-      'Baja', 'Media', 'Alta',
-    ],
+    items_importance: ['Baja', 'Media', 'Alta'],
 
+    roles: localStorage.getItem('roles'),
   }),
   computed: {
     formTitle() {
@@ -419,11 +523,57 @@ export default {
     computedDateFormattedDatefns() {
       return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
     },
+    canRoleLogistics() {
+      return this.roles.includes('logistics')
+    },
+    canRoleWarehouse() {
+      return this.roles.includes('warehouse')
+    },
   },
   watch: {
     dialog(val) {
       // eslint-disable-next-line no-unused-expressions
       val || this.close()
+    },
+
+    select_status() {
+      if (this.switch_my_request || (!this.canRoleWarehouse && !this.canRoleLogistics)) {
+        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else if (this.canRoleLogistics) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
+        )
+      } else {
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
+      }
+    },
+    switch_my_request(val) {
+      if (val) {
+        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+      } else if (this.canRoleLogistics) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
+        )
+      } else {
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
+      }
+    },
+    switch_purchase(val) {
+      if (val) {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status && item.type_request === 'Para Compra',
+        )
+      } else {
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
+        )
+      }
     },
   },
   created() {
@@ -433,8 +583,35 @@ export default {
   methods: {
     // Metodo para cargar recursos (API)
     async initialize() {
-      const url = `${this.$URL_SERVE}/${this.uri}`
-      this.desserts = await api.getAll(url)
+      const roles = localStorage.getItem('roles')
+      const userID = localStorage.getItem('user_id')
+      let url = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+
+      const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+      const myData = await api.getAll(urlMyData)
+      this.desserts_global_my_data = myData
+      this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
+
+      if (roles.includes('logistics')) {
+        // const urlMyData = `${this.$URL_SERVE}/users/${userID}/${this.uri}`
+        // const myData = await api.getAll(urlMyData)
+        // this.desserts_global_my_data = myData
+        url = `${this.$URL_SERVE}/${this.uri}`
+        const data = await api.getAll(url)
+        this.desserts_global = data
+        this.desserts = this.desserts_global.filter(
+          item => item.status === this.select_status
+            && item.type_request !== 'Para Logistica'
+            && item.type_request !== 'Para Compra',
+        )
+      }
+      if (roles.includes('warehouse')) {
+        // Logica para obotener los requerimientos con estado enviado a almacen
+        url = `${this.$URL_SERVE}/${this.uri}?status_message=Enviado a Almacen`
+        const data = await api.getAll(url)
+        this.desserts_global = data
+        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
+      }
     },
 
     // Metodo para abrir modal de editar y capturar data
@@ -459,6 +636,7 @@ export default {
       const data = this.editedItem
       const url = `${this.$URL_SERVE}/${this.uri}`
       const validation = this.$refs.form.validate()
+      data.user_id = localStorage.getItem('user_id')
       if (validation) {
         // no esta vacio
         if (Object.keys(this.desserts_detail).length !== 0) {
@@ -475,25 +653,16 @@ export default {
       }
     },
 
-    // Metodo oara editar recurso (API)
-    async update() {
-      const data = this.editedItem
-      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}`
-      const response = await api.update(url, data)
-      if (response.status === 200) {
-        this.updateItem(response)
-      } else if (await this.isDeleted(data.name)) {
-        this.restore(data.name)
-      } else {
-        this.showErrors(response.errors)
-      }
-    },
-
     // Metodo para eliminar un recurso (API)
     destroy(item) {
       const { id } = { ...item }
       this.$swal({
-        title: '¿Está Seguro?', text: 'Una vez eliminado ya no se podrá recuperar!', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Eliminar!', cancelButtonText: 'Cancelar',
+        title: '¿Está Seguro?',
+        text: 'Una vez eliminado ya no se podrá recuperar!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Eliminar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/${id}`
@@ -512,13 +681,18 @@ export default {
       const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
       const response = await api.getDeleted(url)
 
-      return (response.status === 200)
+      return response.status === 200
     },
 
     // Metodo para restaurar un recurso eliminado
     restore(name) {
       this.$swal({
-        title: '¿Desea Restaurar?', text: 'Este recurso ha sido eliminado anteriormente', icon: 'warning', showCancelButton: true, confirmButtonText: 'Si, Restaurar!', cancelButtonText: 'Cancelar',
+        title: '¿Desea Restaurar?',
+        text: 'Este recurso ha sido eliminado anteriormente',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Restaurar!',
+        cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
           const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
@@ -532,9 +706,51 @@ export default {
       })
     },
 
+    // Metodo para Enviar Requerimiento a almacen
+    async sendToWarehouse(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      const data = this.editedItem
+
+      const json = {
+        status: 'Pendiente',
+        status_message: 'Enviado a Almacen',
+      }
+
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/change-status`
+      const response = await api.updatePatch(url, json)
+
+      if (response.status === 200) {
+        this.updateItem(response)
+      } else {
+        this.showErrors(response.errors)
+      }
+    },
+
+    // Metodo para Evaluar Requerimiento
+    async evaluateRequest(item) {
+      this.editedIndex = this.desserts.indexOf(item)
+      this.editedItem = { ...item }
+      const data = this.editedItem
+      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/evaluate`
+      const response = await api.get(url)
+      if (response.status === 200) {
+        this.showConfirmation(response.message, response.data)
+      } else {
+        this.showErrors(response.errors)
+      }
+    },
+
     // Metodo para insertar Item
     insertItem(response) {
-      this.desserts.push(response.data)
+      if (this.canRoleWarehouse || this.canRoleLogistics) {
+        this.desserts_global_my_data.push(response.data)
+        if (this.switch_my_request) {
+          this.desserts.push(response.data)
+        }
+      } else {
+        this.desserts.push(response.data)
+      }
       this.close()
       this.showMessage(response.message)
     },
@@ -565,6 +781,50 @@ export default {
       this.$toast.error(errosList)
     },
 
+    showConfirmation(message, data) {
+      if (message === 'Requerimiento Satisfecho') {
+        // Mostrar Confirmacion a nota de salida
+        this.confirmationNewExitNote(data)
+      } else {
+        // Mostrar Confirmacion a nota de salida a Nuevo Requerimiento
+        this.confirmationNewRequest(data)
+      }
+    },
+    confirmationNewExitNote() {
+      this.$swal({
+        title: '¿Desea Crear una Nueva Nota de Salida?',
+        text: 'Requerimiento Satisfecho',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Crear!',
+        cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          this.$copyText(this.editedItem.id).then(this.showMessage('Copiado'))
+          this.$router.push('notas-salida')
+        }
+      })
+    },
+    confirmationNewRequest(data) {
+      this.$swal({
+        title: '¿Desea Crear una Nuevo Requerimiento de Compra?',
+        text: 'Requerimiento Insatisfecho',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, Crear!',
+        cancelButtonText: 'Cancelar',
+      }).then(async result => {
+        if (result.isConfirmed) {
+          // Redirigiri a nuevo Requerimiento
+          this.desserts_detail = []
+          this.editedItem = { ...this.defaultItem }
+          this.editedIndex = -1
+          this.desserts_detail = data
+          this.dialog = true
+        }
+      })
+    },
+
     // Metodo Para restablecer valores por default
     close() {
       this.reset()
@@ -592,9 +852,16 @@ export default {
     },
 
     // Metodo para Obternet color de IMportancia
-    getColor(importance) {
-      if (importance.toLowerCase() === 'alta') return '#C62828'
-      if (importance.toLowerCase() === 'media') return '#FFAB40'
+    getColorImportance(importance) {
+      if (importance.toLowerCase() === 'alta') return 'color-importance--red'
+      if (importance.toLowerCase() === 'media') return 'color-importance--yellow'
+
+      return 'color-importance--green'
+    },
+
+    // Metodo para Obternet color de IMportancia
+    getColorStatus(status) {
+      if (status.toLowerCase() === 'pendiente') return '#FFC400'
 
       return '#00897B'
     },
@@ -626,6 +893,34 @@ export default {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail[index].quantity = event
     },
+
+    generatePDF() {
+      // Default export is a4 paper, portrait, using millimeters for units
+      const name = `${this.table}s`
+      const columns = [
+        { header: 'Codigo', dataKey: 'code' },
+        { header: 'Fecha Requerida', dataKey: 'date_required' },
+        { header: 'Tipo Requerimiento', dataKey: 'type_request' },
+        { header: 'Importancia', dataKey: 'importance' },
+        { header: 'Estado', dataKey: 'status' },
+      ]
+      const data = this.desserts
+      generatePDF.report(name, columns, data)
+    },
   },
 }
 </script>
+<style scoped>
+.color-importance--red {
+  color: #b71c1c;
+  font-weight: 600;
+}
+.color-importance--yellow {
+  color: #ff9100;
+  font-weight: 600;
+}
+.color-importance--green {
+  color: #00897b;
+  font-weight: 600;
+}
+</style>
