@@ -574,11 +574,6 @@ export default {
     this.getAllWarehouses()
     this.getAllMaterials()
   },
-  mounted() {
-    this.$root.$on('eventing', data => {
-      console.log(data)
-    })
-  },
   methods: {
     // Metodo para cargar recursos (API)
     async initialize() {
@@ -641,6 +636,8 @@ export default {
           const response = await api.destroy(url)
           if (response.status === 200) {
             this.deleteItem(item, response)
+
+            // this.getAllMaterials()
           } else {
             this.showErrors(response.errors)
           }

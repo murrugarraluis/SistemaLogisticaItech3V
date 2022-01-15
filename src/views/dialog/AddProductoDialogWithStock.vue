@@ -12,6 +12,7 @@
           class="mb-2"
           v-bind="attrs"
           v-on="on"
+          @click="onActivateGetMaterial"
         >
           <v-icon class="mr-1">
             {{ icons.mdiPlusCircleOutline }}
@@ -165,6 +166,9 @@ export default {
     },
     toggleMaterial(item, event) {
       this.$emit('toggleMaterial', item, event)
+    },
+    onActivateGetMaterial() {
+      this.getAllMaterials()
     },
 
     // Metodo Para restablecer valores por default
