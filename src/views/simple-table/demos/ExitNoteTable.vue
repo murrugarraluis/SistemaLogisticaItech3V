@@ -113,15 +113,28 @@
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
-                                <v-text-field
-                                  v-if="editedItem.type_exit === 'Por Requerimiento'"
-                                  v-model="editedItem.document_number"
-                                  label="Numero Documento"
-                                  :rules="documentnumberRules"
-                                  outlined
-                                  dense
-                                  :disabled="editedIndex !== -1"
-                                ></v-text-field>
+                                <div class="d-flex flex-row">
+                                  <v-text-field
+                                    v-if="editedItem.type_exit === 'Por Requerimiento'"
+                                    v-model="editedItem.document_number"
+                                    label="Numero Documento"
+                                    :rules="documentnumberRules"
+                                    outlined
+                                    dense
+                                    :disabled="editedIndex !== -1"
+                                  ></v-text-field>
+                                  <!-- <v-btn
+                                    v-if="editedItem.type_exit === 'Por Requerimiento'"
+                                    color="primary"
+                                    dark
+                                    elevation="2"
+                                    min-width="0"
+                                  >
+                                    <v-icon>
+                                      {{ icons.mdiMagnify }}
+                                    </v-icon>
+                                  </v-btn> -->
+                                </div>
                               </v-col>
                               <v-col cols="12">
                                 <v-textarea
@@ -549,14 +562,22 @@ export default {
         )
       }
     },
+
     'editedItem.warehouse': function () {
-      this.desserts_detail = []
+      if (this.editedIndex === -1) {
+        this.desserts_detail = []
+      }
     },
   },
   created() {
     this.initialize()
     this.getAllWarehouses()
     this.getAllMaterials()
+  },
+  mounted() {
+    this.$root.$on('eventing', data => {
+      console.log(data)
+    })
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -571,7 +592,7 @@ export default {
       this.editedItem = { ...item }
       this.desserts_detail = item.materials
       this.dialog = true
-      console.log(this.editedItem)
+      console.log(item.materials)
     },
 
     // Metodo para guardar cambios(crear o editar)

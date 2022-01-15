@@ -800,7 +800,8 @@ export default {
         cancelButtonText: 'Cancelar',
       }).then(async result => {
         if (result.isConfirmed) {
-          // Redirigiri a nueva nota de salida
+          this.$copyText(this.editedItem.id).then(this.showMessage('Copiado'))
+          this.$router.push('notas-salida')
         }
       })
     },

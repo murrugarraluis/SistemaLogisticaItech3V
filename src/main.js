@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueSweetalert2 from 'vue-sweetalert2'
 import Toast from 'vue-toastification'
 import axios from 'axios'
+import VueClipboard from 'vue-clipboard2'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
@@ -44,6 +45,7 @@ if (token) {
 }
 Vue.use(Toast, optionsToast)
 Vue.use(VueSweetalert2, options)
+Vue.use(VueClipboard)
 new Vue({
   router,
   store,
