@@ -17,7 +17,7 @@
   </v-card>
 </template>
 <script>
-import BaseTable from '@/views/simple-table/demos/ExitNoteTable.vue'
+import BaseTable from '@/views/simple-table/demos/EntryNoteTable.vue'
 
 export default {
   components: {
@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      mantenedor: 'Notas de Salida',
+      mantenedor: 'Notas de Ingreso',
     }
   },
 }

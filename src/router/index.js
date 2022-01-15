@@ -126,10 +126,11 @@ const routes = [
       requiresAuth: true,
     },
   },
+
   {
     path: '/notas-ingreso',
     name: 'notas-ingreso',
-    component: () => import('@/views/simple-table/demos/EntryNoteTable.vue'),
+    component: () => import('@/views/manteiners/EntryNoteMantainer.vue'),
     meta: {
       requiresAuth: true,
     },
