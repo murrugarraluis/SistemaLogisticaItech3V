@@ -100,7 +100,7 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_exit"
+                                  v-model="editedItem.way_to_pay"
                                   :items="items_way_to_pay"
                                   label="Forma Pago"
                                   outlined
@@ -111,7 +111,7 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_exit"
+                                  v-model="editedItem.type_quotation"
                                   :items="items_type_exit"
                                   label="Tipo Cotizacion"
                                   outlined
@@ -171,6 +171,11 @@
                           ></add-product-dialog>
                         </div>
                       </template>
+                      <div>
+                        <div class="d-flex justify-center">
+                          <span class="font-weight-black display-1">S/{{ calcTotalQuotation() }}</span>
+                        </div>
+                      </div>
                       <!--      Encabezado de Tabla-->
                       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
                         <v-text-field
@@ -191,31 +196,31 @@
                       >
                         <template v-slot:item.quantity="{ item }">
                           <v-text-field
-                            :key="item.id"
+                            v-model="item.quantity"
                             :hide-details="true"
                             dense
                             single-line
                             type="number"
                             min="1"
-                            :max="item.stock"
                             :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
-                            @change="setQuantityItem($event, item)"
                           ></v-text-field>
                         </template>
                         <template v-slot:item.price="{ item }">
                           <v-text-field
-                            :key="item.id"
+                            v-model="item.price"
                             :hide-details="true"
                             dense
                             single-line
                             type="number"
-                            min="1"
-                            :value="item.price > 0 ? item.price : 1"
+                            min="0"
+                            :value="item.price > 0 ? item.price : 0.0"
                             :disabled="editedIndex !== -1"
-                            @change="setQuantityItem($event, item)"
                           ></v-text-field>
+                        </template>
+                        <template v-slot:item.total="{ item }">
+                          {{ calcTotal(item) }}
                         </template>
 
                         <template v-slot:item.actions="{ item }">
@@ -342,14 +347,14 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
       >
-        <template v-slot:item.importance="{ item }">
+        <!-- <template v-slot:item.importance="{ item }">
           <span :class="getColorImportance(item.importance)"> {{ item.importance }}</span>
         </template>
         <template v-slot:item.status="{ item }">
           <v-chip :color="getColorStatus(item.status)">
             {{ item.status }}
           </v-chip>
-        </template>
+        </template> -->
         <template v-slot:item.actions="{ item }">
           <div class="pa-2">
             <v-btn
@@ -446,6 +451,12 @@ export default {
         sortable: false,
       },
       {
+        text: 'Total',
+        value: 'total',
+        width: '14%',
+        sortable: false,
+      },
+      {
         text: 'Acciones',
         align: 'end',
         value: 'actions',
@@ -455,8 +466,8 @@ export default {
     desserts_global: [],
     desserts_global_my_data: [],
     desserts: [],
-
     desserts_detail: [],
+    items_way_to_pay: ['Contado', 'Mensual', 'Semanal'],
 
     items_warehouse: [],
 
@@ -492,21 +503,25 @@ export default {
     // Variable para formulario
     editedItem: {
       id: '',
-      warehouse: 1,
       date: '',
-      type_exit: '',
-      comment: '',
+      date_agreed: '',
+      supplier: '',
+      way_to_pay: '',
+      type_quotation: '',
       document_number: '',
       materials: {},
+      total_amount: 0,
     },
     defaultItem: {
       id: '',
-      warehouse: 1,
       date: '',
-      type_exit: '',
-      comment: '',
+      date_agreed: '',
+      supplier: '',
+      way_to_pay: '',
+      type_quotation: '',
       document_number: '',
       materials: {},
+      total_amount: 0,
     },
     editedIndex: -1,
 
@@ -520,7 +535,7 @@ export default {
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu2: false,
 
-    items_type_exit: ['Por Requerimiento', 'Por Compra'],
+    items_type_exit: ['Por Requerimiento', 'Por Producto'],
 
     roles: localStorage.getItem('roles'),
   }),
@@ -589,6 +604,30 @@ export default {
         this.desserts_detail = []
       }
     },
+
+    desserts_detail: {
+      handler(val) {
+        let total = 0
+        val.forEach(item => {
+          total += item.total
+        })
+        this.editedItem.total_amount = total
+      },
+      deep: true,
+    },
+
+    // desserts_detail: {
+    //   handler(val) {
+    //     const vm = this
+    //     val.filter((p, idx) => Object.keys(p).some(prop => {
+    //       const diff = p[prop] !== vm.desserts_detail[idx][prop]
+    //       if (diff) {
+    //         vm.desserts_detail[idx][prop] = p[prop]
+    //       }
+    //     }))
+    //   },
+    //   deep: true,
+    // },
   },
   created() {
     this.initialize()
@@ -608,7 +647,6 @@ export default {
       this.editedItem = { ...item }
       this.desserts_detail = item.materials
       this.dialog = true
-      console.log(item.materials)
     },
 
     // Metodo para guardar cambios(crear o editar)
@@ -842,11 +880,11 @@ export default {
     },
 
     // Metodo para Obternet color de IMportancia
-    getColorStatus(status) {
-      if (status.toLowerCase() === 'pendiente') return '#FFC400'
+    // getColorStatus(status) {
+    //   if (status.toLowerCase() === 'pendiente') return '#FFC400'
 
-      return '#00897B'
-    },
+    //   return '#00897B'
+    // },
 
     //  Metodo para optener productos
     async getAllWarehouses() {
@@ -895,6 +933,16 @@ export default {
       ]
       const data = this.desserts
       generatePDF.report(name, columns, data)
+    },
+    calcTotal(item) {
+      const total = item.price * item.quantity
+      const index = this.desserts_detail.findIndex(val => val.name === item.name)
+      this.desserts_detail[index].total = total
+
+      return total
+    },
+    calcTotalQuotation() {
+      return this.editedItem.total_amount > 0 ? this.editedItem.total_amount : 0
     },
   },
 }
