@@ -58,14 +58,17 @@
                             <!--    Columnas de Inputs-->
                             <v-row>
                               <v-col cols="12">
-                                <v-text-field
+                                <v-autocomplete
                                   v-model="editedItem.supplier"
+                                  :items="items_suppliers"
                                   label="Proveedor"
+                                  item-text="fullname"
+                                  item-value="id"
                                   :rules="supplierRules"
                                   outlined
                                   dense
                                   :disabled="editedIndex !== -1"
-                                ></v-text-field>
+                                ></v-autocomplete>
                               </v-col>
                               <v-col cols="12">
                                 <v-menu
@@ -122,7 +125,7 @@
                               </v-col>
                               <v-col cols="12">
                                 <div class="d-flex flex-row">
-                                  <v-text-field
+                                  <!-- <v-text-field
                                     v-if="editedItem.type_quotation === 'Por Requerimiento'"
                                     v-model="editedItem.document_number"
                                     label="Numero Documento"
@@ -130,7 +133,19 @@
                                     outlined
                                     dense
                                     :disabled="editedIndex !== -1"
-                                  ></v-text-field>
+                                  ></v-text-field> -->
+                                  <v-autocomplete
+                                    v-if="editedItem.type_quotation === 'Por Requerimiento'"
+                                    v-model="editedItem.document_number"
+                                    :items="items_requests"
+                                    label="Numero Documento"
+                                    item-text="code"
+                                    item-value="id"
+                                    :rules="documentnumberRules"
+                                    outlined
+                                    dense
+                                    :disabled="editedIndex !== -1"
+                                  ></v-autocomplete>
                                   <!-- <v-btn
                                     v-if="editedItem.type_exit === 'Por Requerimiento'"
                                     color="primary"
@@ -537,7 +552,8 @@ export default {
     menu2: false,
 
     items_type_exit: ['Por Requerimiento', 'Por Producto'],
-
+    items_suppliers: [],
+    items_requests: [],
     roles: localStorage.getItem('roles'),
   }),
   computed: {
@@ -632,8 +648,8 @@ export default {
   },
   created() {
     this.initialize()
-    this.getAllWarehouses()
-    this.getAllMaterials()
+    this.getAllSuppliers()
+    this.getAllRequests()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -890,15 +906,15 @@ export default {
     // },
 
     //  Metodo para optener productos
-    async getAllWarehouses() {
-      const url = `${this.$URL_SERVE}/warehouses`
-      this.items_warehouse = await api.getAll(url)
+    async getAllSuppliers() {
+      const url = `${this.$URL_SERVE}/suppliers`
+      this.items_suppliers = await api.getAll(url)
     },
 
     //  Metodo para optener productos
-    async getAllMaterials() {
-      const url = `${this.$URL_SERVE}/materials`
-      this.desserts_products = await api.getAll(url)
+    async getAllRequests() {
+      const url = `${this.$URL_SERVE}/requests`
+      this.items_requests = await api.getAll(url)
     },
     toggleMaterial(item) {
       const existMaterial = this.desserts_detail.findIndex(val => val.code === item.code)
