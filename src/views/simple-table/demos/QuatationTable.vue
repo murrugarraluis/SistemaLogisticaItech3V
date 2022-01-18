@@ -218,7 +218,7 @@
                             type="number"
                             min="1"
                             :value="item.quantity > 0 ? item.quantity : 1"
-                            :disabled="editedIndex !== -1"
+                            :disabled="editedIndex !== -1 || quantityDisable"
                             oninput="validity.valid||(value='1');"
                           ></v-text-field>
                         </template>
@@ -498,6 +498,8 @@ export default {
     switch_my_request: false,
     switch_purchase: false,
 
+    quantityDisable: false,
+
     // Iconos
     icons: {
       mdiPencil,
@@ -616,9 +618,17 @@ export default {
       }
     },
 
-    'editedItem.warehouse': function () {
-      if (this.editedIndex === -1) {
+    'editedItem.document_number': function (val) {
+      if (val) {
+        this.getRequestById(val)
+      }
+    },
+    'editedItem.type_quotation': function (val) {
+      if (val) {
+        this.quantityDisable = false
         this.desserts_detail = []
+        this.editedItem.document_number = ''
+        console.log(this.desserts_detail)
       }
     },
 
@@ -909,6 +919,12 @@ export default {
     async getAllSuppliers() {
       const url = `${this.$URL_SERVE}/suppliers`
       this.items_suppliers = await api.getAll(url)
+    },
+    async getRequestById(id) {
+      const url = `${this.$URL_SERVE}/requests/${id}`
+      const response = await api.get(url)
+      this.quantityDisable = true
+      this.desserts_detail = response.data.materials
     },
 
     //  Metodo para optener productos
