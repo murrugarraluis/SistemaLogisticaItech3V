@@ -61,7 +61,7 @@
                                 <v-text-field
                                   v-model="editedItem.supplier"
                                   label="Proveedor"
-                                  :rules="documentnumberRules"
+                                  :rules="supplierRules"
                                   outlined
                                   dense
                                   :disabled="editedIndex !== -1"
@@ -91,7 +91,7 @@
                                     ></v-text-field>
                                   </template>
                                   <v-date-picker
-                                    v-model="editedItem.date"
+                                    v-model="editedItem.date_agreed"
                                     elevation="15"
                                     :min="date_min"
                                     @change="menu2 = false"
@@ -105,7 +105,7 @@
                                   label="Forma Pago"
                                   outlined
                                   dense
-                                  :rules="typeExitRules"
+                                  :rules="wayToPayRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
@@ -116,14 +116,14 @@
                                   label="Tipo Cotizacion"
                                   outlined
                                   dense
-                                  :rules="typeExitRules"
+                                  :rules="typeQuotationRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
                                 <div class="d-flex flex-row">
                                   <v-text-field
-                                    v-if="editedItem.type_exit === 'Por Requerimiento'"
+                                    v-if="editedItem.type_quotation === 'Por Requerimiento'"
                                     v-model="editedItem.document_number"
                                     label="Numero Documento"
                                     :rules="documentnumberRules"
@@ -526,9 +526,10 @@ export default {
     editedIndex: -1,
 
     // Reglas de Validacion
+    supplierRules: [v => !!v || 'Proveedor es obligatorio'],
     dateRequiredRules: [v => !!v || 'Fecha es obligatorio'],
-    warehouseRules: [v => !!v || 'Almacen es obligatorio'],
-    typeExitRules: [v => !!v || 'Tipo Salida es obligatorio'],
+    wayToPayRules: [v => !!v || 'Forma Pago es obligatorio'],
+    typeQuotationRules: [v => !!v || 'Tipo Cotizacion es obligatorio'],
     documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
@@ -544,7 +545,7 @@ export default {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Informacion ${this.table}`
     },
     computedDateFormattedDatefns() {
-      return this.editedItem.date ? format(parseISO(this.editedItem.date), 'dd/MM/yyyy') : ''
+      return this.editedItem.date_agreed ? format(parseISO(this.editedItem.date_agreed), 'dd/MM/yyyy') : ''
     },
     canRoleLogistics() {
       return this.roles.includes('logistics')
@@ -671,7 +672,9 @@ export default {
           if (response.status === 201) {
             this.insertItem(response)
           } else {
-            this.showErrors(response.errors)
+            console.log(response)
+
+            // this.showErrors(response.errors)
           }
         } else {
           this.$toast.error('Debe Agregar al menos un producto')
