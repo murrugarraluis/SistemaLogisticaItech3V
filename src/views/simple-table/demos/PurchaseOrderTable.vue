@@ -467,7 +467,7 @@ export default {
       { text: 'Fecha Requerida', value: 'date_required' },
       { text: 'Fecha Pactada', value: 'date_agreed' },
       { text: 'importance', value: 'importance' },
-      { text: 'Proveedor', value: 'supplier' },
+      { text: 'Proveedor', value: 'supplier_fullname' },
       { text: 'Estado', value: 'status' },
       { text: 'Total', value: 'total_amount' },
 
@@ -659,12 +659,13 @@ export default {
       }
     },
     'editedItem.type_quotation': function (val) {
-      if (val) {
-        this.quantityDisable = false
-        this.desserts_detail = []
-        this.editedItem.document_number = ''
-        console.log(this.desserts_detail)
-      }
+      this.$nextTick(() => {
+        if (val && this.editedIndex === -1) {
+          this.quantityDisable = false
+          this.desserts_detail = []
+          this.editedItem.document_number = ''
+        }
+      })
     },
 
     desserts_detail: {

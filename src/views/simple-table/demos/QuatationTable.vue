@@ -436,7 +436,7 @@ export default {
       { text: 'Fecha', value: 'date' },
       { text: 'Fecha Pactada', value: 'date_agreed' },
       { text: 'Forma Pago', value: 'way_to_pay' },
-      { text: 'Proveedor', value: 'supplier' },
+      { text: 'Proveedor', value: 'supplier_fullname' },
       { text: 'Estado', value: 'status' },
       { text: 'Total', value: 'total_amount' },
 
@@ -619,16 +619,20 @@ export default {
     },
 
     'editedItem.document_number': function (val) {
-      if (val) {
-        this.getRequestById(val)
-      }
+      this.$nextTick(() => {
+        if (val && this.editedIndex === -1) {
+          this.getRequestById(val)
+        }
+      })
     },
     'editedItem.type_quotation': function (val) {
-      if (val) {
-        this.quantityDisable = false
-        this.desserts_detail = []
-        this.editedItem.document_number = ''
-      }
+      this.$nextTick(() => {
+        if (val && this.editedIndex === -1) {
+          this.quantityDisable = false
+          this.desserts_detail = []
+          this.editedItem.document_number = ''
+        }
+      })
     },
 
     desserts_detail: {
@@ -636,10 +640,8 @@ export default {
         if (val) {
           this.$nextTick(() => {
             let total = 0
-            console.log(val)
             val.forEach(item => {
               total += item.total
-              console.log(item.total)
             })
             this.editedItem.total_amount = total
           })
@@ -675,6 +677,7 @@ export default {
 
     // Metodo para abrir modal de editar y capturar data
     edit(item) {
+      console.log(item)
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
       this.desserts_detail = item.materials
