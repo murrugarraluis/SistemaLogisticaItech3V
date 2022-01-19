@@ -245,7 +245,7 @@
                               fab
                               x-small
                               class="ma-1"
-                              :disabled="editedIndex !== -1"
+                              :disabled="editedIndex !== -1 || quantityDisable"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -677,7 +677,6 @@ export default {
 
     // Metodo para abrir modal de editar y capturar data
     edit(item) {
-      console.log(item)
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = { ...item }
       this.desserts_detail = item.materials

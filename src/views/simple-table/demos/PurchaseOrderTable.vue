@@ -115,7 +115,7 @@
                                       readonly
                                       v-bind="attrs"
                                       label="Fecha Pactada"
-                                      :rules="dateRequiredRules"
+                                      :rules="datePactRules"
                                       outlined
                                       dense
                                       :value="computedDateFormattedDatefns"
@@ -134,23 +134,23 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.way_to_pay"
+                                  v-model="editedItem.importance"
                                   :items="items_importance"
                                   label="Importancia"
                                   outlined
                                   dense
-                                  :rules="wayToPayRules"
+                                  :rules="importanceRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_quotation"
+                                  v-model="editedItem.type_purchase_order"
                                   :items="items_type_exit"
                                   label="Tipo Orden de Compra"
                                   outlined
                                   dense
-                                  :rules="typeQuotationRules"
+                                  :rules="typePurchaseOrderRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
@@ -166,7 +166,7 @@
                                     :disabled="editedIndex !== -1"
                                   ></v-text-field> -->
                                   <v-autocomplete
-                                    v-if="editedItem.type_quotation === 'Por Cotizacion'"
+                                    v-if="editedItem.type_purchase_order === 'Por Cotizacion'"
                                     v-model="editedItem.document_number"
                                     :items="items_requests"
                                     label="Numero Documento"
@@ -262,7 +262,7 @@
                             type="number"
                             min="0"
                             :value="item.price > 0 ? item.price : 0.0"
-                            :disabled="editedIndex !== -1"
+                            :disabled="editedIndex !== -1 || priceDisable"
                           ></v-text-field>
                         </template>
                         <template v-slot:item.total="{ item }">
@@ -276,7 +276,7 @@
                               fab
                               x-small
                               class="ma-1"
-                              :disabled="editedIndex !== -1"
+                              :disabled="editedIndex !== -1 || priceDisable"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -530,6 +530,7 @@ export default {
     switch_purchase: false,
 
     quantityDisable: false,
+    priceDisable: false,
 
     // Iconos
     icons: {
@@ -575,9 +576,10 @@ export default {
 
     // Reglas de Validacion
     supplierRules: [v => !!v || 'Proveedor es obligatorio'],
-    dateRequiredRules: [v => !!v || 'Fecha es obligatorio'],
-    wayToPayRules: [v => !!v || 'Forma Pago es obligatorio'],
-    typeQuotationRules: [v => !!v || 'Tipo Cotizacion es obligatorio'],
+    dateRequiredRules: [v => !!v || 'Fecha Requerida es obligatorio'],
+    datePactRules: [v => !!v || 'Fecha Pactada es obligatorio'],
+    importanceRules: [v => !!v || 'Importancia es obligatorio'],
+    typePurchaseOrderRules: [v => !!v || 'Tipo Orden de Compra es obligatorio'],
     documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
@@ -654,14 +656,17 @@ export default {
     },
 
     'editedItem.document_number': function (val) {
-      if (val) {
-        this.getRequestById(val)
-      }
+      this.$nextTick(() => {
+        if (val && this.editedIndex === -1) {
+          this.getQuotationById(val)
+        }
+      })
     },
-    'editedItem.type_quotation': function (val) {
+    'editedItem.type_purchase_order': function (val) {
       this.$nextTick(() => {
         if (val && this.editedIndex === -1) {
           this.quantityDisable = false
+          this.priceDisable = false
           this.desserts_detail = []
           this.editedItem.document_number = ''
         }
@@ -956,10 +961,11 @@ export default {
       const url = `${this.$URL_SERVE}/suppliers`
       this.items_suppliers = await api.getAll(url)
     },
-    async getRequestById(id) {
-      const url = `${this.$URL_SERVE}/requests/${id}`
+    async getQuotationById(id) {
+      const url = `${this.$URL_SERVE}/quotations/${id}`
       const response = await api.get(url)
       this.quantityDisable = true
+      this.priceDisable = true
       this.desserts_detail = response.data.materials
     },
 
