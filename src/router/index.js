@@ -93,15 +93,14 @@ const routes = [
       requiresAuth: true,
     },
   },
-
-  // {
-  //   path: '/compras',
-  //   name: 'compras',
-  //   component: () => import('@/views/simple-table/demos/PurcharseTable.vue'),
-  //   meta: {
-  //     requiresAuth: true,
-  //   },
-  // },
+  {
+    path: '/compras',
+    name: 'compras',
+    component: () => import('@/views/manteiners/PurchaseMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
   {
     path: '/almacenes',
     name: 'almacenes',
