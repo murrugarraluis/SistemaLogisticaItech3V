@@ -22,7 +22,7 @@
       <!--            Contenido Modal-->
       <v-card>
         <v-card-title class="primary">
-          <span class="white--text text-2xl pa-0"> Agregar {{ table }} {{ warehouse }} </span>
+          <span class="white--text text-2xl pa-0"> Agregar {{ table }}</span>
         </v-card-title>
 
         <v-card-text>
@@ -117,12 +117,12 @@ import { mdiPlusCircleOutline, mdiPlusThick } from '@mdi/js'
 import api from '@/api'
 
 export default {
-  props: {
-    warehouse: {
-      type: Number,
-      default: 1,
-    },
-  },
+  // props: {
+  //   warehouse: {
+  //     type: Number,
+  //     default: 1,
+  //   },
+  // },
   data: () => ({
     valid: true,
     table: 'Producto',
@@ -162,12 +162,13 @@ export default {
       // eslint-disable-next-line no-unused-expressions
       val || this.close()
     },
-    async warehouse(val) {
-      const url = `${this.$URL_SERVE}/warehouses/${val}/materials`
-      this.desserts_products = []
-      this.desserts_products = await api.getAll(url)
-      console.log(this.desserts_products)
-    },
+
+    // async warehouse(val) {
+    //   const url = `${this.$URL_SERVE}/warehouses/${val}/materials`
+    //   this.desserts_products = []
+    //   this.desserts_products = await api.getAll(url)
+    //   console.log(this.desserts_products)
+    // },
   },
   created() {
     this.getAllMaterials()

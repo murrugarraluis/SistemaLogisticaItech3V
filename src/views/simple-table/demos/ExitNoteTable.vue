@@ -587,7 +587,6 @@ export default {
       this.editedItem = { ...item }
       this.desserts_detail = item.materials
       this.dialog = true
-      console.log(item.materials)
     },
 
     // Metodo para guardar cambios(crear o editar)

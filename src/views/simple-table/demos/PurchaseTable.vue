@@ -72,7 +72,7 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-menu
-                                  v-model="menu2"
+                                  v-model="menu1"
                                   :close-on-content-click="false"
                                   :nudge-right="40"
                                   transition="scale-transition"
@@ -87,17 +87,17 @@
                                       :rules="dateRequiredRules"
                                       outlined
                                       dense
-                                      :value="computedDateFormattedDatefns"
+                                      :value="computedDateRequiredFormattedDatefns"
                                       :disabled="editedIndex !== -1"
                                       v-on="on"
                                       @click:clear="date = null"
                                     ></v-text-field>
                                   </template>
                                   <v-date-picker
-                                    v-model="editedItem.date_agreed"
+                                    v-model="editedItem.date"
                                     elevation="15"
                                     :min="date_min"
-                                    @change="menu2 = false"
+                                    @change="menu1 = false"
                                   ></v-date-picker>
                                 </v-menu>
                               </v-col>
@@ -114,12 +114,33 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_quotation"
-                                  :items="items_type_exit"
-                                  label="Tipo Cotizacion"
+                                  v-model="editedItem.type_document"
+                                  :items="items_type_document"
+                                  label="Tipo Documento"
                                   outlined
                                   dense
-                                  :rules="typeQuotationRules"
+                                  :rules="wayToPayRules"
+                                  :disabled="editedIndex !== -1"
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-text-field
+                                  v-model="editedItem.number"
+                                  label="Numero Documento"
+                                  :rules="numberRules"
+                                  outlined
+                                  dense
+                                  :disabled="editedIndex !== -1"
+                                ></v-text-field>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-select
+                                  v-model="editedItem.type_purchase"
+                                  :items="items_type_purchase"
+                                  label="Tipo de Compra"
+                                  outlined
+                                  dense
+                                  :rules="typePurchaseRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
@@ -135,13 +156,13 @@
                                     :disabled="editedIndex !== -1"
                                   ></v-text-field> -->
                                   <v-autocomplete
-                                    v-if="editedItem.type_quotation === 'Por Requerimiento'"
+                                    v-if="editedItem.type_purchase === 'Por Orden de Compra'"
                                     v-model="editedItem.document_number"
                                     :items="items_requests"
-                                    label="Numero Documento"
+                                    label="Documento"
                                     item-text="code"
                                     item-value="id"
-                                    :rules="documentnumberRules"
+                                    :rules="documentNumberRules"
                                     outlined
                                     dense
                                     :disabled="editedIndex !== -1"
@@ -231,7 +252,7 @@
                             type="number"
                             min="0"
                             :value="item.price > 0 ? item.price : 0.0"
-                            :disabled="editedIndex !== -1"
+                            :disabled="editedIndex !== -1 || priceDisable"
                           ></v-text-field>
                         </template>
                         <template v-slot:item.total="{ item }">
@@ -245,7 +266,7 @@
                               fab
                               x-small
                               class="ma-1"
-                              :disabled="editedIndex !== -1 || quantityDisable"
+                              :disabled="editedIndex !== -1 || priceDisable"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -364,8 +385,8 @@
       >
         <!-- <template v-slot:item.importance="{ item }">
           <span :class="getColorImportance(item.importance)"> {{ item.importance }}</span>
-        </template>
-        <template v-slot:item.status="{ item }">
+        </template> -->
+        <!-- <template v-slot:item.status="{ item }">
           <v-chip :color="getColorStatus(item.status)">
             {{ item.status }}
           </v-chip>
@@ -427,16 +448,17 @@ export default {
   },
   data: () => ({
     valid: true,
-    table: 'Cotizaciones',
-    uri: 'quotations',
+    table: 'Compra',
+    uri: 'purchases',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Fecha', value: 'date' },
-      { text: 'Fecha Pactada', value: 'date_agreed' },
-      { text: 'Forma Pago', value: 'way_to_pay' },
       { text: 'Proveedor', value: 'supplier_fullname' },
+      { text: 'Forma Pago', value: 'way_to_pay' },
+      { text: 'Tipo Documento', value: 'type_document' },
+      { text: 'Numero Documento', value: 'number' },
       { text: 'Estado', value: 'status' },
       { text: 'Total', value: 'total_amount' },
 
@@ -482,8 +504,9 @@ export default {
     desserts_global_my_data: [],
     desserts: [],
     desserts_detail: [],
+    items_importance: ['Baja', 'Media', 'Alta'],
     items_way_to_pay: ['Contado', 'Mensual', 'Semanal'],
-
+    items_type_document: ['Boleta', 'Factura'],
     items_warehouse: [],
 
     // Variables para ordenamiento de tabla
@@ -499,6 +522,7 @@ export default {
     switch_purchase: false,
 
     quantityDisable: false,
+    priceDisable: false,
 
     // Iconos
     icons: {
@@ -546,14 +570,17 @@ export default {
     supplierRules: [v => !!v || 'Proveedor es obligatorio'],
     dateRequiredRules: [v => !!v || 'Fecha es obligatorio'],
     wayToPayRules: [v => !!v || 'Forma Pago es obligatorio'],
-    typeQuotationRules: [v => !!v || 'Tipo Cotizacion es obligatorio'],
-    documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
+    typeDocumentRules: [v => !!v || 'Tipo Documento es obligatorio'],
+    numberRules: [v => !!v || 'Numero Documento es obligatorio'],
+    typePurchaseRules: [v => !!v || 'Tipo de Compra es obligatorio'],
+    documentNumberRules: [v => !!v || 'Documento es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+    menu1: false,
     menu2: false,
 
-    items_type_exit: ['Por Requerimiento', 'Por Producto'],
+    items_type_purchase: ['Por Orden de Compra', 'Por Producto'],
     items_suppliers: [],
     items_requests: [],
     roles: localStorage.getItem('roles'),
@@ -561,6 +588,9 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Informacion ${this.table}`
+    },
+    computedDateRequiredFormattedDatefns() {
+      return this.editedItem.date ? format(parseISO(this.editedItem.date), 'dd/MM/yyyy') : ''
     },
     computedDateFormattedDatefns() {
       return this.editedItem.date_agreed ? format(parseISO(this.editedItem.date_agreed), 'dd/MM/yyyy') : ''
@@ -621,14 +651,15 @@ export default {
     'editedItem.document_number': function (val) {
       this.$nextTick(() => {
         if (val && this.editedIndex === -1) {
-          this.getRequestById(val)
+          this.getPurchaseOrderById(val)
         }
       })
     },
-    'editedItem.type_quotation': function (val) {
+    'editedItem.type_purchase_order': function (val) {
       this.$nextTick(() => {
         if (val && this.editedIndex === -1) {
           this.quantityDisable = false
+          this.priceDisable = false
           this.desserts_detail = []
           this.editedItem.document_number = ''
         }
@@ -637,15 +668,11 @@ export default {
 
     desserts_detail: {
       handler(val) {
-        if (val) {
-          this.$nextTick(() => {
-            let total = 0
-            val.forEach(item => {
-              total += item.total
-            })
-            this.editedItem.total_amount = total
-          })
-        }
+        let total = 0
+        val.forEach(item => {
+          total += item.total
+        })
+        this.editedItem.total_amount = total
       },
       deep: true,
     },
@@ -666,7 +693,7 @@ export default {
   created() {
     this.initialize()
     this.getAllSuppliers()
-    this.getAllRequests()
+    this.getAllPurchaseOrders()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -809,6 +836,8 @@ export default {
     insertItem(response) {
       this.desserts.push(response.data)
       this.close()
+      this.quantityDisable = false
+      this.priceDisable = false
       this.showMessage(response.message)
     },
 
@@ -927,16 +956,17 @@ export default {
       const url = `${this.$URL_SERVE}/suppliers`
       this.items_suppliers = await api.getAll(url)
     },
-    async getRequestById(id) {
-      const url = `${this.$URL_SERVE}/requests/${id}`
+    async getPurchaseOrderById(id) {
+      const url = `${this.$URL_SERVE}/purchase-orders/${id}`
       const response = await api.get(url)
       this.quantityDisable = true
+      this.priceDisable = true
       this.desserts_detail = response.data.materials
     },
 
     //  Metodo para optener productos
-    async getAllRequests() {
-      const url = `${this.$URL_SERVE}/requests`
+    async getAllPurchaseOrders() {
+      const url = `${this.$URL_SERVE}/purchase-orders`
       this.items_requests = await api.getAll(url)
     },
     toggleMaterial(item) {

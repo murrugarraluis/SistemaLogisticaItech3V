@@ -72,6 +72,37 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-menu
+                                  v-model="menu1"
+                                  :close-on-content-click="false"
+                                  :nudge-right="40"
+                                  transition="scale-transition"
+                                  offset-y
+                                  min-width="auto"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-text-field
+                                      readonly
+                                      v-bind="attrs"
+                                      label="Fecha Requerida"
+                                      :rules="dateRequiredRules"
+                                      outlined
+                                      dense
+                                      :value="computedDateRequiredFormattedDatefns"
+                                      :disabled="editedIndex !== -1"
+                                      v-on="on"
+                                      @click:clear="date = null"
+                                    ></v-text-field>
+                                  </template>
+                                  <v-date-picker
+                                    v-model="editedItem.date_required"
+                                    elevation="15"
+                                    :min="date_min"
+                                    @change="menu1 = false"
+                                  ></v-date-picker>
+                                </v-menu>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-menu
                                   v-model="menu2"
                                   :close-on-content-click="false"
                                   :nudge-right="40"
@@ -83,8 +114,8 @@
                                     <v-text-field
                                       readonly
                                       v-bind="attrs"
-                                      label="Fecha"
-                                      :rules="dateRequiredRules"
+                                      label="Fecha Pactada"
+                                      :rules="datePactRules"
                                       outlined
                                       dense
                                       :value="computedDateFormattedDatefns"
@@ -103,23 +134,23 @@
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.way_to_pay"
-                                  :items="items_way_to_pay"
-                                  label="Forma Pago"
+                                  v-model="editedItem.importance"
+                                  :items="items_importance"
+                                  label="Importancia"
                                   outlined
                                   dense
-                                  :rules="wayToPayRules"
+                                  :rules="importanceRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
                               <v-col cols="12">
                                 <v-select
-                                  v-model="editedItem.type_quotation"
+                                  v-model="editedItem.type_purchase_order"
                                   :items="items_type_exit"
-                                  label="Tipo Cotizacion"
+                                  label="Tipo Orden de Compra"
                                   outlined
                                   dense
-                                  :rules="typeQuotationRules"
+                                  :rules="typePurchaseOrderRules"
                                   :disabled="editedIndex !== -1"
                                 ></v-select>
                               </v-col>
@@ -135,7 +166,7 @@
                                     :disabled="editedIndex !== -1"
                                   ></v-text-field> -->
                                   <v-autocomplete
-                                    v-if="editedItem.type_quotation === 'Por Requerimiento'"
+                                    v-if="editedItem.type_purchase_order === 'Por Cotizacion'"
                                     v-model="editedItem.document_number"
                                     :items="items_requests"
                                     label="Numero Documento"
@@ -231,7 +262,7 @@
                             type="number"
                             min="0"
                             :value="item.price > 0 ? item.price : 0.0"
-                            :disabled="editedIndex !== -1"
+                            :disabled="editedIndex !== -1 || priceDisable"
                           ></v-text-field>
                         </template>
                         <template v-slot:item.total="{ item }">
@@ -245,7 +276,7 @@
                               fab
                               x-small
                               class="ma-1"
-                              :disabled="editedIndex !== -1 || quantityDisable"
+                              :disabled="editedIndex !== -1 || priceDisable"
                               @click="removeMaterial(item)"
                             >
                               <v-icon color="white">
@@ -362,10 +393,10 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
       >
-        <!-- <template v-slot:item.importance="{ item }">
+        <template v-slot:item.importance="{ item }">
           <span :class="getColorImportance(item.importance)"> {{ item.importance }}</span>
         </template>
-        <template v-slot:item.status="{ item }">
+        <!-- <template v-slot:item.status="{ item }">
           <v-chip :color="getColorStatus(item.status)">
             {{ item.status }}
           </v-chip>
@@ -427,15 +458,15 @@ export default {
   },
   data: () => ({
     valid: true,
-    table: 'Cotizaciones',
-    uri: 'quotations',
+    table: 'Ordenes de Compra',
+    uri: 'purchase-orders',
 
     // Variables de uso en tabla
     headers: [
       { text: 'Codigo', align: 'start', value: 'code' },
-      { text: 'Fecha', value: 'date' },
+      { text: 'Fecha Requerida', value: 'date_required' },
       { text: 'Fecha Pactada', value: 'date_agreed' },
-      { text: 'Forma Pago', value: 'way_to_pay' },
+      { text: 'importance', value: 'importance' },
       { text: 'Proveedor', value: 'supplier_fullname' },
       { text: 'Estado', value: 'status' },
       { text: 'Total', value: 'total_amount' },
@@ -482,7 +513,7 @@ export default {
     desserts_global_my_data: [],
     desserts: [],
     desserts_detail: [],
-    items_way_to_pay: ['Contado', 'Mensual', 'Semanal'],
+    items_importance: ['Baja', 'Media', 'Alta'],
 
     items_warehouse: [],
 
@@ -499,6 +530,7 @@ export default {
     switch_purchase: false,
 
     quantityDisable: false,
+    priceDisable: false,
 
     // Iconos
     icons: {
@@ -544,16 +576,18 @@ export default {
 
     // Reglas de Validacion
     supplierRules: [v => !!v || 'Proveedor es obligatorio'],
-    dateRequiredRules: [v => !!v || 'Fecha es obligatorio'],
-    wayToPayRules: [v => !!v || 'Forma Pago es obligatorio'],
-    typeQuotationRules: [v => !!v || 'Tipo Cotizacion es obligatorio'],
+    dateRequiredRules: [v => !!v || 'Fecha Requerida es obligatorio'],
+    datePactRules: [v => !!v || 'Fecha Pactada es obligatorio'],
+    importanceRules: [v => !!v || 'Importancia es obligatorio'],
+    typePurchaseOrderRules: [v => !!v || 'Tipo Orden de Compra es obligatorio'],
     documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
+    menu1: false,
     menu2: false,
 
-    items_type_exit: ['Por Requerimiento', 'Por Producto'],
+    items_type_exit: ['Por Cotizacion', 'Por Producto'],
     items_suppliers: [],
     items_requests: [],
     roles: localStorage.getItem('roles'),
@@ -561,6 +595,9 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Informacion ${this.table}`
+    },
+    computedDateRequiredFormattedDatefns() {
+      return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
     },
     computedDateFormattedDatefns() {
       return this.editedItem.date_agreed ? format(parseISO(this.editedItem.date_agreed), 'dd/MM/yyyy') : ''
@@ -621,14 +658,15 @@ export default {
     'editedItem.document_number': function (val) {
       this.$nextTick(() => {
         if (val && this.editedIndex === -1) {
-          this.getRequestById(val)
+          this.getQuotationById(val)
         }
       })
     },
-    'editedItem.type_quotation': function (val) {
+    'editedItem.type_purchase_order': function (val) {
       this.$nextTick(() => {
         if (val && this.editedIndex === -1) {
           this.quantityDisable = false
+          this.priceDisable = false
           this.desserts_detail = []
           this.editedItem.document_number = ''
         }
@@ -637,15 +675,11 @@ export default {
 
     desserts_detail: {
       handler(val) {
-        if (val) {
-          this.$nextTick(() => {
-            let total = 0
-            val.forEach(item => {
-              total += item.total
-            })
-            this.editedItem.total_amount = total
-          })
-        }
+        let total = 0
+        val.forEach(item => {
+          total += item.total
+        })
+        this.editedItem.total_amount = total
       },
       deep: true,
     },
@@ -666,7 +700,7 @@ export default {
   created() {
     this.initialize()
     this.getAllSuppliers()
-    this.getAllRequests()
+    this.getAllQuotations()
   },
   methods: {
     // Metodo para cargar recursos (API)
@@ -927,16 +961,17 @@ export default {
       const url = `${this.$URL_SERVE}/suppliers`
       this.items_suppliers = await api.getAll(url)
     },
-    async getRequestById(id) {
-      const url = `${this.$URL_SERVE}/requests/${id}`
+    async getQuotationById(id) {
+      const url = `${this.$URL_SERVE}/quotations/${id}`
       const response = await api.get(url)
       this.quantityDisable = true
+      this.priceDisable = true
       this.desserts_detail = response.data.materials
     },
 
     //  Metodo para optener productos
-    async getAllRequests() {
-      const url = `${this.$URL_SERVE}/requests`
+    async getAllQuotations() {
+      const url = `${this.$URL_SERVE}/quotations`
       this.items_requests = await api.getAll(url)
     },
     toggleMaterial(item) {

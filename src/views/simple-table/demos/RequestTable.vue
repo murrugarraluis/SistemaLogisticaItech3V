@@ -188,7 +188,7 @@
                       >
                         <template v-slot:item.quantity="{ item }">
                           <v-text-field
-                            :key="item.id"
+                            v-model="item.quantity"
                             :hide-details="true"
                             dense
                             single-line
@@ -197,7 +197,6 @@
                             :value="item.quantity > 0 ? item.quantity : 1"
                             :disabled="editedIndex !== -1"
                             oninput="validity.valid||(value='1');"
-                            @change="setQuantityItem($event, item)"
                           ></v-text-field>
                         </template>
 
@@ -871,11 +870,12 @@ export default {
       const url = `${this.$URL_SERVE}/materials`
       this.desserts_products = await api.getAll(url)
     },
-    toggleMaterial(item, event) {
-      if (event) {
+    toggleMaterial(item) {
+      const existMaterial = this.desserts_detail.findIndex(val => val.code === item.code)
+      if (existMaterial === -1) {
         this.addMaterial(item)
       } else {
-        this.removeMaterial(item)
+        this.$toast.error('El Material ya esta en lista')
       }
     },
     addMaterial(item) {
