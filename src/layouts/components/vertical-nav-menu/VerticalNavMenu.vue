@@ -177,6 +177,17 @@
         :to="{ name: 'notas-salida' }"
         :icon="icons.mdiClipboardTextOutline"
       ></nav-menu-link>
+      <nav-menu-group
+        v-if="canViewMaterials"
+        title="Reportes"
+        :icon="icons.mdiPackageVariantClosed"
+      >
+        <nav-menu-link
+          title="Requerimentos"
+          :to="{ name: 'reportes-requerimiento' }"
+          :icon="icons.mdiPackageVariantClosed"
+        ></nav-menu-link>
+      </nav-menu-group>
       <!-- <nav-menu-link
         title="Configuracion"
         :to="{ name: 'configuracion' }"
