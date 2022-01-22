@@ -146,7 +146,10 @@
               </v-row>
             </v-card>
           </v-col>
-          <v-col cols="12">
+          <v-col
+            cols="12"
+            md="6"
+          >
             <!--                Tabla Detalle-->
             <v-card class="pa-4">
               <!--      Modal-->
@@ -234,6 +237,32 @@
               </v-data-table>
             </v-card>
           </v-col>
+          <v-col
+            cols="12"
+            md="6"
+          >
+            <!--                Tabla Detalle-->
+            <v-card class="pa-4">
+              <!--      Modal-->
+              <template>
+                <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                  <h3 class="py-4">
+                    Reporte Grafico
+                  </h3>
+                </div>
+              </template>
+              <div>
+                <div id="chart">
+                  <vue-apex-charts
+                    v-if="renderGrapihcs"
+                    :options="chartOptions"
+                    :series="series"
+                    :height="desserts_detail.length > 0 ? '690' : '226'"
+                  ></vue-apex-charts>
+                </div>
+              </div>
+            </v-card>
+          </v-col>
         </v-row>
       </v-card-text>
     </v-card>
@@ -253,12 +282,51 @@ import {
   mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
-
+import VueApexCharts from 'vue-apexcharts'
 import api from '@/api'
 import generatePDF from '@/reports/jsPDF/jsPDF'
 
 export default {
+  components: {
+    VueApexCharts,
+  },
   data: () => ({
+    renderGrapihcs: true,
+    series: [
+      {
+        name: 'Requests',
+        data: [],
+      },
+    ],
+    chartOptions: {
+      chart: {
+        height: 350,
+        type: 'line',
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        curve: 'straight',
+      },
+      title: {
+        text: 'Cantidad de Requerimientos por Mes',
+        align: 'left',
+      },
+      grid: {
+        row: {
+          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          opacity: 0.5,
+        },
+      },
+      xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      },
+    },
+
     valid: true,
     table: 'Ordenes de Compra',
     uri: 'purchase-orders',
@@ -286,6 +354,7 @@ export default {
       'Para Logistica',
       'Para Almacen',
     ],
+    data_report: [],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -376,6 +445,15 @@ export default {
 
       if (validation) {
         [this.desserts_detail, this.data_report] = await api.getAllReport(url)
+        this.chartOptions.xaxis.categories = this.data_report.months
+        this.series[0].data = this.data_report.amount_months
+        console.log(this.chartOptions.xaxis.categories)
+        console.log(this.series[0].data)
+        this.renderGrapihcs = false
+        this.$nextTick(() => {
+          // Add the component back in
+          this.renderGrapihcs = true
+        })
       } else {
         this.$toast.error('Debe Agregar al menos un producto')
       }

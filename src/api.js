@@ -13,7 +13,6 @@ async function getAllReport(url) {
   let items = null
   let dataAdditional = ''
   await axios.get(url).then(result => {
-    console.log(result)
     const { data } = result.data
     const { additional } = result.data
     items = [...data]
