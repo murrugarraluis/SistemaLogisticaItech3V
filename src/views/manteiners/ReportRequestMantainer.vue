@@ -16,10 +16,7 @@
     <v-card>
       <v-card-text class="pa-6">
         <v-row>
-          <v-col
-            cols="12"
-            md="4"
-          >
+          <v-col cols="12">
             <v-card class="pa-4">
               <v-row class-name="match-height">
                 <v-col cols="12">
@@ -37,7 +34,10 @@
                   >
                     <!--    Columnas de Inputs-->
                     <v-row>
-                      <v-col cols="12">
+                      <v-col
+                        cols="12"
+                        md="4"
+                      >
                         <v-autocomplete
                           v-model="editedItem.status"
                           :items="items_status"
@@ -47,7 +47,10 @@
                           dense
                         ></v-autocomplete>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col
+                        cols="12"
+                        md="8"
+                      >
                         <v-autocomplete
                           v-model="editedItem.type_request"
                           :items="items_type_request"
@@ -57,7 +60,10 @@
                           dense
                         ></v-autocomplete>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col
+                        cols="12"
+                        md="5"
+                      >
                         <v-menu
                           v-model="menu1"
                           :close-on-content-click="false"
@@ -70,8 +76,8 @@
                             <v-text-field
                               readonly
                               v-bind="attrs"
-                              label="Fecha Requerida"
-                              :rules="dateRequiredRules"
+                              label="Fecha Inicio"
+                              :rules="dateMinRules"
                               outlined
                               dense
                               :value="computedDateRequiredFormattedDatefns"
@@ -81,14 +87,16 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                            v-model="editedItem.date_required"
+                            v-model="editedItem.date_min"
                             elevation="15"
-                            :min="date_min"
                             @change="menu1 = false"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col
+                        cols="12"
+                        md="5"
+                      >
                         <v-menu
                           v-model="menu2"
                           :close-on-content-click="false"
@@ -101,8 +109,8 @@
                             <v-text-field
                               readonly
                               v-bind="attrs"
-                              label="Fecha Pactada"
-                              :rules="datePactRules"
+                              label="Fecha Final"
+                              :rules="dateMaxRules"
                               outlined
                               dense
                               :value="computedDateFormattedDatefns"
@@ -112,19 +120,21 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                            v-model="editedItem.date_agreed"
+                            v-model="editedItem.date_max"
                             elevation="15"
-                            :min="date_min"
                             @change="menu2 = false"
                           ></v-date-picker>
                         </v-menu>
                       </v-col>
-                      <v-col cols="12">
-                        <div class="d-flex justify-center">
+                      <v-col
+                        cols="12"
+                        md="2"
+                      >
+                        <div class="d-flex justify-center justify-md-end">
                           <v-btn
                             color="primary"
-                            elevation="2"
-                            large
+                            elevation="1"
+                            @click="save"
                           >
                             Buscar
                           </v-btn>
@@ -136,10 +146,7 @@
               </v-row>
             </v-card>
           </v-col>
-          <v-col
-            cols="12"
-            md="8"
-          >
+          <v-col cols="12">
             <!--                Tabla Detalle-->
             <v-card class="pa-4">
               <!--      Modal-->
@@ -150,10 +157,9 @@
                   </h3>
                   <div>
                     <v-btn
-                      block
                       color="primary"
                       elevation="2"
-                      large
+                      @click="generatePDF()"
                     >
                       Reportar
                     </v-btn>
@@ -258,26 +264,6 @@ export default {
     uri: 'purchase-orders',
 
     maintainer: 'Reporte de Requerimientos',
-
-    // Variables de uso en tabla
-    headers: [
-      { text: 'Codigo', align: 'start', value: 'code' },
-      { text: 'Fecha Requerida', value: 'date_required' },
-      { text: 'Fecha Pactada', value: 'date_agreed' },
-      { text: 'importance', value: 'importance' },
-      { text: 'Proveedor', value: 'supplier_fullname' },
-      { text: 'Estado', value: 'status' },
-      { text: 'Total', value: 'total_amount' },
-
-      // { text: 'Importancia', align: 'center', value: 'importance' },
-      // { text: 'Estado', align: 'center', value: 'status' },
-      {
-        text: 'Acciones',
-        align: 'end',
-        value: 'actions',
-        sortable: false,
-      },
-    ],
     headers_detail: [
       { text: 'Codigo', align: 'start', value: 'code' },
       { text: 'Fecha Requerida', value: 'date_required' },
@@ -291,7 +277,15 @@ export default {
     desserts_detail: [],
     items_importance: ['Baja', 'Media', 'Alta'],
 
-    items_warehouse: [],
+    items_status: ['Pendiente', 'Confirmado'],
+    items_type_request: [
+      'Para Marketing',
+      'Para Ventas',
+      'Para Gerencia',
+      'Para Contabilidad',
+      'Para Logistica',
+      'Para Almacen',
+    ],
 
     // Variables para ordenamiento de tabla
     sortBy: 'code',
@@ -301,12 +295,6 @@ export default {
     search: '',
     search_detail: '',
     select_status: 'Pendiente',
-
-    switch_my_request: false,
-    switch_purchase: false,
-
-    quantityDisable: false,
-    priceDisable: false,
 
     // Iconos
     icons: {
@@ -351,148 +339,25 @@ export default {
     editedIndex: -1,
 
     // Reglas de Validacion
-    supplierRules: [v => !!v || 'Proveedor es obligatorio'],
-    dateRequiredRules: [v => !!v || 'Fecha Requerida es obligatorio'],
-    datePactRules: [v => !!v || 'Fecha Pactada es obligatorio'],
-    importanceRules: [v => !!v || 'Importancia es obligatorio'],
-    typePurchaseOrderRules: [v => !!v || 'Tipo Orden de Compra es obligatorio'],
-    documentnumberRules: [v => !!v || 'Numero Documento es obligatorio'],
+    statusRules: [v => !!v || 'Estado es obligatorio'],
+    typeRequestRules: [v => !!v || 'Tipo Requeriiento es obligatorio'],
+    dateMinRules: [v => !!v || 'Fecha Inicio es obligatorio'],
+    dateMaxRules: [v => !!v || 'Fecha Final es obligatorio'],
 
     date: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu1: false,
     menu2: false,
-
-    items_type_exit: ['Por Cotizacion', 'Por Producto'],
-    items_suppliers: [],
-    items_requests: [],
-    roles: localStorage.getItem('roles'),
   }),
   computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? `Nuevo ${this.table}` : `Informacion ${this.table}`
-    },
     computedDateRequiredFormattedDatefns() {
-      return this.editedItem.date_required ? format(parseISO(this.editedItem.date_required), 'dd/MM/yyyy') : ''
+      return this.editedItem.date_min ? format(parseISO(this.editedItem.date_min), 'dd/MM/yyyy') : ''
     },
     computedDateFormattedDatefns() {
-      return this.editedItem.date_agreed ? format(parseISO(this.editedItem.date_agreed), 'dd/MM/yyyy') : ''
+      return this.editedItem.date_max ? format(parseISO(this.editedItem.date_max), 'dd/MM/yyyy') : ''
     },
-    canRoleLogistics() {
-      return this.roles.includes('logistics')
-    },
-    canRoleWarehouse() {
-      return this.roles.includes('warehouse')
-    },
-  },
-  watch: {
-    dialog(val) {
-      // eslint-disable-next-line no-unused-expressions
-      val || this.close()
-    },
-
-    select_status() {
-      if (this.switch_my_request || (!this.canRoleWarehouse && !this.canRoleLogistics)) {
-        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
-      } else if (this.canRoleLogistics) {
-        this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status
-            && item.type_request !== 'Para Logistica'
-            && item.type_request !== 'Para Compra',
-        )
-      } else {
-        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
-      }
-    },
-    switch_my_request(val) {
-      if (val) {
-        this.desserts = this.desserts_global_my_data.filter(item => item.status === this.select_status)
-      } else if (this.canRoleLogistics) {
-        this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status
-            && item.type_request !== 'Para Logistica'
-            && item.type_request !== 'Para Compra',
-        )
-      } else {
-        this.desserts = this.desserts_global.filter(item => item.status === this.select_status)
-      }
-    },
-    switch_purchase(val) {
-      if (val) {
-        this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status && item.type_request === 'Para Compra',
-        )
-      } else {
-        this.desserts = this.desserts_global.filter(
-          item => item.status === this.select_status
-            && item.type_request !== 'Para Logistica'
-            && item.type_request !== 'Para Compra',
-        )
-      }
-    },
-
-    'editedItem.document_number': function (val) {
-      this.$nextTick(() => {
-        if (val && this.editedIndex === -1) {
-          this.getQuotationById(val)
-        }
-      })
-    },
-    'editedItem.type_purchase_order': function (val) {
-      this.$nextTick(() => {
-        if (val && this.editedIndex === -1) {
-          this.quantityDisable = false
-          this.priceDisable = false
-          this.desserts_detail = []
-          this.editedItem.document_number = ''
-        }
-      })
-    },
-
-    desserts_detail: {
-      handler(val) {
-        let total = 0
-        val.forEach(item => {
-          total += item.total
-        })
-        this.editedItem.total_amount = total
-      },
-      deep: true,
-    },
-
-    // desserts_detail: {
-    //   handler(val) {
-    //     const vm = this
-    //     val.filter((p, idx) => Object.keys(p).some(prop => {
-    //       const diff = p[prop] !== vm.desserts_detail[idx][prop]
-    //       if (diff) {
-    //         vm.desserts_detail[idx][prop] = p[prop]
-    //       }
-    //     }))
-    //   },
-    //   deep: true,
-    // },
-  },
-  created() {
-    this.initialize()
-    this.getAllSuppliers()
-    this.getAllQuotations()
   },
   methods: {
-    // Metodo para cargar recursos (API)
-    async initialize() {
-      const url = `${this.$URL_SERVE}/${this.uri}/`
-      this.desserts = await api.getAll(url)
-    },
-
-    // Metodo para abrir modal de editar y capturar data
-    edit(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      this.desserts_detail = item.materials
-      this.dialog = true
-    },
-
     // Metodo para guardar cambios(crear o editar)
     async save() {
       if (this.editedIndex > -1) {
@@ -505,206 +370,14 @@ export default {
     // Metodo para crear recurso (API)
     async register() {
       const data = this.editedItem
-      const url = `${this.$URL_SERVE}/${this.uri}`
+      const url = `${this.$URL_SERVE}/requests?status=${data.status}&&type_request=${data.type_request}&&date_min=${data.date_min}&&date_max=${data.date_max}`
       const validation = this.$refs.form.validate()
       if (validation) {
-        // no esta vacio
-        if (Object.keys(this.desserts_detail).length !== 0) {
-          Object.assign(this.editedItem.materials, { ...this.desserts_detail })
-          const response = await api.register(url, data)
-          if (response.status === 201) {
-            this.insertItem(response)
-          } else {
-            console.log(response)
-
-            // this.showErrors(response.errors)
-          }
-        } else {
-          this.$toast.error('Debe Agregar al menos un producto')
-        }
-      }
-    },
-
-    // Metodo para eliminar un recurso (API)
-    destroy(item) {
-      const { id } = { ...item }
-      this.$swal({
-        title: '¿Está Seguro?',
-        text: 'Una vez eliminado ya no se podrá recuperar!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, Eliminar!',
-        cancelButtonText: 'Cancelar',
-      }).then(async result => {
-        if (result.isConfirmed) {
-          const url = `${this.$URL_SERVE}/${this.uri}/${id}`
-          const response = await api.destroy(url)
-          if (response.status === 200) {
-            this.deleteItem(item, response)
-
-            // this.getAllMaterials()
-          } else {
-            this.showErrors(response.errors)
-          }
-        }
-      })
-    },
-
-    // Metodo para saber si un recurso a sido eliminado
-    async isDeleted(name) {
-      const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}`
-      const response = await api.getDeleted(url)
-
-      return response.status === 200
-    },
-
-    // Metodo para restaurar un recurso eliminado
-    restore(name) {
-      this.$swal({
-        title: '¿Desea Restaurar?',
-        text: 'Este recurso ha sido eliminado anteriormente',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, Restaurar!',
-        cancelButtonText: 'Cancelar',
-      }).then(async result => {
-        if (result.isConfirmed) {
-          const url = `${this.$URL_SERVE}/${this.uri}/deleted/${name}/restore`
-          const response = await api.restore(url)
-          if (response.status === 200) {
-            this.insertItem(response)
-          } else {
-            this.showErrors(response.errors)
-          }
-        }
-      })
-    },
-
-    // Metodo para Enviar Requerimiento a almacen
-    async sendToWarehouse(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      const data = this.editedItem
-
-      const json = {
-        status: 'Pendiente',
-        status_message: 'Enviado a Almacen',
-      }
-
-      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/change-status`
-      const response = await api.updatePatch(url, json)
-
-      if (response.status === 200) {
-        this.updateItem(response)
+        this.desserts_detail = await api.getAll(url)
+        console.log(this.desserts_detail)
       } else {
-        this.showErrors(response.errors)
+        this.$toast.error('Debe Agregar al menos un producto')
       }
-    },
-
-    // Metodo para Evaluar Requerimiento
-    async evaluateRequest(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = { ...item }
-      const data = this.editedItem
-      const url = `${this.$URL_SERVE}/${this.uri}/${data.id}/evaluate`
-      const response = await api.get(url)
-      if (response.status === 200) {
-        this.showConfirmation(response.message, response.data)
-      } else {
-        this.showErrors(response.errors)
-      }
-    },
-
-    // Metodo para insertar Item
-    insertItem(response) {
-      this.desserts.push(response.data)
-      this.close()
-      this.showMessage(response.message)
-    },
-
-    // Metodo para Actualizar Item
-    updateItem(response) {
-      Object.assign(this.desserts[this.editedIndex], response.data)
-      this.close()
-      this.showMessage(response.message)
-    },
-
-    // Metodo para Eliminar Item
-    deleteItem(item, response) {
-      const index = this.desserts.indexOf(item)
-      this.desserts.splice(index, 1)
-      this.showMessage(response.message)
-    },
-
-    // Metodo para mostrar en Toast Mensaje
-    showMessage(message) {
-      this.$toast.success(message)
-    },
-
-    // Metodo para mostrar en Toast Errors
-    showErrors(errors) {
-      const errorsArray = Object.values(errors)
-      const errosList = errorsArray.join('\n')
-      this.$toast.error(errosList)
-    },
-
-    showConfirmation(message, data) {
-      if (message === 'Requerimiento Satisfecho') {
-        // Mostrar Confirmacion a nota de salida
-        this.confirmationNewExitNote(data)
-      } else {
-        // Mostrar Confirmacion a nota de salida a Nuevo Requerimiento
-        this.confirmationNewRequest(data)
-      }
-    },
-    confirmationNewExitNote() {
-      this.$swal({
-        title: '¿Desea Crear una Nueva Nota de Salida?',
-        text: 'Requerimiento Satisfecho',
-        icon: 'success',
-        showCancelButton: true,
-        confirmButtonText: 'Si, Crear!',
-        cancelButtonText: 'Cancelar',
-      }).then(async result => {
-        if (result.isConfirmed) {
-          // Redirigiri a nueva nota de salida
-        }
-      })
-    },
-    confirmationNewRequest(data) {
-      this.$swal({
-        title: '¿Desea Crear una Nuevo Requerimiento de Compra?',
-        text: 'Requerimiento Insatisfecho',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Si, Crear!',
-        cancelButtonText: 'Cancelar',
-      }).then(async result => {
-        if (result.isConfirmed) {
-          // Redirigiri a nuevo Requerimiento
-          this.desserts_detail = []
-          this.editedItem = { ...this.defaultItem }
-          this.editedIndex = -1
-          this.desserts_detail = data
-          this.dialog = true
-        }
-      })
-    },
-
-    // Metodo Para restablecer valores por default
-    close() {
-      this.reset()
-      this.dialog = false
-      this.$nextTick(() => {
-        this.desserts_detail = []
-        this.editedItem = { ...this.defaultItem }
-        this.editedIndex = -1
-      })
-    },
-
-    // Metodo Para restablecer valores por default
-    closeProduct() {
-      this.dialogProduct = false
     },
 
     // Metodo para limpiar reseatear formulario (limpiar campos)
@@ -717,66 +390,26 @@ export default {
       this.$refs.form.resetValidation()
     },
 
-    // Metodo para Obternet color de IMportancia
-    getColorImportance(importance) {
-      if (importance.toLowerCase() === 'alta') return 'color-importance--red'
-      if (importance.toLowerCase() === 'media') return 'color-importance--yellow'
-
-      return 'color-importance--green'
-    },
-
-    // Metodo para Obternet color de IMportancia
-    // getColorStatus(status) {
-    //   if (status.toLowerCase() === 'pendiente') return '#FFC400'
-
-    //   return '#00897B'
-    // },
-
-    //  Metodo para optener productos
-    async getAllSuppliers() {
-      const url = `${this.$URL_SERVE}/suppliers`
-      this.items_suppliers = await api.getAll(url)
-    },
-    async getQuotationById(id) {
-      const url = `${this.$URL_SERVE}/quotations/${id}`
-      const response = await api.get(url)
-      this.quantityDisable = true
-      this.priceDisable = true
-      this.desserts_detail = response.data.materials
-    },
-
-    //  Metodo para optener productos
-    async getAllQuotations() {
-      const url = `${this.$URL_SERVE}/quotations`
-      this.items_requests = await api.getAll(url)
-    },
-    toggleMaterial(item) {
-      const existMaterial = this.desserts_detail.findIndex(val => val.code === item.code)
-      if (existMaterial === -1) {
-        this.addMaterial(item)
-      } else {
-        this.$toast.error('El Material ya esta en lista')
-      }
-    },
-    addMaterial(item) {
-      const data = { ...item }
-      data.quantity = 1
-      this.desserts_detail.push(data)
-    },
-    removeMaterial(item) {
-      const index = this.desserts_detail.findIndex(val => val.name === item.name)
-      this.desserts_detail.splice(index, 1)
-    },
-
-    // Metodo para insertar detalle de cantidad a data (editItem)
-    setQuantityItem(event, item) {
-      const index = this.desserts_detail.findIndex(val => val.name === item.name)
-      this.desserts_detail[index].quantity = event
-    },
-
     generatePDF() {
       // Default export is a4 paper, portrait, using millimeters for units
-      const name = `${this.table}s`
+      const data = this.desserts_detail
+
+      // if (data.length > 0) {
+      //   const name = 'Reporte de Requerimientos'
+      //   const columns = [
+      //     { header: 'Codigo', dataKey: 'code' },
+      //     { header: 'Fecha Requerida', dataKey: 'date_required' },
+      //     { header: 'Tipo Requerimiento', dataKey: 'type_request' },
+      //     { header: 'Importancia', dataKey: 'importance' },
+      //     { header: 'Estado', dataKey: 'status' },
+      //   ]
+
+      //   generatePDF.report(name, columns, data)
+      // } else {
+      //   this.$toast.error('No hay Datos en el Reporte')
+      // }
+
+      const name = 'Reporte de Requerimientos'
       const columns = [
         { header: 'Codigo', dataKey: 'code' },
         { header: 'Fecha Requerida', dataKey: 'date_required' },
@@ -784,18 +417,8 @@ export default {
         { header: 'Importancia', dataKey: 'importance' },
         { header: 'Estado', dataKey: 'status' },
       ]
-      const data = this.desserts
-      generatePDF.report(name, columns, data)
-    },
-    calcTotal(item) {
-      const total = item.price * item.quantity
-      const index = this.desserts_detail.findIndex(val => val.name === item.name)
-      this.desserts_detail[index].total = total
-
-      return total
-    },
-    calcTotalQuotation() {
-      return this.editedItem.total_amount > 0 ? this.editedItem.total_amount : 0
+      const parameters = this.editedItem
+      generatePDF.report(name, columns, data, parameters)
     },
   },
 }
