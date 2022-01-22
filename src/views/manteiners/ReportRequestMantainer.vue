@@ -157,6 +157,7 @@
                   </h3>
                   <div>
                     <v-btn
+                      v-show="desserts_detail.length > 0"
                       color="primary"
                       elevation="2"
                       @click="generatePDF()"
@@ -181,8 +182,6 @@
                 :headers="headers_detail"
                 :items="desserts_detail"
                 :search="search_detail"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
               >
                 <template v-slot:item.quantity="{ item }">
                   <v-text-field
@@ -254,6 +253,7 @@ import {
   mdiBookCheckOutline,
 } from '@mdi/js'
 import { format, parseISO } from 'date-fns'
+
 import api from '@/api'
 import generatePDF from '@/reports/jsPDF/jsPDF'
 
@@ -370,11 +370,12 @@ export default {
     // Metodo para crear recurso (API)
     async register() {
       const data = this.editedItem
+
       const url = `${this.$URL_SERVE}/requests?status=${data.status}&&type_request=${data.type_request}&&date_min=${data.date_min}&&date_max=${data.date_max}`
       const validation = this.$refs.form.validate()
+
       if (validation) {
-        this.desserts_detail = await api.getAll(url)
-        console.log(this.desserts_detail)
+        [this.desserts_detail, this.data_report] = await api.getAllReport(url)
       } else {
         this.$toast.error('Debe Agregar al menos un producto')
       }
@@ -418,7 +419,7 @@ export default {
         { header: 'Estado', dataKey: 'status' },
       ]
       const parameters = this.editedItem
-      generatePDF.report(name, columns, data, parameters)
+      generatePDF.reportRequest(name, columns, data, parameters)
     },
   },
 }

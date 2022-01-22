@@ -1,7 +1,7 @@
 import { jsPDF as JSPDF } from 'jspdf'
 import 'jspdf-autotable'
 
-function report(name, columns, data, parameters) {
+function reportRequest(name, columns, data, parameters) {
   const company = {
     name: 'ITECH 3V SAC',
     email: 'itech3v@gmail.com',
@@ -46,11 +46,12 @@ function report(name, columns, data, parameters) {
   doc.autoTable({
     columns,
     body: data,
-    margin: { left: 10, top: 55 },
+    margin: { left: 10 },
+    startY: doc.pageCount > 1 ? 0 : 55,
   })
 
   window.open(URL.createObjectURL(doc.output('blob')))
 }
 export default {
-  report,
+  reportRequest,
 }

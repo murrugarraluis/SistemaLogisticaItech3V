@@ -2,14 +2,25 @@ import axios from 'axios'
 
 async function getAll(url) {
   let items = null
-  await axios
-    .get(url)
-    .then(result => {
-      const { data } = result.data
-      items = [...data]
-    })
+  await axios.get(url).then(result => {
+    const { data } = result.data
+    items = [...data]
+  })
 
   return items
+}
+async function getAllReport(url) {
+  let items = null
+  let dataAdditional = ''
+  await axios.get(url).then(result => {
+    console.log(result)
+    const { data } = result.data
+    const { additional } = result.data
+    items = [...data]
+    dataAdditional = additional
+  })
+
+  return [items, dataAdditional]
 }
 async function get(url) {
   let JSON = {}
@@ -261,4 +272,5 @@ export default {
   restore,
   login,
   logout,
+  getAllReport,
 }
