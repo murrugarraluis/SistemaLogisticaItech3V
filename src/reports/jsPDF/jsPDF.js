@@ -1,7 +1,7 @@
 import { jsPDF as JSPDF } from 'jspdf'
 import 'jspdf-autotable'
 
-function reportRequest(name, columns, data, parameters) {
+function reportRequest(name, columns, data, parameters, graphics) {
   const company = {
     name: 'ITECH 3V SAC',
     email: 'itech3v@gmail.com',
@@ -49,7 +49,9 @@ function reportRequest(name, columns, data, parameters) {
     margin: { left: 10 },
     startY: doc.pageCount > 1 ? 0 : 55,
   })
-
+  doc.addPage()
+  doc.setFont('helvetica').setFont(undefined, 'bold').setFontSize(14).text('GRAFICO', 10, 10)
+  doc.addImage(graphics, 'PNG', 10, 15, 190, 150)
   window.open(URL.createObjectURL(doc.output('blob')))
 }
 export default {

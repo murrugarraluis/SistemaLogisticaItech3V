@@ -160,7 +160,6 @@
                   </h3>
                   <div>
                     <v-btn
-                      v-show="desserts_detail.length > 0"
                       color="primary"
                       elevation="2"
                       @click="generatePDF()"
@@ -255,6 +254,7 @@
                 <div id="chart">
                   <vue-apex-charts
                     v-if="renderGrapihcs"
+                    ref="demoChart"
                     :options="chartOptions"
                     :series="series"
                     :height="desserts_detail.length > 0 ? '690' : '226'"
@@ -447,8 +447,6 @@ export default {
         [this.desserts_detail, this.data_report] = await api.getAllReport(url)
         this.chartOptions.xaxis.categories = this.data_report.months
         this.series[0].data = this.data_report.amount_months
-        console.log(this.chartOptions.xaxis.categories)
-        console.log(this.series[0].data)
         this.renderGrapihcs = false
         this.$nextTick(() => {
           // Add the component back in
@@ -470,24 +468,7 @@ export default {
     },
 
     generatePDF() {
-      // Default export is a4 paper, portrait, using millimeters for units
       const data = this.desserts_detail
-
-      // if (data.length > 0) {
-      //   const name = 'Reporte de Requerimientos'
-      //   const columns = [
-      //     { header: 'Codigo', dataKey: 'code' },
-      //     { header: 'Fecha Requerida', dataKey: 'date_required' },
-      //     { header: 'Tipo Requerimiento', dataKey: 'type_request' },
-      //     { header: 'Importancia', dataKey: 'importance' },
-      //     { header: 'Estado', dataKey: 'status' },
-      //   ]
-
-      //   generatePDF.report(name, columns, data)
-      // } else {
-      //   this.$toast.error('No hay Datos en el Reporte')
-      // }
-
       const name = 'Reporte de Requerimientos'
       const columns = [
         { header: 'Codigo', dataKey: 'code' },
@@ -497,7 +478,12 @@ export default {
         { header: 'Estado', dataKey: 'status' },
       ]
       const parameters = this.editedItem
-      generatePDF.reportRequest(name, columns, data, parameters)
+
+      let graphic = ''
+      this.$refs.demoChart.dataURI().then(({ imgURI }) => {
+        graphic = imgURI
+        generatePDF.reportRequest(name, columns, data, parameters, graphic)
+      })
     },
   },
 }
