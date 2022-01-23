@@ -257,7 +257,7 @@
                     ref="demoChart"
                     :options="chartOptions"
                     :series="series"
-                    :height="desserts_detail.length > 0 ? '690' : '226'"
+                    :height="desserts_detail.length > 0 ? '675' : '226'"
                   ></vue-apex-charts>
                 </div>
               </div>
@@ -294,36 +294,63 @@ export default {
     renderGrapihcs: true,
     series: [
       {
-        name: 'Requests',
+        name: 'Requerimientos',
         data: [],
       },
     ],
     chartOptions: {
       chart: {
-        height: 350,
         type: 'line',
-        zoom: {
-          enabled: false,
+        dropShadow: {
+          enabled: true,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2,
+        },
+        toolbar: {
+          show: false,
         },
       },
+      colors: ['#77B6EA', '#545454'],
       dataLabels: {
-        enabled: false,
+        enabled: true,
       },
       stroke: {
-        curve: 'straight',
+        curve: 'smooth',
       },
       title: {
-        text: 'Cantidad de Requerimientos por Mes',
+        text: 'Cantidad de Requerimientos por Periodo',
         align: 'left',
       },
       grid: {
+        borderColor: '#e7e7e7',
         row: {
           colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
           opacity: 0.5,
         },
       },
+      markers: {
+        size: 1,
+      },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        title: {
+          text: 'Periodo',
+        },
+      },
+      yaxis: {
+        title: {
+          text: 'Cantidad',
+        },
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        floating: true,
+        offsetY: -25,
+        offsetX: -5,
       },
     },
 
