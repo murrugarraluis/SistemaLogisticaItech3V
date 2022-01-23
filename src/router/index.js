@@ -183,6 +183,15 @@ const routes = [
       requiresAuth: true,
     },
   },
+
+  {
+    path: '/reportes-requerimiento',
+    name: 'reportes-requerimiento',
+    component: () => import('@/views/manteiners/ReportRequestMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
   {
     path: '/error-404',
     name: 'error-404',
@@ -253,6 +262,9 @@ function hasAccess(name) {
 
     case 'notas-salida':
       return permissions.includes('view exit notes')
+
+    case 'reportes-requerimiento':
+      return permissions.includes('view reports')
 
     default:
       return false
