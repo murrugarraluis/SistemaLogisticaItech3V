@@ -187,6 +187,11 @@
           :to="{ name: 'reportes-requerimiento' }"
           :icon="icons.mdiPackageVariantClosed"
         ></nav-menu-link>
+        <nav-menu-link
+          title="Compras"
+          :to="{ name: 'reportes-compra' }"
+          :icon="icons.mdiCartVariant"
+        ></nav-menu-link>
       </nav-menu-group>
       <!-- <nav-menu-link
         title="Configuracion"
