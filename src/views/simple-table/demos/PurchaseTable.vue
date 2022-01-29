@@ -23,6 +23,7 @@
                 <v-icon class="mr-1">
                   {{ icons.mdiPlusCircleOutline }}
                 </v-icon>
+
                 Agregar
               </v-btn>
             </template>
@@ -210,6 +211,16 @@
                       <div>
                         <div class="d-flex justify-center">
                           <span class="font-weight-black display-1">S/{{ calcTotalQuotation() }}</span>
+                        </div>
+                        <div class="d-flex justify-center">
+                            <div class="d-flex flex-column justify-center align-center px-2 pt-5">
+                              <span class="font-weight-black">S/{{ calcTotalQuotation() }}</span>
+                              <span class="font-weight-black caption">IGV</span>
+                            </div>
+                            <div class="d-flex flex-column justify-center align-center px-2 pt-5">
+                              <span class="font-weight-black">S/{{ calcTotalQuotation() }}</span>
+                              <span class="font-weight-black caption">SubTotal</span>
+                            </div>
                         </div>
                       </div>
                       <!--      Encabezado de Tabla-->

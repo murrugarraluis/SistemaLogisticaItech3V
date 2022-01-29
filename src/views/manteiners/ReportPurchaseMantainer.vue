@@ -226,7 +226,10 @@
                 </div>
               </template>
               <div>
-                <div id="chart" class="d-flex justify-center d-sm-block">
+                <div
+                  id="chart"
+                  class="d-flex justify-center d-sm-block"
+                >
                   <vue-apex-charts
                     v-if="renderGrapihcs"
                     ref="demoChart"
