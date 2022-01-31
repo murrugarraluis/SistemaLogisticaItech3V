@@ -193,6 +193,11 @@
           :icon="icons.mdiCartVariant"
         ></nav-menu-link>
       </nav-menu-group>
+      <nav-menu-link
+          title="Ayuda"
+          :to="{ name: 'ayuda' }"
+          :icon="icons.mdiCartVariant"
+      ></nav-menu-link>
       <!-- <nav-menu-link
         title="Configuracion"
         :to="{ name: 'configuracion' }"
