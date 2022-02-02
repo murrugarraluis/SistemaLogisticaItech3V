@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <v-card-text>
+      <span>Tiempo de registro de Requerimiento: {{time_diff}} segundos </span>
       <!--      Modal-->
       <template>
         <div class="d-flex justify-center justify-sm-end">
@@ -19,6 +20,7 @@
                 class="mb-2"
                 v-bind="attrs"
                 v-on="on"
+                @click="startTime()"
               >
                 <v-icon class="mr-1">
                   {{ icons.mdiPlusCircleOutline }}
@@ -514,6 +516,11 @@ export default {
     items_importance: ['Baja', 'Media', 'Alta'],
 
     roles: localStorage.getItem('roles'),
+
+    // Calculo de Tiempos (TIMER)
+    time1: '',
+    time2: '',
+    time_diff: 0,
   }),
   computed: {
     formTitle() {
@@ -643,6 +650,7 @@ export default {
           const response = await api.register(url, data)
           if (response.status === 201) {
             this.insertItem(response)
+            this.getElapsedTime()
           } else {
             this.showErrors(response.errors)
           }
@@ -650,6 +658,10 @@ export default {
           this.$toast.error('Debe Agregar al menos un producto')
         }
       }
+    },
+    getElapsedTime() {
+      this.time2 = new Date().getTime()
+      this.time_diff = (this.time2 - this.time1) / 1000
     },
 
     // Metodo para eliminar un recurso (API)
@@ -906,6 +918,9 @@ export default {
       ]
       const data = this.desserts
       generatePDF.report(name, columns, data)
+    },
+    startTime() {
+      this.time1 = new Date().getTime()
     },
   },
 }

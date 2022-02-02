@@ -129,6 +129,7 @@
               <!--      Modal-->
               <template>
                 <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
+                  <span>Tiempo de elabaroracion de reporte: {{time_diff}} segundos </span>
                   <h3 class="py-4">
                     Compras
                   </h3>
@@ -383,6 +384,11 @@ export default {
     date_min: format(parseISO(new Date().toISOString()), 'yyyy-MM-dd'),
     menu1: false,
     menu2: false,
+
+    // Calculo de Tiempos (TIMER)
+    time1: '',
+    time2: '',
+    time_diff: 0,
   }),
   computed: {
     computedDateRequiredFormattedDatefns() {
@@ -391,6 +397,9 @@ export default {
     computedDateFormattedDatefns() {
       return this.editedItem.date_max ? format(parseISO(this.editedItem.date_max), 'dd/MM/yyyy') : ''
     },
+  },
+  created() {
+    this.time1 = new Date().getTime()
   },
   methods: {
     // Metodo para guardar cambios(crear o editar)
@@ -416,8 +425,14 @@ export default {
         this.renderGrapihcs = false
         this.$nextTick(() => {
           this.renderGrapihcs = true
+          this.getElapsedTime()
         })
       }
+    },
+    getElapsedTime() {
+      this.time2 = new Date().getTime()
+      this.time_diff = (this.time2 - this.time1) / 1000
+      this.time1 = new Date().getTime()
     },
 
     // Metodo para limpiar reseatear formulario (limpiar campos)
