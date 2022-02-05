@@ -16,7 +16,7 @@ import 'sweetalert2/dist/sweetalert2.css'
 
 Vue.config.productionTip = false
 
-Vue.prototype.$URL_SERVE = ' http://127.0.0.1:8000/api'
+Vue.prototype.$URL_SERVE = 'http://api-itech3v.test/api'
 
 const options = {
   confirmButtonColor: '#C62828',
