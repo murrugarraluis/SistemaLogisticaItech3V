@@ -187,7 +187,17 @@
           :to="{ name: 'reportes-requerimiento' }"
           :icon="icons.mdiPackageVariantClosed"
         ></nav-menu-link>
+        <nav-menu-link
+          title="Compras"
+          :to="{ name: 'reportes-compra' }"
+          :icon="icons.mdiCartVariant"
+        ></nav-menu-link>
       </nav-menu-group>
+      <nav-menu-link
+          title="Ayuda"
+          :to="{ name: 'ayuda' }"
+          :icon="icons.mdiHelpCircleOutline "
+      ></nav-menu-link>
       <!-- <nav-menu-link
         title="Configuracion"
         :to="{ name: 'configuracion' }"
@@ -221,6 +231,7 @@ import {
   mdiTag,
   mdiBookmark,
   mdiCounter,
+  mdiHelpCircleOutline,
 } from '@mdi/js'
 
 // import NavMenuSectionTitle from './components/NavMenuSectionTitle.vue'
@@ -243,6 +254,7 @@ export default {
     return {
       active: 'Producto',
       icons: {
+        mdiHelpCircleOutline,
         mdiHomeOutline,
         mdiAlphaTBoxOutline,
         mdiEyeOutline,

@@ -36,32 +36,6 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        md="4"
-                      >
-                        <v-autocomplete
-                          v-model="editedItem.status"
-                          :items="items_status"
-                          label="Estado"
-                          :rules="statusRules"
-                          outlined
-                          dense
-                        ></v-autocomplete>
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        md="8"
-                      >
-                        <v-autocomplete
-                          v-model="editedItem.type_request"
-                          :items="items_type_request"
-                          label="Tipo Requerimento"
-                          :rules="typeRequestRules"
-                          outlined
-                          dense
-                        ></v-autocomplete>
-                      </v-col>
-                      <v-col
-                        cols="12"
                         md="5"
                       >
                         <v-menu
@@ -148,7 +122,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="6"
+            xl="6"
           >
             <!--                Tabla Detalle-->
             <v-card class="pa-4">
@@ -157,7 +131,7 @@
                 <div class="d-flex flex-column justify-center align-center flex-md-row justify-md-space-between">
                   <span>Tiempo de elabaroracion de reporte: {{time_diff}} segundos </span>
                   <h3 class="py-4">
-                    Requerimientos
+                    Compras
                   </h3>
                   <div>
                     <v-btn
@@ -240,7 +214,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="6"
+            xl="6"
           >
             <!--                Tabla Detalle-->
             <v-card class="pa-4">
@@ -253,13 +227,17 @@
                 </div>
               </template>
               <div>
-                <div id="chart">
+                <div
+                  id="chart"
+                  class="d-flex justify-center d-sm-block"
+                >
                   <vue-apex-charts
                     v-if="renderGrapihcs"
                     ref="demoChart"
+                    type="donut"
                     :options="chartOptions"
                     :series="series"
-                    :height="desserts_detail.length > 0 ? '675' : '226'"
+                    :height="desserts_detail.length > 0 ? '975' : '226'"
                   ></vue-apex-charts>
                 </div>
               </div>
@@ -294,79 +272,39 @@ export default {
   },
   data: () => ({
     renderGrapihcs: true,
-    series: [
-      {
-        name: 'Requerimientos',
-        data: [],
-      },
-    ],
+    series: [],
     chartOptions: {
       chart: {
-        type: 'line',
-        dropShadow: {
-          enabled: true,
-          color: '#000',
-          top: 18,
-          left: 7,
-          blur: 10,
-          opacity: 0.2,
+        width: 1000,
+        type: 'pie',
+      },
+      labels: [],
+      responsive: [
+        {
+          breakpoint: 600,
+          options: {
+            chart: {
+              width: 200,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
         },
-        toolbar: {
-          show: false,
-        },
-      },
-      colors: ['#77B6EA', '#545454'],
-      dataLabels: {
-        enabled: true,
-      },
-      stroke: {
-        curve: 'smooth',
-      },
-      title: {
-        text: 'Cantidad de Requerimientos por Periodo',
-        align: 'left',
-      },
-      grid: {
-        borderColor: '#e7e7e7',
-        row: {
-          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
-      },
-      markers: {
-        size: 1,
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        title: {
-          text: 'Periodo',
-        },
-      },
-      yaxis: {
-        title: {
-          text: 'Cantidad',
-        },
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        floating: true,
-        offsetY: -25,
-        offsetX: -5,
-      },
+      ],
     },
 
     valid: true,
     table: 'Ordenes de Compra',
     uri: 'purchase-orders',
 
-    maintainer: 'Reporte de Requerimientos',
+    maintainer: 'Reporte de Compras',
     headers_detail: [
       { text: 'Codigo', align: 'start', value: 'code' },
-      { text: 'Fecha Requerida', value: 'date_required' },
-      { text: 'Tipo Requerimiento', value: 'type_request' },
-      { text: 'Importancia', align: 'center', value: 'importance' },
+      { text: 'Fecha', value: 'date_required' },
+      { text: 'Proveedor', value: 'supplier_fullname' },
       { text: 'Estado', align: 'center', value: 'status' },
+      { text: 'Total', align: 'center', value: 'total_amount' },
     ],
     desserts_global: [],
     desserts_global_my_data: [],
@@ -477,21 +415,18 @@ export default {
     async register() {
       const data = this.editedItem
 
-      const url = `${this.$URL_SERVE}/requests?status=${data.status}&&type_request=${data.type_request}&&date_min=${data.date_min}&&date_max=${data.date_max}`
+      const url = `${this.$URL_SERVE}/purchases?date_min=${data.date_min}&&date_max=${data.date_max}`
       const validation = this.$refs.form.validate()
 
       if (validation) {
         [this.desserts_detail, this.data_report] = await api.getAllReport(url)
-        this.chartOptions.xaxis.categories = this.data_report.months
-        this.series[0].data = this.data_report.amount_months
+        this.chartOptions.labels = this.data_report.suppliers
+        this.series = this.data_report.amount_purchases
         this.renderGrapihcs = false
         this.$nextTick(() => {
-          // Add the component back in
           this.renderGrapihcs = true
           this.getElapsedTime()
         })
-      } else {
-        this.$toast.error('Debe Agregar al menos un producto')
       }
     },
     getElapsedTime() {
@@ -512,20 +447,20 @@ export default {
 
     generatePDF() {
       const data = this.desserts_detail
-      const name = 'Reporte de Requerimientos'
+      const name = 'Reporte de Compras'
       const columns = [
         { header: 'Codigo', dataKey: 'code' },
-        { header: 'Fecha Requerida', dataKey: 'date_required' },
-        { header: 'Tipo Requerimiento', dataKey: 'type_request' },
-        { header: 'Importancia', dataKey: 'importance' },
+        { header: 'Fecha', dataKey: 'date_required' },
+        { header: 'Proveedor', dataKey: 'supplier_fullname' },
         { header: 'Estado', dataKey: 'status' },
+        { header: 'Total', dataKey: 'total_amount' },
       ]
       const parameters = this.editedItem
-
+      console.log(data)
       let graphic = ''
       this.$refs.demoChart.dataURI().then(({ imgURI }) => {
         graphic = imgURI
-        generatePDF.reportRequest(name, columns, data, parameters, graphic)
+        generatePDF.reportPurchase(name, columns, data, parameters, graphic)
       })
     },
   },

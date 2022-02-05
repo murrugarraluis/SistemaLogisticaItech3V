@@ -193,6 +193,19 @@ const routes = [
     },
   },
   {
+    path: '/reportes-compra',
+    name: 'reportes-compra',
+    component: () => import('@/views/manteiners/ReportPurchaseMantainer.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/ayuda',
+    name: 'ayuda',
+    component: () => import('@/views/manteiners/HelpMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),
@@ -264,6 +277,8 @@ function hasAccess(name) {
       return permissions.includes('view exit notes')
 
     case 'reportes-requerimiento':
+      return permissions.includes('view reports')
+    case 'reportes-compra':
       return permissions.includes('view reports')
 
     default:
