@@ -201,6 +201,11 @@ const routes = [
     },
   },
   {
+    path: '/ayuda',
+    name: 'ayuda',
+    component: () => import('@/views/manteiners/HelpMantainer.vue'),
+  },
+  {
     path: '/error-404',
     name: 'error-404',
     component: () => import('@/views/Error.vue'),

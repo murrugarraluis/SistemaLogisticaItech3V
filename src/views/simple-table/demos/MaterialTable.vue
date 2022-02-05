@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <v-card-text>
+      <span>Tiempo de registro de material: {{time_diff}} segundos </span>
       <!--      Modal-->
       <template>
         <div class="d-flex justify-center justify-sm-end">
@@ -19,6 +20,7 @@
                 dark
                 v-bind="attrs"
                 v-on="on"
+                @click="startTime()"
               >
                 <v-icon class="mr-1">
                   {{ icons.mdiPlusCircleOutline }}
@@ -218,6 +220,7 @@
           </v-dialog>
         </div>
       </template>
+
       <!--      Encabezado de Tabla-->
       <v-card-title class="d-flex flex-column justify-center flex-sm-row">
         <v-text-field
@@ -408,6 +411,11 @@ export default {
     items_category: [],
     items_mark: [],
     items_measure_unit: [],
+
+    // Calculo de Tiempos (TIMER)
+    time1: '',
+    time2: '',
+    time_diff: 0,
   }),
   computed: {
     formTitle() {
@@ -494,12 +502,17 @@ export default {
         const response = await api.register(url, data)
         if (response.status === 201) {
           this.insertItem(response)
+          this.getElapsedTime()
         } else if (await this.isDeleted(data.name)) {
           this.restore(data.name)
         } else {
           this.showErrors(response.errors)
         }
       }
+    },
+    getElapsedTime() {
+      this.time2 = new Date().getTime()
+      this.time_diff = (this.time2 - this.time1) / 1000
     },
 
     // Metodo oara editar recurso (API)
@@ -644,6 +657,9 @@ export default {
     setQuantityItem(event, item) {
       const index = this.desserts_detail.findIndex(val => val.name === item.name)
       this.desserts_detail[index].quantity = event
+    },
+    startTime() {
+      this.time1 = new Date().getTime()
     },
   },
 }
